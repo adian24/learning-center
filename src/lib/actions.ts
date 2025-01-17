@@ -19,4 +19,14 @@ const signUp = async (formData: FormData) => {
   });
 };
 
-export { signUp };
+const checkEmailExists = async (email: string) => {
+  const user = await db.user.findUnique({
+    where: {
+      email: email,
+    },
+  });
+
+  return user !== null;
+};
+
+export { signUp, checkEmailExists };

@@ -1,12 +1,13 @@
 import { v4 as uuid } from "uuid";
 import { encode as defaultEncode } from "next-auth/jwt";
 
-import db from "@/lib/db/db";
 import { PrismaAdapter } from "@auth/prisma-adapter";
+import { schema } from "@/lib/schema";
+import { checkEmailExists } from "./actions";
+import db from "@/lib/db/db";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
-import { schema } from "@/lib/schema";
 
 const adapter = PrismaAdapter(db);
 
@@ -20,12 +21,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: {},
       },
       authorize: async (credentials) => {
-        const validatedCredentials = schema.parse(credentials);
+        const { email, password } = schema.parse(credentials);
+
+        const emailExists = await checkEmailExists(email);
+
+        if (emailExists) {
+          return null;
+        }
 
         const user = await db.user.findFirst({
           where: {
-            email: validatedCredentials.email,
-            password: validatedCredentials.password,
+            email: email,
+            password: password,
           },
         });
 
