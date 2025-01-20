@@ -1,7 +1,10 @@
-import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/app/globals.css";
 import { ReactNode } from "react";
+import ConfettiProvider from "@/components/Providers/ConfettiProvider";
+import { ThemeProvider } from "@/components/Providers/ThemeProvidder";
+import ToasterPrivder from "@/components/Providers/ToasterPrivder";
+import { Metadata } from "next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,17 +24,23 @@ const metadata: Metadata = {
 type LayoutProps = {
   children: ReactNode;
 };
+
 const Layout = ({ children }: LayoutProps) => {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <main className="flex items-center justify-center min-h-screen bg-gray-100">
-          <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-            {children}
-          </div>
-        </main>
+        <ConfettiProvider />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+          <ToasterPrivder />
+        </ThemeProvider>
       </body>
     </html>
   );
