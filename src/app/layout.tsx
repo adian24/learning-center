@@ -5,6 +5,7 @@ import ConfettiProvider from "@/components/Providers/ConfettiProvider";
 import { ThemeProvider } from "@/components/Providers/ThemeProvidder";
 import ToasterPrivder from "@/components/Providers/ToasterPrivder";
 import { Metadata } from "next";
+import { SessionProvider } from "next-auth/react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,7 +39,7 @@ const Layout = ({ children }: LayoutProps) => {
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <SessionProvider>{children}</SessionProvider>
           <ToasterPrivder />
         </ThemeProvider>
       </body>

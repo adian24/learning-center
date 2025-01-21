@@ -3,12 +3,6 @@ import db from "@/lib/db/db";
 import { executeAction } from "@/lib/executeAction";
 import argon2 from "argon2";
 
-const handleRegister = async (formData: FormData) => {
-  const res = await signUp(formData);
-
-  return res;
-};
-
 const signUp = async (formData: FormData) => {
   return executeAction({
     actionFn: async () => {
@@ -41,4 +35,4 @@ const checkEmailExists = async (email: string) => {
   return user !== null;
 };
 
-export { signUp, checkEmailExists, handleRegister };
+export { signUp, checkEmailExists };
