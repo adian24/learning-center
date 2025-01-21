@@ -2,12 +2,13 @@ import { v4 as uuid } from "uuid";
 import { encode as defaultEncode } from "next-auth/jwt";
 
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { schema } from "@/lib/schema";
+import { loginSchema } from "@/lib/schema";
 import { checkEmailExists } from "./actions";
 import db from "@/lib/db/db";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
+import argon2 from "argon2";
 
 const adapter = PrismaAdapter(db);
 
@@ -19,24 +20,35 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       credentials: {
         email: {},
         password: {},
+        name: {},
       },
       authorize: async (credentials) => {
-        const { email, password } = schema.parse(credentials);
+        const { email, password } = loginSchema.parse(credentials);
 
         const emailExists = await checkEmailExists(email);
 
         if (emailExists) {
-          return null;
+          throw new Error("User already exists.");
         }
 
         const user = await db.user.findFirst({
           where: {
             email: email,
-            password: password,
           },
         });
 
         if (!user) {
+          throw new Error("Invalid credentials.");
+        }
+
+        // Verify the password
+        if (!user?.password) {
+          throw new Error("Invalid credentials.");
+        }
+
+        const isValid = await argon2.verify(user.password, password);
+
+        if (!isValid) {
           throw new Error("Invalid credentials.");
         }
 

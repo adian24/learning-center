@@ -1,17 +1,29 @@
-import { schema } from "@/lib/schema";
+import { registerSchema } from "@/lib/schema";
 import db from "@/lib/db/db";
 import { executeAction } from "@/lib/executeAction";
+import argon2 from "argon2";
+
+const handleRegister = async (formData: FormData) => {
+  const res = await signUp(formData);
+
+  return res;
+};
 
 const signUp = async (formData: FormData) => {
   return executeAction({
     actionFn: async () => {
       const email = formData.get("email");
       const password = formData.get("password");
-      const validatedData = schema.parse({ email, password });
+      const name = formData.get("name");
+      const validatedData = registerSchema.parse({ email, password, name });
+
+      const hashedPassword = await argon2.hash(validatedData.password);
+
       await db.user.create({
         data: {
-          email: validatedData.email.toLocaleLowerCase(),
-          password: validatedData.password,
+          name: validatedData.name,
+          email: validatedData.email,
+          password: hashedPassword,
         },
       });
     },
@@ -29,4 +41,4 @@ const checkEmailExists = async (email: string) => {
   return user !== null;
 };
 
-export { signUp, checkEmailExists };
+export { signUp, checkEmailExists, handleRegister };
