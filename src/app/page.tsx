@@ -7,8 +7,6 @@ const Page = async () => {
 
   if (session?.user) redirect("/dashboard");
 
-  console.log("session", session);
-
   return <HeroFormSignUpForm />;
 };
 

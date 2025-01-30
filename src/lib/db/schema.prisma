@@ -19,6 +19,9 @@ model User {
   // Optional for WebAuthn support
   Authenticator Authenticator[]
 
+   studentProfile StudentProfile?
+  teacherProfile TeacherProfile?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -78,4 +81,317 @@ model Authenticator {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, credentialID])
+}
+
+model Certificate {
+  id              String    @id @default(uuid()) @map("_id")
+  studentId       String
+  student         StudentProfile @relation(fields: [studentId], references: [id])
+  
+  courseId        String
+  course          Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  
+  // Certificate details
+  certificateNumber String  @unique    // Unique identifier/serial number
+  issueDate        DateTime @default(now())
+  
+  // URLs
+  pdfUrl           String?  // URL to generated PDF certificate
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([studentId])
+  @@index([courseId])
+  @@unique([studentId, courseId]) // One certificate per course per student
+}
+
+model StudentProfile {
+  id        String   @id @default(cuid()) @map("_id") 
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @unique
+  // Student specific fields
+  enrolledCourses EnrolledCourse[]
+  certificates    Certificate[]
+  progress        UserProgress[]
+  quizAttempts    QuizAttempt[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model TeacherProfile {
+  id        String   @id @default(cuid()) @map("_id") 
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @unique
+  // Teacher specific fields
+  bio       String?
+  expertise String[]
+  courses   Course[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Course {
+  id          String    @id @default(uuid()) @map("_id") 
+  title       String   
+  description String?  
+  imageUrl    String?  
+  price       Float?
+  isPublished Boolean   @default(false)
+  
+  // Link to TeacherProfile instead of just userId and author
+  teacherId   String
+  teacher     TeacherProfile @relation(fields: [teacherId], references: [id])
+
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id])
+
+  chapters    Chapter[]
+  certificates Certificate[]
+  
+  // Link to StudentProfile through purchases
+  enrolledStudents EnrolledCourse[]
+  
+  // Additional useful fields
+  language    String?   // Course language
+  level       Level    @default(BEGINNER)  // Course difficulty level
+  duration    Int?     // Total duration in minutes
+  totalSteps  Int      @default(0)  // Total number of lessons/steps
+  rating      Float?   // Average rating
+  reviewCount Int      @default(0)  // Number of reviews
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([categoryId])
+  @@index([teacherId])
+}
+
+model Category {
+  id      String   @id @default(uuid()) @map("_id") 
+  name    String   @unique
+  slug    String   @unique  // URL-friendly version of name
+  courses Course[]
+}
+
+model Chapter {
+  id          String    @id @default(uuid()) @map("_id") 
+  title       String
+  description String?   
+  videoUrl    String?   
+  position    Int
+  isPublished Boolean   @default(false)
+  isFree      Boolean   @default(false)
+  duration    Int?      // Video duration in minutes
+  
+  courseId    String
+  course      Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  // Track student progress
+  userProgress UserProgress[]
+  
+  // Additional useful fields
+  resources   Resource[]   // Additional learning materials
+  quizzes     Quiz[]      // Chapter quizzes
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([courseId])
+}
+
+model UserProgress {
+  id           String    @id @default(uuid()) @map("_id") 
+  studentId    String    // Changed from userId to match StudentProfile
+  student      StudentProfile @relation(fields: [studentId], references: [id])
+
+  chapterId    String
+  chapter      Chapter   @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  isCompleted  Boolean   @default(false)
+  
+  // Additional useful fields
+  watchedSeconds Int     @default(0)    // Track video progress
+  lastWatchedAt  DateTime?              // Last time user watched the video
+  completedAt    DateTime?              // When the chapter was completed
+  notes          String?                // User's personal notes
+  
+  // If you have quizzes
+  quizAttempts   QuizAttempt[]
+  
+  // Optional: track completion status of chapter resources
+  completedResources Resource[] @relation("CompletedResources")
+
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([chapterId])
+  @@index([studentId])
+  @@unique([studentId, chapterId])
+}
+
+// New models to support additional features
+model Resource {
+  id          String   @id @default(uuid()) @map("_id")
+  title       String
+  type        ResourceType
+  url         String
+  chapterId   String
+  chapter     Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  
+  completedBy UserProgress[] @relation("CompletedResources")
+
+  @@index([chapterId])
+}
+
+model Quiz {
+  id          String    @id @default(uuid()) @map("_id")
+  title       String
+  description String?
+  timeLimit   Int?      // Time limit in minutes, null for no limit
+  passingScore Int     @default(60) // Passing score percentage
+  
+  chapterId   String
+  chapter     Chapter   @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  
+  questions   Question[]
+  attempts    QuizAttempt[]
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([chapterId])
+}
+
+model Question {
+  id          String    @id @default(uuid()) @map("_id")
+  text        String    // The question text
+  type        QuestionType
+  points      Int       @default(1)
+  explanation String?   // Explanation of the correct answer
+  
+  options     QuestionOption[]
+  
+  quizId      String
+  quiz        Quiz      @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  
+  // Track student answers
+  answers     StudentAnswer[]
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([quizId])
+}
+
+model QuestionOption {
+  id          String    @id @default(uuid()) @map("_id")
+  text        String    // The option text
+  isCorrect   Boolean   @default(false)
+  
+  questionId  String
+  question    Question  @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  
+  // Track which students selected this option
+  selectedBy  StudentAnswer[]
+
+  @@index([questionId])
+}
+
+model QuizAttempt {
+  id          String    @id @default(uuid()) @map("_id")
+  score       Float     // Percentage score
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+  
+  quizId      String
+  quiz        Quiz      @relation(fields: [quizId], references: [id])
+  
+  studentId   String
+  student     StudentProfile @relation(fields: [studentId], references: [id])
+  
+  userProgressId String?
+  userProgress   UserProgress? @relation(fields: [userProgressId], references: [id])
+
+  answers     StudentAnswer[]
+
+  @@index([quizId])
+  @@index([studentId])
+}
+
+model StudentAnswer {
+  id          String    @id @default(uuid()) @map("_id")
+  
+  questionId  String
+  question    Question  @relation(fields: [questionId], references: [id])
+  
+  // For multiple choice questions
+  selectedOptionId String?
+  selectedOption QuestionOption? @relation(fields: [selectedOptionId], references: [id])
+  
+  // For text/number type questions
+  textAnswer   String?
+  
+  attemptId    String
+  attempt      QuizAttempt @relation(fields: [attemptId], references: [id])
+  
+  isCorrect    Boolean
+  pointsEarned Float
+
+  @@index([questionId])
+  @@index([attemptId])
+  @@index([selectedOptionId])
+}
+
+model EnrolledCourse {
+  id          String    @id @default(uuid()) @map("_id") 
+  studentId   String    // Changed from userId to match StudentProfile
+  student     StudentProfile @relation(fields: [studentId], references: [id])
+
+  courseId    String
+  course      Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  // Payment and pricing information
+  amount      Float     // Amount paid
+  currency    String    @default("USD")
+  paymentId   String?   // Reference to payment provider transaction
+  status      PurchaseStatus @default(COMPLETED)
+
+  // Access control
+  validUntil  DateTime? // For courses with time-limited access
+  isActive    Boolean   @default(true)
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([studentId, courseId]) // Prevent duplicate purchases
+  @@index([courseId])
+  @@index([studentId])
+}
+
+enum PurchaseStatus {
+  PENDING
+  COMPLETED
+  REFUNDED
+  FAILED
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  SINGLE_CHOICE
+  TRUE_FALSE
+  TEXT
+  NUMBER
+}
+
+enum Level {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum ResourceType {
+  PDF
+  LINK
+  FILE
 }

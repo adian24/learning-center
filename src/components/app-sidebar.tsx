@@ -2,11 +2,9 @@
 
 import * as React from "react";
 import {
-  BookOpen,
-  Bot,
-  Frame,
-  Map,
-  PieChart,
+  UsersRound,
+  DraftingCompass,
+  ChartArea,
   Compass,
   LayoutDashboard,
   GraduationCap,
@@ -15,8 +13,8 @@ import {
   TicketCheck,
 } from "lucide-react";
 
-import { NavMain } from "@/components/nav-main";
-import { NavProjects } from "@/components/nav-projects";
+import { NavStudent } from "@/components/nav-student";
+import { NavTeacher } from "@/components/nav-teacher";
 import { NavUser } from "@/components/nav-user";
 import { TeamSwitcher } from "@/components/team-switcher";
 import {
@@ -26,6 +24,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { SidebarOption } from "./sidebar-option";
 
 // This is sample data.
 const data = {
@@ -49,12 +48,12 @@ const data = {
       isActive: true,
     },
     {
-      title: "My Course",
+      title: "Courses",
       url: "/courses",
       icon: Compass,
     },
     {
-      title: "Sertifikat",
+      title: "Certificates",
       url: "/certificates",
       icon: TicketCheck,
     },
@@ -66,19 +65,29 @@ const data = {
   ],
   navTeacher: [
     {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
+      name: "Dashboard",
+      url: "/teacher/dashboard",
+      icon: LayoutDashboard,
     },
     {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
+      name: "My Courses",
+      url: "/teacher/courses",
+      icon: Compass,
     },
     {
-      name: "Travel",
-      url: "#",
-      icon: Map,
+      name: "Course Builder",
+      url: "/teacher/builder",
+      icon: DraftingCompass,
+    },
+    {
+      name: "Students",
+      url: "/teacher/students",
+      icon: UsersRound,
+    },
+    {
+      name: "Analytics",
+      url: "/teacher/analytics",
+      icon: ChartArea,
     },
   ],
 };
@@ -90,10 +99,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navStudent} />
-        <NavProjects projects={data.navTeacher} />
+        <NavStudent items={data.navStudent} />
+        <NavTeacher items={data.navTeacher} />
       </SidebarContent>
       <SidebarFooter>
+        <div className="p-1">
+          <SidebarOption />
+        </div>
         <NavUser />
       </SidebarFooter>
       <SidebarRail />
