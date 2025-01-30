@@ -41,7 +41,7 @@ const data = {
       plan: "0 Courses",
     },
   ],
-  navMain: [
+  navStudent: [
     {
       title: "Dashboard",
       url: "/dashboard",
@@ -64,7 +64,7 @@ const data = {
       icon: ShoppingCart,
     },
   ],
-  projects: [
+  navTeacher: [
     {
       name: "Design Engineering",
       url: "#",
@@ -90,8 +90,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        <NavMain items={data.navStudent} />
+        <NavProjects projects={data.navTeacher} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser />
