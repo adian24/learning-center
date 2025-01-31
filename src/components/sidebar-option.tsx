@@ -7,9 +7,16 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { SidebarMenu, useSidebar } from "./ui/sidebar";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 export function SidebarOption() {
   const { open } = useSidebar();
+  const { data: user, isLoading } = useCurrentUser();
+
+  // Don't show while loading or if user has teacher profile
+  if (isLoading || !user || user.teacherProfile) {
+    return null;
+  }
 
   return (
     <SidebarMenu>
