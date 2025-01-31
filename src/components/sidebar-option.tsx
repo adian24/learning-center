@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/card";
 import { SidebarMenu, useSidebar } from "./ui/sidebar";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import Link from "next/link";
 
 export function SidebarOption() {
   const { open } = useSidebar();
@@ -30,12 +31,14 @@ export function SidebarOption() {
               </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-2.5 p-4">
-              <Button
-                className="w-full bg-sidebar-primary text-sidebar-primary-foreground shadow-none"
-                size="sm"
-              >
-                Daftar Sebagai Teacher
-              </Button>
+              <Link href={"/teacher/register"}>
+                <Button
+                  className="w-full bg-sidebar-primary text-sidebar-primary-foreground shadow-none"
+                  size="sm"
+                >
+                  Daftar Sebagai Teacher
+                </Button>
+              </Link>
             </CardContent>
           </form>
         </Card>

@@ -4,12 +4,12 @@ import { usePathname } from "next/navigation";
 import {
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { generateBreadcrumb } from "@/lib/breadcrumb";
+import { Fragment } from "react";
 
 export default function NavBreadcrumb() {
   const pathname = usePathname();
@@ -27,18 +27,16 @@ export default function NavBreadcrumb() {
 
         {/* Dynamic breadcrumbs */}
         {breadcrumbs.map((breadcrumb, index) => (
-          <BreadcrumbItem key={breadcrumb.href}>
+          <Fragment key={index}>
             {breadcrumb.isLast ? (
               <BreadcrumbPage>{breadcrumb.label}</BreadcrumbPage>
             ) : (
               <>
-                <BreadcrumbLink href={breadcrumb.href}>
-                  {breadcrumb.label}
-                </BreadcrumbLink>
+                <BreadcrumbItem>{breadcrumb.label}</BreadcrumbItem>
                 <BreadcrumbSeparator />
               </>
             )}
-          </BreadcrumbItem>
+          </Fragment>
         ))}
       </BreadcrumbList>
     </Breadcrumb>
