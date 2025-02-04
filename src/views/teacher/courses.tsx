@@ -1,49 +1,20 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import Layout from "@/layout";
 import { Course } from "@/lib/types";
 import CourseCard from "@/sections/course/CourseCard";
+import CourseFilter from "@/sections/course/CourseFilter";
 import CourseList from "@/sections/course/CourseList";
 import TeacherEmptyCourse from "@/sections/teacher/TeacherEmptyCourse";
-import {
-  BookOpen,
-  FileText,
-  LayoutGrid,
-  List,
-  MoreVertical,
-  Plus,
-  Search,
-  Users,
-  UsersRound,
-} from "lucide-react";
+import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function TeacherCourses() {
-  const [viewType, setViewType] = useState("grid");
+  const router = useRouter();
+
+  const [viewType, setViewType] = useState<"grid" | "list">("grid");
 
   const courses: Course[] = [
     {
@@ -102,6 +73,7 @@ export default function TeacherCourses() {
             <Button
               size="lg"
               className="text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+              onClick={() => router.push("/teacher/courses/create")}
             >
               <Plus className="mr-2 h-4 w-4" />
               Buat Course Baru
@@ -116,49 +88,7 @@ export default function TeacherCourses() {
         {courses.length === 0 && <TeacherEmptyCourse />}
 
         {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-            <Input placeholder="Cari course..." className="pl-9" />
-          </div>
-          <Select defaultValue="all">
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Semua Status</SelectItem>
-              <SelectItem value="published">Published</SelectItem>
-              <SelectItem value="draft">Draft</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select defaultValue="all">
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Level" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Semua Level</SelectItem>
-              <SelectItem value="BEGINNER">Beginner</SelectItem>
-              <SelectItem value="INTERMEDIATE">Intermediate</SelectItem>
-              <SelectItem value="ADVANCED">Advanced</SelectItem>
-            </SelectContent>
-          </Select>
-          <div className="flex gap-2">
-            <Button
-              variant={viewType === "grid" ? "default" : "outline"}
-              size="icon"
-              onClick={() => setViewType("grid")}
-            >
-              <LayoutGrid className="h-4 w-4" />
-            </Button>
-            <Button
-              variant={viewType === "list" ? "default" : "outline"}
-              size="icon"
-              onClick={() => setViewType("list")}
-            >
-              <List className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
+        <CourseFilter viewType={viewType} setViewType={setViewType} />
 
         {/* Course Content */}
         <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
