@@ -40,7 +40,7 @@ export function DialogDeleteCourse() {
 
       // Revalidate courses data
       queryClient.invalidateQueries({
-        queryKey: ["courses"],
+        queryKey: ["teacher-courses"],
       });
 
       reset();

@@ -18,6 +18,7 @@ import {
 import { CourseListProps } from "@/lib/types";
 import { BookOpen, Calendar, Users } from "lucide-react";
 import CourseActions from "./CourseActions";
+import { formatPrice } from "@/utils/formatPrice";
 
 const CourseList: React.FC<CourseListProps> = ({ courses }) => {
   return (
@@ -96,7 +97,9 @@ const CourseList: React.FC<CourseListProps> = ({ courses }) => {
                 </TooltipProvider>
               </TableCell>
               <TableCell>
-                <div className="flex items-center">Rp {course.price}</div>
+                <div className="flex items-center">
+                  {formatPrice(course.price)}
+                </div>
               </TableCell>
               <TableCell>
                 <div className="flex items-center">

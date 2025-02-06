@@ -10,6 +10,7 @@ import {
 import { Course } from "@/lib/types";
 import { BookOpen, Users } from "lucide-react";
 import CourseActions from "./CourseActions";
+import { formatPrice } from "@/utils/formatPrice";
 
 const CourseCard = ({ course }: { course: Course }) => {
   return (
@@ -52,7 +53,9 @@ const CourseCard = ({ course }: { course: Course }) => {
             <BookOpen className="h-4 w-4 mr-1" />
             {course.chapters.length} chapter
           </div>
-          <div className="font-medium text-gray-900">Rp {course.price}</div>
+          <div className="font-medium text-gray-900">
+            {formatPrice(course.price)}
+          </div>
         </div>
         <Badge variant="secondary" className="mt-3">
           {course.level}
