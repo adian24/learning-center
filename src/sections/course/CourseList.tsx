@@ -100,7 +100,7 @@ const CourseList: React.FC<CourseListProps> = ({ courses }) => {
                 </div>
               </TableCell>
               <TableCell>
-                <CourseActions />
+                <CourseActions course={course} />
               </TableCell>
             </TableRow>
           ))}

@@ -6,11 +6,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CourseCardProps } from "@/lib/types";
+import { Course } from "@/lib/types";
 import { BookOpen, Users } from "lucide-react";
 import CourseActions from "./CourseActions";
 
-const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
+const CourseCard = ({ course }: { course: Course }) => {
   return (
     <Card key={course.id} className="flex flex-col">
       <div className="aspect-video relative overflow-hidden rounded-t-lg">
@@ -32,7 +32,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
       <CardHeader>
         <div className="flex justify-between items-start">
           <CardTitle className="text-xl">{course.title}</CardTitle>
-          <CourseActions />
+          <CourseActions course={course} />
         </div>
         <CardDescription>{course.description}</CardDescription>
       </CardHeader>
