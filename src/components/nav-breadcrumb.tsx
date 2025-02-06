@@ -10,13 +10,32 @@ import {
 } from "@/components/ui/breadcrumb";
 import { generateBreadcrumb } from "@/lib/breadcrumb";
 import { Fragment } from "react";
+import { useCourseQuery } from "@/hooks/use-course-query";
 
 export default function NavBreadcrumb() {
   const pathname = usePathname();
+  const courseIdMatch = pathname.match(/\/courses\/([^\/]+)/);
+  const courseId = courseIdMatch ? courseIdMatch[1] : null;
+
+  const { data: course } = courseId ? useCourseQuery(courseId) : { data: null };
+
+  if (pathname === "/") return null;
+
   const breadcrumbs = generateBreadcrumb(pathname);
 
-  // Don't show breadcrumb on home page
-  if (pathname === "/") return null;
+  let updatedBreadcrumbs = breadcrumbs;
+
+  if (courseId && course) {
+    updatedBreadcrumbs = breadcrumbs.map((breadcrumb) => {
+      if (breadcrumb.label.match(/[0-9]/)) {
+        return {
+          ...breadcrumb,
+          label: course.title,
+        };
+      }
+      return breadcrumb;
+    });
+  }
 
   return (
     <Breadcrumb>
@@ -26,7 +45,7 @@ export default function NavBreadcrumb() {
         <BreadcrumbSeparator />
 
         {/* Dynamic breadcrumbs */}
-        {breadcrumbs.map((breadcrumb, index) => (
+        {updatedBreadcrumbs.map((breadcrumb, index) => (
           <Fragment key={index}>
             {breadcrumb.isLast ? (
               <BreadcrumbPage>{breadcrumb.label}</BreadcrumbPage>
