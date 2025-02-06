@@ -6,7 +6,7 @@ import { ThemeProvider } from "@/components/Providers/ThemeProvidder";
 import ToasterPrivder from "@/components/Providers/ToasterPrivder";
 import { Metadata } from "next";
 import { SessionProvider } from "next-auth/react";
-import { Providers } from "./Providers";
+import { QueryProvider } from "@/components/Providers/QueryProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,9 +40,9 @@ const Layout = ({ children }: LayoutProps) => {
           enableSystem
           disableTransitionOnChange
         >
-          <Providers>
+          <QueryProvider>
             <SessionProvider>{children}</SessionProvider>
-          </Providers>
+          </QueryProvider>
           <ToasterPrivder />
         </ThemeProvider>
       </body>

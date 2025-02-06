@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import ButtonNvigation from "@/components/button-navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Layout from "@/layout";
 import { BarChart, BookOpen, GraduationCap, Users } from "lucide-react";
@@ -116,26 +116,21 @@ export default function TeacherDashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <Button
+                <ButtonNvigation
+                  text="Buat Course Baru"
                   className="w-full text-white bg-blue-600 rounded-lg hover:bg-blue-700"
-                  size="lg"
-                >
-                  Buat Course Baru
-                </Button>
-                <Button
+                  url="/teacher/courses/create"
+                />
+                <ButtonNvigation
+                  text="Lihat Analytics"
                   className="w-full text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100"
-                  variant="secondary"
-                  size="lg"
-                >
-                  Lihat Analytics
-                </Button>
-                <Button
+                  url="/teacher/courses/analytics"
+                />
+                <ButtonNvigation
+                  text="Kelola Students"
                   className="w-full text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100"
-                  variant="secondary"
-                  size="lg"
-                >
-                  Kelola Students
-                </Button>
+                  url="/teacher/courses/students"
+                />
               </div>
             </CardContent>
           </Card>
