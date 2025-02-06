@@ -38,7 +38,7 @@ export default function TeacherCourseBuilder() {
     <Layout>
       {/* Top Navigation */}
       <div className="bg-white shadow-sm">
-        <div className="flex justify-between items-center mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="h-16">
             <h1 className="text-lg font-bold sm:text-xl md:text-2xl">
               Course Builder
@@ -53,7 +53,7 @@ export default function TeacherCourseBuilder() {
       {/* Main Content */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         <div className="h-full">
-          <div className="grid grid-cols-12 gap-4 p-6">
+          <div className="grid grid-cols-12 gap-4">
             <div className="col-span-6 bg-white rounded-lg shadow">
               <CourseList
                 courses={data?.courses}
