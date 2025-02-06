@@ -1,60 +1,57 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import ButtonNvigation from "@/components/button-navigation";
+import { useCoursesQuery } from "@/hooks/use-courses-query";
 import Layout from "@/layout";
-import { Course } from "@/lib/types";
 import CourseCard from "@/sections/course/CourseCard";
 import CourseFilter from "@/sections/course/CourseFilter";
 import CourseList from "@/sections/course/CourseList";
+import CoursePagination, {
+  generatePaginationItems,
+} from "@/sections/course/CoursePagination";
 import TeacherEmptyCourse from "@/sections/teacher/TeacherEmptyCourse";
-import { Plus } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 import { useState } from "react";
 
 export default function TeacherCourses() {
-  const router = useRouter();
+  const [viewType, setViewType] = useState<"grid" | "list">("list");
+  const [page, setPage] = useState(1);
+  const perPage = 10;
 
-  const [viewType, setViewType] = useState<"grid" | "list">("grid");
+  const { data, isLoading, error } = useCoursesQuery({
+    page,
+    perPage,
+  });
 
-  const courses: Course[] = [
-    {
-      id: 1,
-      title: "Web Development Fundamentals",
-      description:
-        "Learn the basics of web development including HTML, CSS, and JavaScript",
-      imageUrl: "/api/placeholder/400/250",
-      enrolledCount: 45,
-      totalChapters: 12,
-      price: 49.99,
-      isPublished: true,
-      level: "BEGINNER",
-      lastUpdated: "12-05-2024",
-    },
-    {
-      id: 2,
-      title: "Advanced React Patterns",
-      description: "Master advanced React concepts and design patterns",
-      imageUrl: "/api/placeholder/400/250",
-      enrolledCount: 32,
-      totalChapters: 8,
-      price: 79.99,
-      isPublished: false,
-      level: "ADVANCED",
-      lastUpdated: "12-05-2024",
-    },
-    {
-      id: 3,
-      title: "Jumping Jacks 1000X",
-      description: "Master advanced React concepts and design patterns",
-      imageUrl: "/api/placeholder/400/250",
-      enrolledCount: 32,
-      totalChapters: 8,
-      price: 79.99,
-      isPublished: false,
-      level: "INTERMEDIATE",
-      lastUpdated: "12-05-2024",
-    },
-  ];
+  const totalPages = data?.meta.totalPages || 1;
+  const paginationItems = generatePaginationItems(page, totalPages);
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="h-full flex items-center justify-center min-h-[200px]">
+          <div className="flex items-center gap-2">
+            <Loader2 className="h-6 w-6 animate-spin" />
+            <p>Loading courses...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <Layout>
+        <div className="h-full flex items-center justify-center min-h-[200px]">
+          <p className="text-red-500">
+            Something went wrong. Please try again later.
+          </p>
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       {/* Top Navigation */}
@@ -69,15 +66,12 @@ export default function TeacherCourses() {
             </p>
           </div>
 
-          {courses.length > 0 && (
-            <Button
-              size="lg"
+          {(data?.courses?.length ?? 0) > 0 && (
+            <ButtonNvigation
+              text="Buat Course Baru"
+              url="/teacher/courses/create"
               className="text-white bg-blue-600 rounded-lg hover:bg-blue-700"
-              onClick={() => router.push("/teacher/courses/create")}
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Buat Course Baru
-            </Button>
+            />
           )}
         </div>
       </div>
@@ -85,7 +79,7 @@ export default function TeacherCourses() {
       {/* Main Content */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         {/* Empty State Card */}
-        {courses.length === 0 && <TeacherEmptyCourse />}
+        {(data?.courses?.length ?? 0) === 0 && <TeacherEmptyCourse />}
 
         {/* Filters */}
         <CourseFilter viewType={viewType} setViewType={setViewType} />
@@ -93,12 +87,20 @@ export default function TeacherCourses() {
         {/* Course Content */}
         <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {viewType === "grid" &&
-            courses.map((course) => (
+            data?.courses?.map((course) => (
               <CourseCard course={course} key={course.id} />
             ))}
         </div>
-        {viewType === "list" && <CourseList courses={courses} />}
+        {viewType === "list" && <CourseList courses={data?.courses ?? []} />}
       </div>
+
+      {/* Pagination */}
+      <CoursePagination
+        page={page}
+        setPage={setPage}
+        totalPages={totalPages}
+        paginationItems={paginationItems}
+      />
     </Layout>
   );
 }

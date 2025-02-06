@@ -36,7 +36,7 @@ const CourseList: React.FC<CourseListProps> = ({ courses }) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {courses.map((course) => (
+          {courses?.map((course) => (
             <TableRow key={course.id}>
               <TableCell>
                 <div>
@@ -81,25 +81,22 @@ const CourseList: React.FC<CourseListProps> = ({ courses }) => {
                     <TooltipTrigger>
                       <div className="flex items-center justify-center">
                         <BookOpen className="h-4 w-4 mr-1" />
-                        {course.totalChapters}
+                        {course.chapters?.length}
                       </div>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>{course.totalChapters} chapter</p>
+                      <p>{course.chapters?.length} chapter</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </TableCell>
               <TableCell>
-                <div className="flex items-center">
-                  <DollarSign className="h-4 w-4" />
-                  {course.price}
-                </div>
+                <div className="flex items-center">Rp {course.price}</div>
               </TableCell>
               <TableCell>
                 <div className="flex items-center">
                   <Calendar className="h-4 w-4 mr-1" />
-                  {new Date(course.lastUpdated).toLocaleDateString()}
+                  {new Date(course.updatedAt).toLocaleDateString()}
                 </div>
               </TableCell>
               <TableCell>

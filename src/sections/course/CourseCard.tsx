@@ -44,9 +44,9 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
           </div>
           <div className="flex items-center">
             <BookOpen className="h-4 w-4 mr-1" />
-            {course.totalChapters} chapter
+            {course.chapters.length} chapter
           </div>
-          <div className="font-medium text-gray-900">${course.price}</div>
+          <div className="font-medium text-gray-900">Rp {course.price}</div>
         </div>
         <Badge variant="secondary" className="mt-3">
           {course.level}

@@ -18,8 +18,8 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useImageUpload } from "@/hooks/use-image-upload";
 import { useCategories } from "@/hooks/use-categories";
-import { CourseMediaUpload } from "./forms-course-create/CourseMediaUpload";
-import { CourseForm } from "./forms-course-create/CourseForm";
+import { CourseMediaUpload } from "@/sections/course/forms-course-create/CourseMediaUpload";
+import { CourseForm } from "@/sections/course/forms-course-create/CourseForm";
 
 const CreateCourse = () => {
   const router = useRouter();
