@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import ButtonNvigation from "@/components/button-navigation";
 import {
   Card,
   CardContent,
@@ -30,13 +30,11 @@ const TeacherEmptyCourse = () => {
             </div>
 
             {/* Primary Action */}
-            <Button
-              size="lg"
+            <ButtonNvigation
+              text={`Buat Course Baru`}
+              url="/teacher/courses/create"
               className="mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-700"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Buat Course Baru
-            </Button>
+            />
           </div>
         </CardContent>
       </Card>

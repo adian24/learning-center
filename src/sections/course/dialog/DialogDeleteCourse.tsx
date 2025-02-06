@@ -14,9 +14,11 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { useDeleteCourseStore } from "@/store/use-delete-course-store";
+import { useRouter } from "next/navigation";
 
 export function DialogDeleteCourse() {
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   const { isOpen, courseToDelete, isDeleting, onClose, setIsDeleting, reset } =
     useDeleteCourseStore();
@@ -30,7 +32,7 @@ export function DialogDeleteCourse() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to delete course");
+        toast.error("Failed to delete course");
       }
 
       // Show success message
@@ -42,6 +44,7 @@ export function DialogDeleteCourse() {
       });
 
       reset();
+      router.push("/teacher/courses");
     } catch (error) {
       console.error("[DELETE_COURSE_ERROR]", error);
       toast.error("Failed to delete course");

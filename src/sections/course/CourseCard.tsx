@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -31,7 +32,12 @@ const CourseCard = ({ course }: { course: Course }) => {
       </div>
       <CardHeader>
         <div className="flex justify-between items-start">
-          <CardTitle className="text-xl">{course.title}</CardTitle>
+          <Link
+            href={`/teacher/courses/${course.id}`}
+            className="hover:underline hover:text-blue-600 transition-colors"
+          >
+            <CardTitle className="text-xl">{course.title}</CardTitle>
+          </Link>
           <CourseActions course={course} />
         </div>
         <CardDescription>{course.description}</CardDescription>

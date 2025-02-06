@@ -12,6 +12,7 @@ interface CourseFormProps {
   onSubmit: (data: CourseFormValues) => Promise<void>;
   isSubmitting: boolean;
   categories?: Array<{ id: string; name: string }>;
+  origin: "create" | "update";
 }
 
 export const CourseForm = ({
@@ -19,6 +20,7 @@ export const CourseForm = ({
   onSubmit,
   isSubmitting,
   categories,
+  origin,
 }: CourseFormProps) => {
   return (
     <Form {...form}>
@@ -36,10 +38,12 @@ export const CourseForm = ({
           {isSubmitting ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Membuat Course...
+              {origin === "create" ? "Membuat Course..." : "Mengubah Course..."}
             </>
-          ) : (
+          ) : origin === "create" ? (
             "Buat Course"
+          ) : (
+            "Ubah Course"
           )}
         </Button>
       </form>

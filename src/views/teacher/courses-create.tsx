@@ -102,6 +102,7 @@ const CreateCourse = () => {
                 onSubmit={onSubmit}
                 isSubmitting={isSubmitting}
                 categories={categories}
+                origin="create"
               />
             </CardContent>
           </Card>

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import {
@@ -15,8 +16,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { CourseListProps } from "@/lib/types";
-import { BookOpen, Calendar, DollarSign, Users } from "lucide-react";
-import React from "react";
+import { BookOpen, Calendar, Users } from "lucide-react";
 import CourseActions from "./CourseActions";
 
 const CourseList: React.FC<CourseListProps> = ({ courses }) => {
@@ -40,7 +40,12 @@ const CourseList: React.FC<CourseListProps> = ({ courses }) => {
             <TableRow key={course.id}>
               <TableCell>
                 <div>
-                  <div className="font-medium">{course.title}</div>
+                  <Link
+                    href={`/teacher/courses/${course.id}`}
+                    className="font-medium hover:text-blue-600 hover:underline transition-colors"
+                  >
+                    <div className="font-medium">{course.title}</div>
+                  </Link>
                   <div className="text-sm text-gray-500 truncate max-w-[280px]">
                     {course.description}
                   </div>

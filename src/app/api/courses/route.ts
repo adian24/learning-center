@@ -1,7 +1,6 @@
 // app/api/courses/route.ts
 import { auth } from "@/lib/auth";
 import db from "@/lib/db/db";
-import { PaginatedResponse } from "@/lib/types";
 import { NextResponse } from "next/server";
 
 // GET all courses
