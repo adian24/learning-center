@@ -82,25 +82,34 @@ export default function TeacherCourses() {
         {(data?.courses?.length ?? 0) === 0 && <TeacherEmptyCourse />}
 
         {/* Filters */}
-        <CourseFilter viewType={viewType} setViewType={setViewType} />
+        {(data?.courses?.length ?? 0) > 0 && (
+          <CourseFilter viewType={viewType} setViewType={setViewType} />
+        )}
 
         {/* Course Content */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {viewType === "grid" &&
-            data?.courses?.map((course) => (
-              <CourseCard course={course} key={course.id} />
-            ))}
-        </div>
-        {viewType === "list" && <CourseList courses={data?.courses ?? []} />}
-      </div>
+        {(data?.courses?.length ?? 0) > 0 && (
+          <>
+            <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {viewType === "grid" &&
+                data?.courses?.map((course) => (
+                  <CourseCard course={course} key={course.id} />
+                ))}
+            </div>
 
-      {/* Pagination */}
-      <CoursePagination
-        page={page}
-        setPage={setPage}
-        totalPages={totalPages}
-        paginationItems={paginationItems}
-      />
+            {viewType === "list" && (
+              <CourseList courses={data?.courses ?? []} />
+            )}
+
+            {/* Pagination */}
+            <CoursePagination
+              page={page}
+              setPage={setPage}
+              totalPages={totalPages}
+              paginationItems={paginationItems}
+            />
+          </>
+        )}
+      </div>
     </Layout>
   );
 }
