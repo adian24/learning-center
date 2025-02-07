@@ -1,10 +1,10 @@
 import { DialogDeleteCourse } from "@/sections/course/dialog/DialogDeleteCourse";
-import TeacherCourses from "@/views/teacher/courses";
+import CourseDetail from "@/views/teacher/course-detail";
 
-export default function TeacherCoursesPage() {
+export default function CourseDetailPage() {
   return (
     <>
-      <TeacherCourses />
+      <CourseDetail />
       <DialogDeleteCourse />
     </>
   );

@@ -12,7 +12,7 @@ export const useImageUpload = () => {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await fetch("/api/courses/upload", {
+      const response = await fetch("/api/teacher/courses/upload", {
         method: "POST",
         body: formData,
       });

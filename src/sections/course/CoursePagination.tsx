@@ -57,7 +57,7 @@ const CoursePagination = ({
   paginationItems,
 }: CoursePaginationProps) => {
   return (
-    <Pagination>
+    <Pagination className="mt-8">
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious

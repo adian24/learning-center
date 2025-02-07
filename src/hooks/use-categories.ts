@@ -8,7 +8,7 @@ interface Category {
 }
 
 async function getCategories(): Promise<Category[]> {
-  const response = await fetch("/api/courses/categories");
+  const response = await fetch("/api/teacher/courses/categories");
   if (!response.ok) {
     throw new Error("Failed to fetch categories");
   }

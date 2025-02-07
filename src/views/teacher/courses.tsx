@@ -26,19 +26,6 @@ export default function TeacherCourses() {
   const totalPages = data?.meta.totalPages || 1;
   const paginationItems = generatePaginationItems(page, totalPages);
 
-  if (isLoading) {
-    return (
-      <Layout>
-        <div className="h-full flex items-center justify-center min-h-[200px]">
-          <div className="flex items-center gap-2">
-            <Loader2 className="h-6 w-6 animate-spin" />
-            <p>Loading courses...</p>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
-
   // Error state
   if (error) {
     return (
@@ -82,25 +69,43 @@ export default function TeacherCourses() {
         {(data?.courses?.length ?? 0) === 0 && <TeacherEmptyCourse />}
 
         {/* Filters */}
-        <CourseFilter viewType={viewType} setViewType={setViewType} />
+        {!isLoading && (data?.courses?.length ?? 0) > 0 && (
+          <CourseFilter viewType={viewType} setViewType={setViewType} />
+        )}
+
+        {isLoading && (
+          <div className="h-full flex items-center justify-center min-h-[200px]">
+            <div className="flex items-center gap-2">
+              <Loader2 className="h-6 w-6 animate-spin" />
+              <p>Loading courses...</p>
+            </div>
+          </div>
+        )}
 
         {/* Course Content */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {viewType === "grid" &&
-            data?.courses?.map((course) => (
-              <CourseCard course={course} key={course.id} />
-            ))}
-        </div>
-        {viewType === "list" && <CourseList courses={data?.courses ?? []} />}
-      </div>
+        {!isLoading && (data?.courses?.length ?? 0) > 0 && (
+          <>
+            <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {viewType === "grid" &&
+                data?.courses?.map((course) => (
+                  <CourseCard course={course} key={course.id} />
+                ))}
+            </div>
 
-      {/* Pagination */}
-      <CoursePagination
-        page={page}
-        setPage={setPage}
-        totalPages={totalPages}
-        paginationItems={paginationItems}
-      />
+            {viewType === "list" && (
+              <CourseList courses={data?.courses ?? []} />
+            )}
+
+            {/* Pagination */}
+            <CoursePagination
+              page={page}
+              setPage={setPage}
+              totalPages={totalPages}
+              paginationItems={paginationItems}
+            />
+          </>
+        )}
+      </div>
     </Layout>
   );
 }

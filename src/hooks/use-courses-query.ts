@@ -8,7 +8,9 @@ async function fetchCourses(
   if (params.page) searchParams.set("page", params.page.toString());
   if (params.perPage) searchParams.set("perPage", params.perPage.toString());
 
-  const response = await fetch(`/api/courses?${searchParams.toString()}`);
+  const response = await fetch(
+    `/api/teacher/courses?${searchParams.toString()}`
+  );
   if (!response.ok) {
     throw new Error("Failed to fetch courses");
   }
@@ -19,7 +21,7 @@ export function useCoursesQuery(
   params: PaginationParams = { page: 1, perPage: 10 }
 ) {
   return useQuery({
-    queryKey: ["courses", params],
+    queryKey: ["teacher-courses", params],
     queryFn: () => fetchCourses(params),
   });
 }
