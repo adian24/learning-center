@@ -16,6 +16,10 @@ export async function GET(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
+    if (!params.courseId) {
+      return new NextResponse("Missing required fields", { status: 400 });
+    }
+
     const course = await db.course.findUnique({
       where: {
         id: params.courseId,
@@ -64,8 +68,8 @@ export async function PATCH(
     const { title, description, imageUrl, price, categoryId, level } =
       await req.json();
 
-    if (!title) {
-      return new NextResponse("Title is required", { status: 400 });
+    if (!title || !params.courseId) {
+      return new NextResponse("Missing required fields", { status: 400 });
     }
 
     // Verify ownership
@@ -123,6 +127,10 @@ export async function DELETE(
 
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    if (!params.courseId) {
+      return new NextResponse("Missing required fields", { status: 400 });
     }
 
     // Verify ownership

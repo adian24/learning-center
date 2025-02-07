@@ -5,6 +5,7 @@ import { useCourseQuery } from "@/hooks/use-course-query";
 import { useCreateChapterStore } from "@/store/use-store-create-chapter";
 import { formatPrice } from "@/utils/formatPrice";
 import { Plus } from "lucide-react";
+import { ChapterList } from "./chapter/ChapterList";
 
 interface CourseDetailProps {
   courseId: string | number;
@@ -54,7 +55,7 @@ const CourseDetail = ({ courseId }: CourseDetailProps) => {
               Tambah Chapter
             </Button>
           </div>
-          {/* <ChapterList courseId={courseId} /> */}
+          <ChapterList courseId={courseId} />
         </div>
       </CardContent>
     </Card>

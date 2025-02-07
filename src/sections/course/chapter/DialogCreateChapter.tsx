@@ -48,16 +48,16 @@ const DialogCreateChapter = () => {
   const createChapter = useMutation({
     mutationFn: async (values: ChapterFormValues) => {
       setIsCreating(true);
-      const response = await fetch("/api/chapters", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...values,
-          courseId: chapterToCreate?.courseId,
-        }),
-      });
+      const response = await fetch(
+        `/api/teacher/courses/${chapterToCreate?.courseId}/chapters`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(values),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to create chapter");
