@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreVertical } from "lucide-react";
 import { Course } from "@/lib/types";
-import { useDeleteCourseStore } from "@/store/use-delete-course-store";
+import { useDeleteCourseStore } from "@/store/use-store-delete-course";
 
 interface CourseActionsProps {
   course: Course;

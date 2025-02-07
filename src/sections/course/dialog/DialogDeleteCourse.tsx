@@ -13,7 +13,7 @@ import {
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
-import { useDeleteCourseStore } from "@/store/use-delete-course-store";
+import { useDeleteCourseStore } from "@/store/use-store-delete-course";
 import { useRouter } from "next/navigation";
 
 export function DialogDeleteCourse() {
