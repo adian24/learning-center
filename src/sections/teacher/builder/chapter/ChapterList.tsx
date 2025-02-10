@@ -17,6 +17,7 @@ import {
   Settings,
   BookCheck,
 } from "lucide-react";
+import { useSettingChapterStore } from "@/store/use-store-setting-chapter";
 // import { ChapterSettingsDialog } from "./chapter-settings-dialog";
 // import { useDialogStore } from "@/store/dialog-store";
 
@@ -46,6 +47,10 @@ interface ChapterListProps {
 }
 
 export function ChapterList({ courseId }: ChapterListProps) {
+  const openChapterSettingsDialog = useSettingChapterStore(
+    (state) => state.onOpen
+  );
+
   const { data: chapters, isLoading } = useQuery({
     queryKey: ["chapters", courseId],
     queryFn: async () => {
@@ -54,8 +59,6 @@ export function ChapterList({ courseId }: ChapterListProps) {
       return response.json();
     },
   });
-
-  console.log("CHapters :: ", chapters);
 
   //   const { openChapterSettingsDialog } = useDialogStore();
 
@@ -83,8 +86,12 @@ export function ChapterList({ courseId }: ChapterListProps) {
           <AccordionItem key={chapter.id} value={chapter.id}>
             <AccordionTrigger className="flex items-center justify-between px-4">
               <div className="flex items-center gap-x-2">
-                <span>{chapter.title}</span>
-                {chapter.isFree && <Badge variant="secondary">Free</Badge>}
+                <span className="text-left line-clamp-2">{chapter.title}</span>
+                {chapter.isFree && (
+                  <Badge variant="outline" className="bg-green-300">
+                    Free
+                  </Badge>
+                )}
                 {!chapter.isPublished && (
                   <Badge variant="destructive">Draft</Badge>
                 )}
@@ -160,7 +167,12 @@ export function ChapterList({ courseId }: ChapterListProps) {
                 {/* Settings Button */}
                 <div className="flex justify-end mt-4">
                   <Button
-                    // onClick={() => openChapterSettingsDialog(chapter.id)}
+                    onClick={() => {
+                      openChapterSettingsDialog({
+                        courseId,
+                        chapterId: chapter?.id,
+                      });
+                    }}
                     variant="outline"
                     size="sm"
                   >

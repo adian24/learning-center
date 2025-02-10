@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import {
   Dialog,
   DialogContent,
@@ -17,7 +18,7 @@ import {
 } from "@/components/ui/form";
 import { useCreateChapterStore } from "@/store/use-store-create-chapter";
 import { useForm } from "react-hook-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -42,6 +43,17 @@ const DialogCreateChapter = () => {
       title: "",
       description: "",
       isFree: false,
+    },
+  });
+
+  const { data: chapters } = useQuery({
+    queryKey: ["chapters", chapterToCreate?.courseId],
+    queryFn: async () => {
+      const response = await fetch(
+        `/api/teacher/courses/${chapterToCreate?.courseId}/chapters`
+      );
+      if (!response.ok) throw new Error("Failed to fetch chapters");
+      return response.json();
     },
   });
 
@@ -79,12 +91,16 @@ const DialogCreateChapter = () => {
   });
 
   const onSubmit = async (values: ChapterFormValues) => {
-    await createChapter.mutateAsync(values);
+    const prefix = `Chapter ${chapters?.length + 1} : `;
+    await createChapter.mutateAsync({
+      ...values,
+      title: prefix + values.title,
+    });
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[750px]">
         <DialogHeader>
           <DialogTitle>Buat Chapter Baru</DialogTitle>
           <DialogDescription>
@@ -101,7 +117,11 @@ const DialogCreateChapter = () => {
                 <FormItem>
                   <FormLabel>Title</FormLabel>
                   <FormControl>
-                    <Input placeholder="Masukan title chapter" {...field} />
+                    <Input
+                      {...field}
+                      placeholder="Masukan Title"
+                      startContent={`Chapter ${chapters?.length + 1} : `}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
