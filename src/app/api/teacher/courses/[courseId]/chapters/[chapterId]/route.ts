@@ -18,6 +18,9 @@ export async function GET(
             teacherId: true,
           },
         },
+        quizzes: true,
+        resources: true,
+        userProgress: true,
       },
     });
 

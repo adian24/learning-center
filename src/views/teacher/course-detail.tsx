@@ -16,7 +16,7 @@ import { useImageUpload } from "@/hooks/use-image-upload";
 import { useCategories } from "@/hooks/use-categories";
 
 // store
-import { useDeleteCourseStore } from "@/store/use-delete-course-store";
+import { useDeleteCourseStore } from "@/store/use-store-delete-course";
 
 // import
 import { CourseForm } from "@/sections/course/forms-course-create/CourseForm";

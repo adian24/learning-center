@@ -2,9 +2,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCourseQuery } from "@/hooks/use-course-query";
+import { useCreateChapterStore } from "@/store/use-store-create-chapter";
 import { formatPrice } from "@/utils/formatPrice";
 import { Plus } from "lucide-react";
-import React from "react";
+import { ChapterList } from "./chapter/ChapterList";
 
 interface CourseDetailProps {
   courseId: string | number;
@@ -12,6 +13,7 @@ interface CourseDetailProps {
 
 const CourseDetail = ({ courseId }: CourseDetailProps) => {
   const { data: course } = courseId ? useCourseQuery(String(courseId)) : {};
+  const onOpenCreateDialog = useCreateChapterStore((state) => state.onOpen);
 
   return (
     <Card>
@@ -43,14 +45,17 @@ const CourseDetail = ({ courseId }: CourseDetailProps) => {
             <h3 className="text-lg font-semibold">Chapters</h3>
             <Button
               onClick={() => {
-                /* Add chapter handler */
+                onOpenCreateDialog({
+                  courseId,
+                  courseTitle: course?.title || "",
+                });
               }}
             >
               <Plus className="w-4 h-4 mr-2" />
               Tambah Chapter
             </Button>
           </div>
-          {/* <ChapterList courseId={courseId} /> */}
+          <ChapterList courseId={courseId} />
         </div>
       </CardContent>
     </Card>

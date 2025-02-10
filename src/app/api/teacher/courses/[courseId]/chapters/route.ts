@@ -1,22 +1,36 @@
 import db from "@/lib/db/db";
 import { NextResponse } from "next/server";
 
-export async function POST(req: Request) {
+export async function POST(
+  req: Request,
+  { params }: { params: { courseId: string } }
+) {
   try {
     const json = await req.json();
-    const { title, description, courseId, position, isFree = false } = json;
+    const { title, description, isFree = false } = json;
 
-    if (!title || !courseId) {
+    if (!title || !params.courseId) {
       return new NextResponse("Missing required fields", { status: 400 });
     }
+
+    const lastChapter = await db.chapter.findFirst({
+      where: {
+        courseId: params.courseId,
+      },
+      orderBy: {
+        position: "desc",
+      },
+    });
+
+    const newPosition = (lastChapter?.position ?? 0) + 1;
 
     const chapter = await db.chapter.create({
       data: {
         title,
         description,
-        position,
+        position: newPosition,
         isFree,
-        courseId,
+        courseId: params.courseId,
       },
     });
 
@@ -32,6 +46,10 @@ export async function GET(
   { params }: { params: { courseId: string } }
 ) {
   try {
+    if (!params.courseId) {
+      return new NextResponse("Missing required fields", { status: 400 });
+    }
+
     const chapters = await db.chapter.findMany({
       where: {
         courseId: params.courseId,
@@ -46,6 +64,8 @@ export async function GET(
             teacherId: true,
           },
         },
+        resources: true,
+        quizzes: true,
       },
     });
 
