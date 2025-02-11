@@ -5,27 +5,25 @@ import { Form } from "@/components/ui/form";
 import { Loader2 } from "lucide-react";
 import { CourseFormValues } from "@/lib/validations/courses";
 import { UseFormReturn } from "react-hook-form";
-import { BasicInfoFields } from "./BasicInfoFields";
+import { BasicInfoFieldsCreate } from "./forms-course-create/BasicInfoFields";
 
-interface CourseFormProps {
+interface CourseFormCreateProps {
   form: UseFormReturn<CourseFormValues>;
   onSubmit: (data: CourseFormValues) => Promise<void>;
   isSubmitting: boolean;
   categories?: Array<{ id: string; name: string }>;
-  origin: "create" | "update";
 }
 
-export const CourseForm = ({
+export const CourseFormCreate = ({
   form,
   onSubmit,
   isSubmitting,
   categories,
-  origin,
-}: CourseFormProps) => {
+}: CourseFormCreateProps) => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <BasicInfoFields
+        <BasicInfoFieldsCreate
           form={form}
           isSubmitting={isSubmitting}
           categories={categories}
@@ -38,12 +36,10 @@ export const CourseForm = ({
           {isSubmitting ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              {origin === "create" ? "Membuat Course..." : "Mengubah Course..."}
+              Membuat Course...
             </>
-          ) : origin === "create" ? (
-            "Buat Course"
           ) : (
-            "Ubah Course"
+            "Buat Course"
           )}
         </Button>
       </form>
