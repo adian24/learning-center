@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { EXPERTISE_CATEGORIES } from "@/lib/constants";
+import { useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
   bio: z.string().min(50, "Bio must be at least 50 characters"),
@@ -32,6 +33,8 @@ type FormValues = z.infer<typeof formSchema>;
 
 export default function TeacherRegistration() {
   const router = useRouter();
+  const queryClient = useQueryClient();
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -57,6 +60,7 @@ export default function TeacherRegistration() {
       return response.json();
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user"] })
       toast.success("Registration successful!");
       router.push("/teacher/dashboard");
       router.refresh();
