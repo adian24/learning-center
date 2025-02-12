@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 interface DeleteCourse {
-  id: number | string;
+  id: string;
   title: string;
 }
 

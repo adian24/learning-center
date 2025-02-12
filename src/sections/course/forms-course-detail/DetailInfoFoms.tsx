@@ -24,10 +24,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { HandCoins, LibraryBig, Rocket } from "lucide-react";
+import { Eye, HandCoins, LibraryBig, Rocket } from "lucide-react";
 import { CourseFormValues } from "@/lib/validations/courses";
 import { UseFormReturn } from "react-hook-form";
 import { useCategories } from "@/hooks/use-categories";
+import { Switch } from "@/components/ui/switch";
 
 interface DetailInfoFomsProps {
   form: UseFormReturn<CourseFormValues>;
@@ -105,7 +106,7 @@ const DetailInfoFoms = ({ form, isSubmitting }: DetailInfoFomsProps) => {
             name="categoryId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Kategori</FormLabel>
+                <FormLabel>Pilih Kategori</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
@@ -153,10 +154,38 @@ const DetailInfoFoms = ({ form, isSubmitting }: DetailInfoFomsProps) => {
                     step="0.01"
                     placeholder="e.g. 49.99"
                     disabled={isSubmitting}
-                    // startContent="Rp"
+                  // startContent="Rp"
                   />
                 </FormControl>
                 <FormMessage />
+              </FormItem>
+            )}
+          />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <div className="flex flex-row justify-between">
+            <CardTitle className="text-xl">Publikasi Course</CardTitle>
+            <Eye />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <FormField
+            control={form.control}
+            name="isPublished"
+            render={({ field }) => (
+              <FormItem className="flex items-center justify-between rounded-lg border p-3">
+                <div className="space-y-0.5">
+                  <FormLabel>Publikasi</FormLabel>
+                </div>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
               </FormItem>
             )}
           />

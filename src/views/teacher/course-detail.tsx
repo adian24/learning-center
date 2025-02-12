@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Layout from "@/layout";
 
 // rhf
@@ -13,44 +13,27 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useCourseQuery } from "@/hooks/use-course-query";
 import { useUpdateCourse } from "@/hooks/use-update-course";
 import { useImageUpload } from "@/hooks/use-image-upload";
-import { useCategories } from "@/hooks/use-categories";
 
 // import
 
 // validation/schema
 import { courseFormSchema, CourseFormValues } from "@/lib/validations/courses";
-import { HandCoins, LibraryBig, Loader2, Rocket } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import DetailInfoHeader from "@/sections/course/forms-course-detail/DetailInfoHeader";
 import {
   Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 import { BasicInfoFieldsDetail } from "@/sections/course/forms-course-detail/BasicInfoFields";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import DetailInfoFoms from "@/sections/course/forms-course-detail/DetailInfoFoms";
 
 const CourseDetail = () => {
   const params = useParams();
-  const router = useRouter();
   const courseId = params.courseId as string;
 
   const { data: course, isLoading: isLoadingCourse } = useCourseQuery(courseId);
@@ -67,8 +50,9 @@ const CourseDetail = () => {
       description: course?.description || "",
       imageUrl: course?.imageUrl || "",
       price: course?.price || 0,
-      //   categoryId: course?.categoryId || "",
+      categoryId: course?.categoryId || "",
       level: course?.level || "BEGINNER",
+      isPublished: course?.isPublished
     },
   });
 
@@ -80,8 +64,9 @@ const CourseDetail = () => {
         description: course.description || "",
         imageUrl: course.imageUrl || "",
         price: course.price || 0,
-        // categoryId: course.categoryId || "",
+        categoryId: course.categoryId || "",
         level: course.level,
+        isPublished: course.isPublished
       });
     }
   }, [course, form]);
@@ -113,7 +98,6 @@ const CourseDetail = () => {
         <form
           id="detailCourseForm"
           onSubmit={form.handleSubmit(onSubmit)}
-        // className="space-y-6"
         >
           <div className="max-w-7xl mx-auto p-6">
             {/* Header */}

@@ -13,8 +13,8 @@ const levelColors = {
 interface CourseListProps {
   courses?: Course[];
   isLoading: boolean;
-  selectedId: string | number;
-  onSelect: (id: string | number) => void;
+  selectedId: string;
+  onSelect: (id: string) => void;
 }
 
 const CourseList = ({
@@ -31,7 +31,7 @@ const CourseList = ({
     return <div className="p-4">No courses found</div>;
   }
 
-  const handleCourseClick = (courseId: string | number) => {
+  const handleCourseClick = (courseId: string) => {
     if (courseId !== selectedId) {
       onSelect(courseId);
     }
@@ -43,9 +43,8 @@ const CourseList = ({
         {courses?.map((course) => (
           <Card
             key={course.id}
-            className={`p-4 cursor-pointer hover:shadow-md transition ${
-              selectedId === course.id ? "border-2 border-primary" : ""
-            }`}
+            className={`p-4 cursor-pointer hover:shadow-md transition ${selectedId === course.id ? "border-2 border-primary" : ""
+              }`}
             onClick={() => handleCourseClick(course.id)}
           >
             <div className="flex items-start justify-between">
@@ -54,9 +53,8 @@ const CourseList = ({
                 <div className="flex items-center gap-2 mt-2">
                   <Badge variant={course.isPublished ? "default" : "secondary"}>
                     <CircleIcon
-                      className={`w-2 h-2 mr-1 ${
-                        course.isPublished ? "text-green-500" : "text-gray-500"
-                      }`}
+                      className={`w-2 h-2 mr-1 ${course.isPublished ? "text-green-500" : "text-gray-500"
+                        }`}
                     />
                     {course.isPublished ? "Published" : "Draft"}
                   </Badge>

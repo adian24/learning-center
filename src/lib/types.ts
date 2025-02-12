@@ -36,7 +36,7 @@ export enum ResourceType {
 
 // Interface untuk data course
 export interface Course {
-  id: number | string;
+  id: string;
   title: string;
   description: string;
   imageUrl: string;
@@ -46,6 +46,7 @@ export interface Course {
   isPublished: boolean;
   level: CourseLevel;
   updatedAt: string;
+  categoryId: string;
   chapters: Chapter[];
 }
 

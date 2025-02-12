@@ -16,6 +16,8 @@ import {
   FileBox,
   Settings,
   BookCheck,
+  Delete,
+  Trash2,
 } from "lucide-react";
 import { useSettingChapterStore } from "@/store/use-store-setting-chapter";
 // import { ChapterSettingsDialog } from "./chapter-settings-dialog";
@@ -43,7 +45,7 @@ interface Chapter {
 }
 
 interface ChapterListProps {
-  courseId: string | number;
+  courseId: string;
 }
 
 export function ChapterList({ courseId }: ChapterListProps) {
@@ -59,8 +61,6 @@ export function ChapterList({ courseId }: ChapterListProps) {
       return response.json();
     },
   });
-
-  //   const { openChapterSettingsDialog } = useDialogStore();
 
   if (isLoading) {
     return <div>Loading chapters...</div>;
@@ -140,7 +140,7 @@ export function ChapterList({ courseId }: ChapterListProps) {
                   </div>
 
                   {/* Resources Count */}
-                  {chapter.resources.length > 0 && (
+                  {chapter.resources && (
                     <div className="flex items-center gap-x-2">
                       {chapter.resources.map((resource) => (
                         <span key={resource.id}>
@@ -151,7 +151,7 @@ export function ChapterList({ courseId }: ChapterListProps) {
                   )}
 
                   {/* Quiz Count */}
-                  {chapter.quizzes.length > 0 && (
+                  {chapter.quizzes && (
                     <Badge
                       variant="outline"
                       className="flex items-center gap-x-1"
@@ -163,8 +163,13 @@ export function ChapterList({ courseId }: ChapterListProps) {
                   )}
                 </div>
 
+
+
                 {/* Settings Button */}
-                <div className="flex justify-end mt-4">
+                <div className="flex justify-end items-center mt-4 gap-2">
+                  <Button size="sm" variant="outline">
+                    <Trash2 />
+                  </Button>
                   <Button
                     onClick={() => {
                       openChapterSettingsDialog({
@@ -175,7 +180,7 @@ export function ChapterList({ courseId }: ChapterListProps) {
                     variant="outline"
                     size="sm"
                   >
-                    <Settings className="h-4 w-4 mr-2" />
+                    <Settings />
                     Settings
                   </Button>
                 </div>
@@ -184,7 +189,6 @@ export function ChapterList({ courseId }: ChapterListProps) {
           </AccordionItem>
         ))}
       </Accordion>
-      {/* <ChapterSettingsDialog /> */}
-    </div>
+    </div >
   );
 }

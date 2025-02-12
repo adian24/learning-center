@@ -54,6 +54,7 @@ const DetailInfoHeader = ({ course }: DetailInfoHeaderProps) => {
         </TooltipProvider>
         <Button
           form="detailCourseForm"
+          type="submit"
           className="text-white bg-blue-600 rounded-lg hover:bg-blue-700"
         >
           <Save />
