@@ -23,7 +23,7 @@ export function NavTeacher({
     icon: LucideIcon;
   }[];
 }) {
-  const { data: user, isLoading } = useCurrentUser();
+  const { data: user } = useCurrentUser();
 
   return (
     <SidebarGroup>

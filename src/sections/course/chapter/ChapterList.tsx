@@ -81,9 +81,9 @@ export function ChapterList({ courseId }: ChapterListProps) {
 
   return (
     <div className="space-y-4">
-      <Accordion type="single" collapsible className="w-full">
+      <Accordion type="single" collapsible className="my-4 w-full space-y-2">
         {chapters?.map((chapter: Chapter) => (
-          <AccordionItem key={chapter.id} value={chapter.id}>
+          <AccordionItem key={chapter.id} value={chapter.id} className="border-none rounded-md px-4 bg-secondary">
             <AccordionTrigger className="flex items-center justify-between px-4">
               <div className="flex items-center gap-x-2">
                 <span className="text-left line-clamp-2">{chapter.title}</span>
@@ -93,7 +93,7 @@ export function ChapterList({ courseId }: ChapterListProps) {
                   </Badge>
                 )}
                 {!chapter.isPublished && (
-                  <Badge variant="destructive">Draft</Badge>
+                  <Badge variant="default" className="bg-orange-400">Draft</Badge>
                 )}
               </div>
             </AccordionTrigger>
@@ -129,11 +129,10 @@ export function ChapterList({ courseId }: ChapterListProps) {
                   {/* Video Status */}
                   <div className="flex items-center gap-x-2">
                     <Video
-                      className={`h-4 w-4 ${
-                        chapter.videoUrl
-                          ? "text-sky-700"
-                          : "text-muted-foreground"
-                      }`}
+                      className={`h-4 w-4 ${chapter.videoUrl
+                        ? "text-sky-700"
+                        : "text-muted-foreground"
+                        }`}
                     />
                     <span className="text-sm">
                       {chapter.videoUrl ? "Video added" : "No video"}

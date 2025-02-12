@@ -1,3 +1,4 @@
+import DialogCreateChapter from "@/sections/course/chapter/DialogCreateChapter";
 import { DialogDeleteCourse } from "@/sections/course/dialog/DialogDeleteCourse";
 import CourseDetail from "@/views/teacher/course-detail";
 
@@ -6,6 +7,7 @@ export default function CourseDetailPage() {
     <>
       <CourseDetail />
       <DialogDeleteCourse />
+      <DialogCreateChapter />
     </>
   );
 }
