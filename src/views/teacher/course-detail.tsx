@@ -15,16 +15,11 @@ import { useUpdateCourse } from "@/hooks/use-update-course";
 import { useImageUpload } from "@/hooks/use-image-upload";
 import { useCategories } from "@/hooks/use-categories";
 
-// store
-import { useDeleteCourseStore } from "@/store/use-store-delete-course";
-
 // import
-import { CourseForm } from "@/sections/course/forms-course-create/CourseForm";
-import { CourseMediaUpload } from "@/sections/course/forms-course-create/CourseMediaUpload";
 
 // validation/schema
 import { courseFormSchema, CourseFormValues } from "@/lib/validations/courses";
-import { ArrowLeft, Loader2, Trash2 } from "lucide-react";
+import { HandCoins, LibraryBig, Loader2, Rocket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -33,6 +28,25 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import DetailInfoHeader from "@/sections/course/forms-course-detail/DetailInfoHeader";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { BasicInfoFieldsDetail } from "@/sections/course/forms-course-detail/BasicInfoFields";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import DetailInfoFoms from "@/sections/course/forms-course-detail/DetailInfoFoms";
 
 const CourseDetail = () => {
   const params = useParams();
@@ -43,8 +57,6 @@ const CourseDetail = () => {
   const { mutate: updateCourse, isPending: isUpdating } =
     useUpdateCourse(courseId);
   const { uploadImage, isUploading } = useImageUpload();
-  const { data: categories, isLoading: isLoadingCategories } = useCategories();
-  const onOpenDeleteDialog = useDeleteCourseStore((state) => state.onOpen);
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
@@ -97,72 +109,39 @@ const CourseDetail = () => {
 
   return (
     <Layout>
-      <div className="max-w-5xl mx-auto p-6">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              onClick={() => router.back()}
-              className="gap-2"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Back
-            </Button>
-            <h1 className="text-2xl font-bold">Edit Course</h1>
+      <Form {...form}>
+        <form
+          id="detailCourseForm"
+          onSubmit={form.handleSubmit(onSubmit)}
+          // className="space-y-6"
+        >
+          <div className="max-w-7xl mx-auto p-6">
+            {/* Header */}
+            <DetailInfoHeader course={course} />
+
+            {/* Main Content */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-xl">
+                      Course Information
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <BasicInfoFieldsDetail
+                      form={form}
+                      isSubmitting={isSubmitting}
+                    />
+                  </CardContent>
+                </Card>
+              </div>
+
+              <DetailInfoFoms form={form} isSubmitting={isSubmitting} />
+            </div>
           </div>
-          <Button
-            variant="destructive"
-            onClick={() =>
-              onOpenDeleteDialog({ id: courseId, title: course?.title || "" })
-            }
-            className="gap-2"
-          >
-            <Trash2 className="h-4 w-4" />
-            Delete Course
-          </Button>
-        </div>
-
-        {/* Form */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Course Information</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CourseForm
-                form={form}
-                onSubmit={onSubmit}
-                isSubmitting={isSubmitting}
-                categories={categories}
-                origin="update"
-              />
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Course Media</CardTitle>
-              <CardDescription>
-                Ubah gambar thumbnail untuk course Anda
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <CourseMediaUpload
-                form={form}
-                isUploading={isUploading}
-                isSubmitting={isSubmitting}
-                onImageUpload={handleImageUpload}
-              />
-              {form.formState.errors.imageUrl && (
-                <p className="text-sm text-red-500 mt-2">
-                  {form.formState.errors.imageUrl.message}
-                </p>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+        </form>
+      </Form>
     </Layout>
   );
 };

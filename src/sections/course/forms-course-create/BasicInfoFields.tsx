@@ -24,7 +24,7 @@ interface BasicInfoFieldsProps {
   categories?: Array<{ id: string; name: string }>;
 }
 
-export const BasicInfoFields = ({
+export const BasicInfoFieldsCreate = ({
   form,
   isSubmitting,
   categories,

@@ -19,7 +19,7 @@ import { toast } from "sonner";
 import { useImageUpload } from "@/hooks/use-image-upload";
 import { useCategories } from "@/hooks/use-categories";
 import { CourseMediaUpload } from "@/sections/course/forms-course-create/CourseMediaUpload";
-import { CourseForm } from "@/sections/course/forms-course-create/CourseForm";
+import { CourseFormCreate } from "@/sections/course/CourseForm";
 
 const CreateCourse = () => {
   const router = useRouter();
@@ -97,12 +97,11 @@ const CreateCourse = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <CourseForm
+              <CourseFormCreate
                 form={form}
                 onSubmit={onSubmit}
                 isSubmitting={isSubmitting}
                 categories={categories}
-                origin="create"
               />
             </CardContent>
           </Card>

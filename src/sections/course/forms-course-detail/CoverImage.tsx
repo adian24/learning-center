@@ -1,48 +1,50 @@
 import { Button } from "@/components/ui/button";
+import { FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { ImagePlus, Loader2 } from "lucide-react";
-import { UseFormReturn } from "react-hook-form";
-import { CourseFormValues } from "@/lib/validations/courses";
 import { useDeleteImage } from "@/hooks/use-delete-image";
+import { CourseFormValues } from "@/lib/validations/courses";
+import { ImagePlus, Loader2, RotateCw } from "lucide-react";
+import React from "react";
+import { UseFormReturn } from "react-hook-form";
 
-interface CourseMediaUploadProps {
+interface CoverImageProps {
   form: UseFormReturn<CourseFormValues>;
   isSubmitting: boolean;
   isUploading: boolean;
   onImageUpload: (file: File) => Promise<void>;
 }
 
-export const CourseMediaUpload = ({
+const CoverImage = ({
   form,
   isSubmitting,
-  isUploading,
   onImageUpload,
-}: CourseMediaUploadProps) => {
+  isUploading,
+}: CoverImageProps) => {
   const { deleteImage, isDeleting } = useDeleteImage({
     onSuccess: () => form.setValue("imageUrl", ""),
   });
-
   return (
-    <div className="flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-8 space-y-4">
+    <div className="flex flex-col items-center justify-center rounded-lg">
       {form.getValues("imageUrl") ? (
         <div className="w-full aspect-video rounded-lg">
-          <img
-            src={form.getValues("imageUrl")}
-            alt="Course thumbnail"
-            className="object-cover"
-          />
-          <div className="mt-4 flex justify-center">
+          <div className="flex justify-between items-center">
+            <FormLabel>Cover Image</FormLabel>
             <Button
               variant="link"
               size="sm"
               onClick={() => deleteImage(form.getValues("imageUrl"))}
               disabled={isDeleting || isSubmitting}
-              className="hover:text-red-300 text-red-600"
+              className="hover:text-blue-300 text-blue-600 text-xs"
             >
               {isDeleting && <Loader2 className="animate-spin" />}
-              Hapus dan Ubah
+              <RotateCw /> Ubah Cover Image
             </Button>
           </div>
+          <img
+            src={form.getValues("imageUrl")}
+            alt="Course thumbnail"
+            className="object-cover"
+          />
         </div>
       ) : (
         <>
@@ -78,3 +80,5 @@ export const CourseMediaUpload = ({
     </div>
   );
 };
+
+export default CoverImage;

@@ -32,7 +32,7 @@ export function NavStudent({
       <SidebarMenu>
         {items.map((item, index) => (
           <SidebarMenuItem key={index}>
-            <SidebarMenuButton tooltip={item.title} asChild disabled>
+            <SidebarMenuButton tooltip={item.title} asChild>
               <Link href={item.url}>
                 {item.icon && <item.icon />}
                 <span>{item.title}</span>

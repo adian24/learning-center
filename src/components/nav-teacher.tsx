@@ -12,6 +12,8 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
+import { useCurrentUser } from "@/hooks/use-current-user";
+
 export function NavTeacher({
   items,
 }: {
@@ -21,13 +23,15 @@ export function NavTeacher({
     icon: LucideIcon;
   }[];
 }) {
+  const { data: user, isLoading } = useCurrentUser();
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Teacher</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton tooltip={item.name} asChild>
+            <SidebarMenuButton tooltip={item.name} asChild disabled={!user?.teacherProfile}>
               <Link href={item.url}>
                 <item.icon />
                 <span>{item.name}</span>
