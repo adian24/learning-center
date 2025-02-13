@@ -8,40 +8,32 @@ import {
 } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import {
   Video,
   FileText,
   Link,
   FileBox,
-  Settings,
-  BookCheck,
-  Delete,
   Trash2,
-  Pencil
+  Pencil,
+  FileQuestion,
+  Plus,
+  PlayCircle
 } from 'lucide-react';
-import { useSettingChapterStore } from '@/store/use-store-setting-chapter';
 import { useEditChapterStore } from '@/store/use-store-edit-chapter';
 import { Chapter } from '@/lib/types';
 import { useDeleteChapterStore } from '@/store/use-store-delete-chapter';
-// import { ChapterSettingsDialog } from "./chapter-settings-dialog";
-// import { useDialogStore } from "@/store/dialog-store";
+import { Separator } from '@/components/ui/separator';
 
 interface Resource {
   id: string;
   type: 'PDF' | 'LINK' | 'FILE';
 }
 
-
-
 interface ChapterListProps {
   courseId: string;
 }
 
 export function ChapterList({ courseId }: ChapterListProps) {
-  const openChapterSettingsDialog = useSettingChapterStore(
-    (state) => state.onOpen
-  );
   const openEditChapterDialog = useEditChapterStore(
     (state) => state.onOpen
   );
@@ -108,61 +100,149 @@ export function ChapterList({ courseId }: ChapterListProps) {
                   </p>
                 )}
 
-                {/* Chapter Assets */}
-                <div className="flex items-center gap-x-4 mt-2">
-                  {/* Video Status */}
-                  <div className="flex items-center gap-x-2">
-                    <Video
-                      className={`h-4 w-4 ${chapter.videoUrl
-                        ? 'text-sky-700'
-                        : 'text-muted-foreground'
-                        }`}
-                    />
-                    <span className="text-sm">
-                      {chapter.videoUrl ? 'Video added' : 'No video'}
-                    </span>
-                  </div>
-
-                  {/* Resources Count */}
-                  {chapter.resources && (
-                    <div className="flex items-center gap-x-2">
-                      {chapter.resources.map((resource) => (
-                        <span key={resource.id}>
-                          {getResourceIcon(resource.type)}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Quiz Count */}
-                  {chapter.quizzes && (
-                    <Badge
+                {/* Video Section */}
+                <div className="space-y-2 pt-5">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-medium">Video Pembelajaran</h3>
+                    <Button
+                      // onClick={() => handleAddVideo(chapter.id)}
                       variant="outline"
-                      className="flex items-center gap-x-1"
+                      size="sm"
+                      className="h-8"
+                      type='button'
                     >
-                      <FileText className="h-4 w-4" />
-                      {chapter.quizzes.length}{' '}
-                      {chapter.quizzes.length === 1 ? 'Quiz' : 'Quizzes'}
-                    </Badge>
+                      {chapter.videoUrl ? (
+                        <>
+                          <PlayCircle className="h-4 w-4 mr-2" />
+                          Update Video
+                        </>
+                      ) : (
+                        <>
+                          <Plus className="h-4 w-4 mr-2" />
+                          Add Video
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                  {chapter.videoUrl ? (
+                    <div className="flex items-center gap-x-2 text-sm text-muted-foreground">
+                      <Video className="h-4 w-4 text-sky-700" />
+                      Video telah ditambahkan
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      Belum ada video untuk chapter ini
+                    </p>
                   )}
                 </div>
 
+                <Separator />
+
+                {/* Quiz Section */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-medium">Quiz</h3>
+                    <Button
+                      // onClick={() => handleAddQuiz(chapter.id)}
+                      variant="outline"
+                      size="sm"
+                      className="h-8"
+                      type='button'
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Quiz
+                    </Button>
+                  </div>
+                  {chapter.quizzes && chapter.quizzes.length > 0 ? (
+                    <div className="space-y-2">
+                      {chapter.quizzes.map((quiz) => (
+                        <div
+                          key={quiz.id}
+                          className="flex items-center justify-between bg-secondary/50 p-2 rounded-md"
+                        >
+                          <div className="flex items-center gap-x-2">
+                            <FileQuestion className="h-4 w-4" />
+                            <span className="text-sm">{quiz.title}</span>
+                          </div>
+                          <div className="flex items-center gap-x-2">
+                            <Button
+                              // onClick={() => handleEditQuiz(chapter.id, quiz.id)}
+                              variant="ghost"
+                              size="sm"
+                              type='button'
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              // onClick={() => handleDeleteQuiz(chapter.id, quiz.id)}
+                              variant="ghost"
+                              size="sm"
+                              className="text-red-500 hover:text-red-600"
+                              type='button'
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      Belum ada quiz untuk chapter ini
+                    </p>
+                  )}
+                </div>
+
+                <Separator />
+
+                {/* Resources Section */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-medium">Resources</h3>
+                    <Button
+                      // onClick={() => handleAddResource(chapter.id)}
+                      variant="outline"
+                      size="sm"
+                      className="h-8"
+                      type='button'
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Resource
+                    </Button>
+                  </div>
+                  {chapter.resources && chapter.resources.length > 0 ? (
+                    <div className="grid grid-cols-1 gap-2">
+                      {chapter.resources.map((resource: Resource) => (
+                        <div
+                          key={resource.id}
+                          className="flex items-center justify-between bg-secondary/50 p-2 rounded-md"
+                        >
+                          <div className="flex items-center gap-x-2">
+                            {getResourceIcon(resource.type)}
+                            {/* <span className="text-sm">{resource.title}</span> */}
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-red-500 hover:text-red-600"
+                            type='button'
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      Belum ada resource untuk chapter ini
+                    </p>
+                  )}
+                </div>
+
+                <Separator />
+
                 {/* Settings Button */}
                 <div className="flex justify-end items-center mt-4 gap-2">
-                  <Button
-                    onClick={() => {
-                      openChapterSettingsDialog({
-                        courseId,
-                        chapterId: chapter?.id
-                      });
-                    }}
-                    variant="outline"
-                    size="sm"
-                    type='button'
-                  >
-                    <Settings />
-                    Settings
-                  </Button>
                   <Button
                     onClick={() => {
                       openEditChapterDialog(chapter);
