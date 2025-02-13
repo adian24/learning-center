@@ -93,6 +93,7 @@ export const BasicInfoFieldsDetail = ({
           <Button
             variant="ghost"
             className="text-blue-600 hover:text-blue-900 hover:bg-blue-50"
+            type="button"
             onClick={() => {
               onOpenCreateDialog({
                 courseId: course?.id || "",

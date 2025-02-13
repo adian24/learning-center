@@ -1,14 +1,14 @@
 // components/chapters/chapter-list.tsx
-import { useQuery } from "@tanstack/react-query";
+import { useQuery } from '@tanstack/react-query';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
+  AccordionTrigger
+} from '@/components/ui/accordion';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import {
   Video,
   FileText,
@@ -18,31 +18,21 @@ import {
   BookCheck,
   Delete,
   Trash2,
-} from "lucide-react";
-import { useSettingChapterStore } from "@/store/use-store-setting-chapter";
+  Pencil
+} from 'lucide-react';
+import { useSettingChapterStore } from '@/store/use-store-setting-chapter';
+import { useEditChapterStore } from '@/store/use-store-edit-chapter';
+import { Chapter } from '@/lib/types';
+import { useDeleteChapterStore } from '@/store/use-store-delete-chapter';
 // import { ChapterSettingsDialog } from "./chapter-settings-dialog";
 // import { useDialogStore } from "@/store/dialog-store";
 
 interface Resource {
   id: string;
-  type: "PDF" | "LINK" | "FILE";
+  type: 'PDF' | 'LINK' | 'FILE';
 }
 
-interface Chapter {
-  id: string;
-  title: string;
-  description: string | null;
-  isFree: boolean;
-  isPublished: boolean;
-  videoUrl: string | null;
-  position: number;
-  resources: Resource[];
-  quizzes: { id: string }[];
-  userProgress: {
-    isCompleted: boolean;
-    watchedSeconds: number;
-  } | null;
-}
+
 
 interface ChapterListProps {
   courseId: string;
@@ -52,14 +42,20 @@ export function ChapterList({ courseId }: ChapterListProps) {
   const openChapterSettingsDialog = useSettingChapterStore(
     (state) => state.onOpen
   );
+  const openEditChapterDialog = useEditChapterStore(
+    (state) => state.onOpen
+  );
+  const openDeleteChapterDialog = useDeleteChapterStore(
+    (state) => state.onOpen
+  );
 
   const { data: chapters, isLoading } = useQuery({
-    queryKey: ["chapters", courseId],
+    queryKey: ['chapters', courseId],
     queryFn: async () => {
       const response = await fetch(`/api/teacher/courses/${courseId}/chapters`);
-      if (!response.ok) throw new Error("Failed to fetch chapters");
+      if (!response.ok) throw new Error('Failed to fetch chapters');
       return response.json();
-    },
+    }
   });
 
   if (isLoading) {
@@ -68,11 +64,11 @@ export function ChapterList({ courseId }: ChapterListProps) {
 
   const getResourceIcon = (type: string) => {
     switch (type) {
-      case "PDF":
+      case 'PDF':
         return <FileText className="h-4 w-4" />;
-      case "LINK":
+      case 'LINK':
         return <Link className="h-4 w-4" />;
-      case "FILE":
+      case 'FILE':
         return <FileBox className="h-4 w-4" />;
       default:
         return null;
@@ -83,7 +79,11 @@ export function ChapterList({ courseId }: ChapterListProps) {
     <div className="space-y-4">
       <Accordion type="single" collapsible className="my-4 w-full space-y-2">
         {chapters?.map((chapter: Chapter) => (
-          <AccordionItem key={chapter.id} value={chapter.id} className="border-none rounded-md px-4 bg-secondary">
+          <AccordionItem
+            key={chapter.id}
+            value={chapter.id}
+            className="border-none rounded-md px-4 bg-secondary"
+          >
             <AccordionTrigger className="flex items-center justify-between px-4">
               <div className="flex items-center gap-x-2">
                 <span className="text-left line-clamp-2">{chapter.title}</span>
@@ -93,7 +93,9 @@ export function ChapterList({ courseId }: ChapterListProps) {
                   </Badge>
                 )}
                 {!chapter.isPublished && (
-                  <Badge variant="default" className="bg-orange-400">Draft</Badge>
+                  <Badge variant="default" className="bg-orange-400">
+                    Draft
+                  </Badge>
                 )}
               </div>
             </AccordionTrigger>
@@ -106,36 +108,18 @@ export function ChapterList({ courseId }: ChapterListProps) {
                   </p>
                 )}
 
-                {/* Progress */}
-                {chapter.userProgress && (
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-x-2">
-                      <BookCheck className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm font-medium">
-                        {chapter.userProgress.isCompleted
-                          ? "Completed"
-                          : "In Progress"}
-                      </span>
-                    </div>
-                    <Progress
-                      value={chapter.userProgress.watchedSeconds}
-                      className="h-2"
-                    />
-                  </div>
-                )}
-
                 {/* Chapter Assets */}
                 <div className="flex items-center gap-x-4 mt-2">
                   {/* Video Status */}
                   <div className="flex items-center gap-x-2">
                     <Video
                       className={`h-4 w-4 ${chapter.videoUrl
-                        ? "text-sky-700"
-                        : "text-muted-foreground"
+                        ? 'text-sky-700'
+                        : 'text-muted-foreground'
                         }`}
                     />
                     <span className="text-sm">
-                      {chapter.videoUrl ? "Video added" : "No video"}
+                      {chapter.videoUrl ? 'Video added' : 'No video'}
                     </span>
                   </div>
 
@@ -157,31 +141,43 @@ export function ChapterList({ courseId }: ChapterListProps) {
                       className="flex items-center gap-x-1"
                     >
                       <FileText className="h-4 w-4" />
-                      {chapter.quizzes.length}{" "}
-                      {chapter.quizzes.length === 1 ? "Quiz" : "Quizzes"}
+                      {chapter.quizzes.length}{' '}
+                      {chapter.quizzes.length === 1 ? 'Quiz' : 'Quizzes'}
                     </Badge>
                   )}
                 </div>
 
-
-
                 {/* Settings Button */}
                 <div className="flex justify-end items-center mt-4 gap-2">
-                  <Button size="sm" variant="outline">
-                    <Trash2 />
-                  </Button>
                   <Button
                     onClick={() => {
                       openChapterSettingsDialog({
                         courseId,
-                        chapterId: chapter?.id,
+                        chapterId: chapter?.id
                       });
                     }}
                     variant="outline"
                     size="sm"
+                    type='button'
                   >
                     <Settings />
                     Settings
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      openEditChapterDialog(chapter);
+                    }}
+                    size="sm" variant="outline" type='button'>
+                    <Pencil />
+                    Edit Chapter
+                  </Button>
+                  <Button onClick={() => {
+                    openDeleteChapterDialog(chapter);
+                  }}
+                    size="sm"
+                    variant="outline"
+                    type='button'>
+                    <Trash2 />
                   </Button>
                 </div>
               </div>
@@ -189,6 +185,6 @@ export function ChapterList({ courseId }: ChapterListProps) {
           </AccordionItem>
         ))}
       </Accordion>
-    </div >
+    </div>
   );
 }

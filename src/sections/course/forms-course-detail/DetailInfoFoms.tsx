@@ -51,7 +51,7 @@ const DetailInfoFoms = ({ form, isSubmitting }: DetailInfoFomsProps) => {
                 Lihat bagaimana Student meninjau Course Anda
               </CardDescription>
             </div>
-            <Button variant="outline">Pratinjau</Button>
+            <Button variant="outline" type="button">Pratinjau</Button>
           </div>
         </CardHeader>
       </Card>
