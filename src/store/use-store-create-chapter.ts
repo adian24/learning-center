@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 interface CreateChapter {
-  courseId: string | number;
+  courseId: string;
   courseTitle: string;
 }
 

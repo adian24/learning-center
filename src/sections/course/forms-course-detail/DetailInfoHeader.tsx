@@ -24,7 +24,7 @@ const DetailInfoHeader = ({ course }: DetailInfoHeaderProps) => {
   return (
     <div className="flex items-center justify-between mb-6">
       <div className="gap-4">
-        <Button variant="ghost" onClick={() => router.back()} className="gap-2">
+        <Button variant="ghost" onClick={() => router.back()} className="gap-2" type="button">
           <ArrowLeft className="h-4 w-4" />
           Back
         </Button>
@@ -43,17 +43,19 @@ const DetailInfoHeader = ({ course }: DetailInfoHeaderProps) => {
                   })
                 }
                 className="gap-2"
+                type="button"
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent className="bg-black text-white">
+            <TooltipContent className="bg-black text-white" >
               <p>Hapus Course</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
         <Button
           form="detailCourseForm"
+          type="submit"
           className="text-white bg-blue-600 rounded-lg hover:bg-blue-700"
         >
           <Save />

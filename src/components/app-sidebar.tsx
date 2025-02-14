@@ -75,11 +75,6 @@ const data = {
       icon: Compass,
     },
     {
-      name: "Course Builder",
-      url: "/teacher/builder",
-      icon: DraftingCompass,
-    },
-    {
       name: "Students",
       url: "/teacher/students",
       icon: UsersRound,

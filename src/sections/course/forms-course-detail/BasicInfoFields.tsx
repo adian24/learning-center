@@ -12,17 +12,25 @@ import { UseFormReturn } from "react-hook-form";
 import { CourseFormValues } from "@/lib/validations/courses";
 import { useImageUpload } from "@/hooks/use-image-upload";
 import CoverImage from "./CoverImage";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { useCreateChapterStore } from "@/store/use-store-create-chapter";
+import { Course } from "@/lib/types";
+import { ChapterList } from "@/sections/course/chapter/ChapterList";
 
 interface BasicInfoFieldsProps {
   form: UseFormReturn<CourseFormValues>;
   isSubmitting: boolean;
+  course: Course | undefined;
 }
 
 export const BasicInfoFieldsDetail = ({
   form,
   isSubmitting,
+  course
 }: BasicInfoFieldsProps) => {
   const { uploadImage, isUploading } = useImageUpload();
+  const onOpenCreateDialog = useCreateChapterStore((state) => state.onOpen);
 
   const handleImageUpload = async (file: File) => {
     const imageUrl = await uploadImage(file);
@@ -78,6 +86,27 @@ export const BasicInfoFieldsDetail = ({
           </FormItem>
         )}
       />
+
+      <div className="mt-8">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold">Chapters ({course?.chapters.length})</h3>
+          <Button
+            variant="ghost"
+            className="text-blue-600 hover:text-blue-900 hover:bg-blue-50"
+            type="button"
+            onClick={() => {
+              onOpenCreateDialog({
+                courseId: course?.id || "",
+                courseTitle: course?.title || "",
+              });
+            }}
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Tambah Chapter
+          </Button>
+        </div>
+        <ChapterList courseId={course?.id ?? ""} />
+      </div>
     </div>
   );
 };

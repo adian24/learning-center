@@ -52,6 +52,10 @@ export const courseFormSchema = z.object({
     required_error: "Level course harus dipilih",
     invalid_type_error: "Level tidak valid",
   }),
+  isPublished: z.boolean({
+    required_error: "Publikasi harus dipilih",
+    invalid_type_error: "Publikasi tidak valid",
+  })
 });
 
 export type CourseFormValues = z.infer<typeof courseFormSchema>;

@@ -16,9 +16,9 @@ import {
   FormLabel,
   FormMessage
 } from '@/components/ui/form';
-import { useCreateChapterStore } from '@/store/use-store-create-chapter';
+import { useEditChapterStore } from '@/store/use-store-edit-chapter';
 import { useForm } from 'react-hook-form';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -32,38 +32,44 @@ interface ChapterFormValues {
   isFree: boolean;
 }
 
-const DialogCreateChapter = () => {
+const DialogEditChapter = () => {
   const queryClient = useQueryClient();
 
-  const { isOpen, chapterToCreate, isCreating, onClose, setIsCreating, reset } =
-    useCreateChapterStore();
+  const { isOpen, chapterToEdit, isEditing, onClose, setIsEditing, reset } =
+    useEditChapterStore();
+
+  console.log('chapterToEdit : ', chapterToEdit);
+  console.log(
+    'chapterToEdit.title.replace : ',
+    chapterToEdit?.title.replace(/^Chapter (\d+) :/, '')
+  );
 
   const form = useForm<ChapterFormValues>({
     defaultValues: {
-      title: '',
-      description: '',
-      isFree: false
+      title: chapterToEdit?.title || '',
+      description: chapterToEdit?.description || '',
+      isFree: chapterToEdit?.isFree || false
     }
   });
 
-  const { data: chapters } = useQuery({
-    queryKey: ['chapters', chapterToCreate?.courseId],
-    queryFn: async () => {
-      const response = await fetch(
-        `/api/teacher/courses/${chapterToCreate?.courseId}/chapters`
-      );
-      if (!response.ok) throw new Error('Failed to fetch chapters');
-      return response.json();
+  // Reset form when chapter changes
+  React.useEffect(() => {
+    if (chapterToEdit) {
+      form.reset({
+        title: chapterToEdit?.title.replace(/^Chapter (\d+) :/, ''), // Remove chapter prefix
+        description: chapterToEdit?.description || '',
+        isFree: chapterToEdit?.isFree
+      });
     }
-  });
+  }, [chapterToEdit, form]);
 
-  const createChapter = useMutation({
+  const editChapter = useMutation({
     mutationFn: async (values: ChapterFormValues) => {
-      setIsCreating(true);
+      setIsEditing(true);
       const response = await fetch(
-        `/api/teacher/courses/${chapterToCreate?.courseId}/chapters`,
+        `/api/teacher/courses/${chapterToEdit?.courseId}/chapters/${chapterToEdit?.id}`,
         {
-          method: 'POST',
+          method: 'PATCH',
           headers: {
             'Content-Type': 'application/json'
           },
@@ -72,29 +78,31 @@ const DialogCreateChapter = () => {
       );
 
       if (!response.ok) {
-        throw new Error('Failed to create chapter');
+        throw new Error('Failed to update chapter');
       }
 
       return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['chapters'] });
-      toast.success('Chapter created successfully');
+      toast.success('Chapter updated successfully');
       reset();
       form.reset();
-      setIsCreating(false);
+      setIsEditing(false);
     },
     onError: () => {
-      toast.error('Failed to create chapter');
-      setIsCreating(false);
+      toast.error('Failed to update chapter');
+      setIsEditing(false);
     }
   });
 
   const onSubmit = async (values: ChapterFormValues) => {
-    const prefix = `Chapter ${chapters?.length + 1} : `;
-    await createChapter.mutateAsync({
+    // Preserve the original chapter number
+    const chapterNumber =
+      chapterToEdit?.title.match(/^Chapter (\d+) :/)?.[0] || '';
+    await editChapter.mutateAsync({
       ...values,
-      title: prefix + ' ' + values.title
+      title: chapterNumber + ' ' + values.title
     });
   };
 
@@ -102,10 +110,7 @@ const DialogCreateChapter = () => {
     <Dialog open={isOpen} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogContent className="sm:max-w-[750px]">
         <DialogHeader>
-          <DialogTitle>Buat Chapter Baru</DialogTitle>
-          <DialogDescription>
-            Buat Chapter untuk Course <b>{chapterToCreate?.courseTitle}</b>
-          </DialogDescription>
+          <DialogTitle>Edit Chapter</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -120,7 +125,9 @@ const DialogCreateChapter = () => {
                     <Input
                       {...field}
                       placeholder="Masukan Title"
-                      startContent={`Chapter ${chapters?.length + 1} : `}
+                      startContent={
+                        chapterToEdit?.title.match(/^Chapter \d+ :/)?.[0] || ''
+                      }
                     />
                   </FormControl>
                   <FormMessage />
@@ -170,15 +177,15 @@ const DialogCreateChapter = () => {
               <Button
                 type="submit"
                 className="bg-blue-500 hover:bg-blue-700"
-                disabled={isCreating}
+                disabled={isEditing}
               >
-                {isCreating ? (
+                {isEditing ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Membuat...
+                    Menyimpan...
                   </>
                 ) : (
-                  'Buat Chapter'
+                  'Simpan Perubahan'
                 )}
               </Button>
             </div>
@@ -189,4 +196,4 @@ const DialogCreateChapter = () => {
   );
 };
 
-export default DialogCreateChapter;
+export default DialogEditChapter;
