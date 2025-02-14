@@ -1,36 +1,29 @@
-"use client";
+'use client';
 
-import React from "react";
+import React from 'react';
 
-import { useParams } from "next/navigation";
-import Layout from "@/layout";
+import { useParams } from 'next/navigation';
+import Layout from '@/layout';
 
 // rhf
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 // hooks
-import { useCourseQuery } from "@/hooks/use-course-query";
-import { useUpdateCourse } from "@/hooks/use-update-course";
-import { useImageUpload } from "@/hooks/use-image-upload";
+import { useCourseQuery } from '@/hooks/use-course-query';
+import { useUpdateCourse } from '@/hooks/use-update-course';
+import { useImageUpload } from '@/hooks/use-image-upload';
 
 // import
 
 // validation/schema
-import { courseFormSchema, CourseFormValues } from "@/lib/validations/courses";
-import { Loader2 } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import DetailInfoHeader from "@/sections/course/forms-course-detail/DetailInfoHeader";
-import {
-  Form,
-} from "@/components/ui/form";
-import { BasicInfoFieldsDetail } from "@/sections/course/forms-course-detail/BasicInfoFields";
-import DetailInfoFoms from "@/sections/course/forms-course-detail/DetailInfoFoms";
+import { courseFormSchema, CourseFormValues } from '@/lib/validations/courses';
+import { Loader2 } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import DetailInfoHeader from '@/sections/course/forms-course-detail/DetailInfoHeader';
+import { Form } from '@/components/ui/form';
+import { BasicInfoFieldsDetail } from '@/sections/course/forms-course-detail/BasicInfoFields';
+import DetailInfoFoms from '@/sections/course/forms-course-detail/DetailInfoFoms';
 
 const CourseDetail = () => {
   const params = useParams();
@@ -46,14 +39,14 @@ const CourseDetail = () => {
   const form = useForm<CourseFormValues>({
     resolver: zodResolver(courseFormSchema),
     defaultValues: {
-      title: course?.title || "",
-      description: course?.description || "",
-      imageUrl: course?.imageUrl || "",
+      title: course?.title || '',
+      description: course?.description || '',
+      imageUrl: course?.imageUrl || '',
       price: course?.price || 0,
-      categoryId: course?.categoryId || "",
-      level: course?.level || "BEGINNER",
+      categoryId: course?.categoryId || '',
+      level: course?.level || 'BEGINNER',
       isPublished: course?.isPublished
-    },
+    }
   });
 
   // Update form values when course data is loaded
@@ -61,10 +54,10 @@ const CourseDetail = () => {
     if (course) {
       form.reset({
         title: course.title,
-        description: course.description || "",
-        imageUrl: course.imageUrl || "",
+        description: course.description || '',
+        imageUrl: course.imageUrl || '',
         price: course.price || 0,
-        categoryId: course.categoryId || "",
+        categoryId: course.categoryId || '',
         level: course.level,
         isPublished: course.isPublished
       });
@@ -74,7 +67,7 @@ const CourseDetail = () => {
   const handleImageUpload = async (file: File) => {
     const imageUrl = await uploadImage(file);
     if (imageUrl) {
-      form.setValue("imageUrl", imageUrl);
+      form.setValue('imageUrl', imageUrl);
     }
   };
 
@@ -95,10 +88,7 @@ const CourseDetail = () => {
   return (
     <Layout>
       <Form {...form}>
-        <form
-          id="detailCourseForm"
-          onSubmit={form.handleSubmit(onSubmit)}
-        >
+        <form id="detailCourseForm" onSubmit={form.handleSubmit(onSubmit)}>
           <div className="max-w-7xl mx-auto p-6">
             {/* Header */}
             <DetailInfoHeader course={course} />

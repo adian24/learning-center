@@ -1,5 +1,3 @@
-// components/chapters/chapter-list.tsx
-import { useQuery } from '@tanstack/react-query';
 import {
   Accordion,
   AccordionContent,
@@ -17,12 +15,15 @@ import {
   Pencil,
   FileQuestion,
   Plus,
-  PlayCircle
+  PlayCircle,
+  MoveUpRight
 } from 'lucide-react';
 import { useEditChapterStore } from '@/store/use-store-edit-chapter';
 import { Chapter } from '@/lib/types';
 import { useDeleteChapterStore } from '@/store/use-store-delete-chapter';
 import { Separator } from '@/components/ui/separator';
+import { useChaptersQuery } from '@/hooks/use-chapters-query';
+import { useRouter } from 'next/navigation';
 
 interface Resource {
   id: string;
@@ -34,20 +35,17 @@ interface ChapterListProps {
 }
 
 export function ChapterList({ courseId }: ChapterListProps) {
-  const openEditChapterDialog = useEditChapterStore(
-    (state) => state.onOpen
-  );
+  const router = useRouter();
+
+  const openEditChapterDialog = useEditChapterStore((state) => state.onOpen);
   const openDeleteChapterDialog = useDeleteChapterStore(
     (state) => state.onOpen
   );
 
-  const { data: chapters, isLoading } = useQuery({
-    queryKey: ['chapters', courseId],
-    queryFn: async () => {
-      const response = await fetch(`/api/teacher/courses/${courseId}/chapters`);
-      if (!response.ok) throw new Error('Failed to fetch chapters');
-      return response.json();
-    }
+  const { data: chapters, isLoading } = useChaptersQuery({
+    courseId,
+    page: 1,
+    limit: 3
   });
 
   if (isLoading) {
@@ -70,7 +68,7 @@ export function ChapterList({ courseId }: ChapterListProps) {
   return (
     <div className="space-y-4">
       <Accordion type="single" collapsible className="my-4 w-full space-y-2">
-        {chapters?.map((chapter: Chapter) => (
+        {chapters?.chapters?.map((chapter: Chapter) => (
           <AccordionItem
             key={chapter.id}
             value={chapter.id}
@@ -106,19 +104,19 @@ export function ChapterList({ courseId }: ChapterListProps) {
                     <h3 className="text-sm font-medium">Video Pembelajaran</h3>
                     <Button
                       // onClick={() => handleAddVideo(chapter.id)}
-                      variant="outline"
+                      className="text-blue-600 hover:text-blue-900"
+                      variant="link"
                       size="sm"
-                      className="h-8"
-                      type='button'
+                      type="button"
                     >
                       {chapter.videoUrl ? (
                         <>
-                          <PlayCircle className="h-4 w-4 mr-2" />
+                          <PlayCircle />
                           Update Video
                         </>
                       ) : (
                         <>
-                          <Plus className="h-4 w-4 mr-2" />
+                          <Plus />
                           Add Video
                         </>
                       )}
@@ -126,7 +124,7 @@ export function ChapterList({ courseId }: ChapterListProps) {
                   </div>
                   {chapter.videoUrl ? (
                     <div className="flex items-center gap-x-2 text-sm text-muted-foreground">
-                      <Video className="h-4 w-4 text-sky-700" />
+                      <Video className="text-sky-700" />
                       Video telah ditambahkan
                     </div>
                   ) : (
@@ -144,12 +142,12 @@ export function ChapterList({ courseId }: ChapterListProps) {
                     <h3 className="text-sm font-medium">Quiz</h3>
                     <Button
                       // onClick={() => handleAddQuiz(chapter.id)}
-                      variant="outline"
+                      className="text-blue-600 hover:text-blue-900"
+                      variant="link"
                       size="sm"
-                      className="h-8"
-                      type='button'
+                      type="button"
                     >
-                      <Plus className="h-4 w-4 mr-2" />
+                      <Plus />
                       Add Quiz
                     </Button>
                   </div>
@@ -161,7 +159,7 @@ export function ChapterList({ courseId }: ChapterListProps) {
                           className="flex items-center justify-between bg-secondary/50 p-2 rounded-md"
                         >
                           <div className="flex items-center gap-x-2">
-                            <FileQuestion className="h-4 w-4" />
+                            <FileQuestion />
                             <span className="text-sm">{quiz.title}</span>
                           </div>
                           <div className="flex items-center gap-x-2">
@@ -169,18 +167,18 @@ export function ChapterList({ courseId }: ChapterListProps) {
                               // onClick={() => handleEditQuiz(chapter.id, quiz.id)}
                               variant="ghost"
                               size="sm"
-                              type='button'
+                              type="button"
                             >
-                              <Pencil className="h-4 w-4" />
+                              <Pencil />
                             </Button>
                             <Button
                               // onClick={() => handleDeleteQuiz(chapter.id, quiz.id)}
                               variant="ghost"
                               size="sm"
                               className="text-red-500 hover:text-red-600"
-                              type='button'
+                              type="button"
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Trash2 />
                             </Button>
                           </div>
                         </div>
@@ -201,12 +199,12 @@ export function ChapterList({ courseId }: ChapterListProps) {
                     <h3 className="text-sm font-medium">Resources</h3>
                     <Button
                       // onClick={() => handleAddResource(chapter.id)}
-                      variant="outline"
+                      className="text-blue-600 hover:text-blue-900"
+                      variant="link"
                       size="sm"
-                      className="h-8"
-                      type='button'
+                      type="button"
                     >
-                      <Plus className="h-4 w-4 mr-2" />
+                      <Plus />
                       Add Resource
                     </Button>
                   </div>
@@ -225,9 +223,9 @@ export function ChapterList({ courseId }: ChapterListProps) {
                             variant="ghost"
                             size="sm"
                             className="text-red-500 hover:text-red-600"
-                            type='button'
+                            type="button"
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 />
                           </Button>
                         </div>
                       ))}
@@ -247,16 +245,21 @@ export function ChapterList({ courseId }: ChapterListProps) {
                     onClick={() => {
                       openEditChapterDialog(chapter);
                     }}
-                    size="sm" variant="outline" type='button'>
+                    size="sm"
+                    variant="outline"
+                    type="button"
+                  >
                     <Pencil />
                     Edit Chapter
                   </Button>
-                  <Button onClick={() => {
-                    openDeleteChapterDialog(chapter);
-                  }}
+                  <Button
+                    onClick={() => {
+                      openDeleteChapterDialog(chapter);
+                    }}
                     size="sm"
                     variant="outline"
-                    type='button'>
+                    type="button"
+                  >
                     <Trash2 />
                   </Button>
                 </div>
@@ -265,6 +268,19 @@ export function ChapterList({ courseId }: ChapterListProps) {
           </AccordionItem>
         ))}
       </Accordion>
+
+      <div className="flex justify-center mt-8">
+        <Button
+          variant="link"
+          size={'sm'}
+          type="button"
+          className="underline text-blue-600 hover:text-blue-900"
+          onClick={() => router.push(`/teacher/courses/${courseId}/chapters`)}
+        >
+          Lihat semua Chapters ({chapters?.metadata.totalChapters}){' '}
+          <MoveUpRight />
+        </Button>
+      </div>
     </div>
   );
 }
