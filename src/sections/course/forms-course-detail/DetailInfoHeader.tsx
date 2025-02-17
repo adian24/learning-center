@@ -9,24 +9,30 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useDeleteCourseStore } from "@/store/use-store-delete-course";
-import { ArrowLeft, Save, Trash2 } from "lucide-react";
+import { ArrowLeft, Loader2, Save, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Course } from "@/lib/types";
 
 interface DetailInfoHeaderProps {
   course: Course | undefined;
+  isUpdating: boolean;
 }
 
-const DetailInfoHeader = ({ course }: DetailInfoHeaderProps) => {
+const DetailInfoHeader = ({ course, isUpdating }: DetailInfoHeaderProps) => {
   const router = useRouter();
   const onOpenDeleteDialog = useDeleteCourseStore((state) => state.onOpen);
 
   return (
     <div className="flex items-center justify-between mb-6">
-      <div className="gap-4">
-        <Button variant="ghost" onClick={() => router.back()} className="gap-2" type="button">
+      <div>
+        <Button
+          variant="link"
+          onClick={() => router.back()}
+          className="p-0"
+          type="button"
+        >
           <ArrowLeft className="h-4 w-4" />
-          Back
+          Kembali
         </Button>
         <h1 className="text-2xl font-bold line-clamp-3">{course?.title}</h1>
       </div>
@@ -48,7 +54,7 @@ const DetailInfoHeader = ({ course }: DetailInfoHeaderProps) => {
                 <Trash2 className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent className="bg-black text-white" >
+            <TooltipContent className="bg-black text-white">
               <p>Hapus Course</p>
             </TooltipContent>
           </Tooltip>
@@ -57,9 +63,19 @@ const DetailInfoHeader = ({ course }: DetailInfoHeaderProps) => {
           form="detailCourseForm"
           type="submit"
           className="text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+          disabled={isUpdating}
         >
-          <Save />
-          Simpan
+          {isUpdating ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Membuat Course...
+            </>
+          ) : (
+            <>
+              <Save />
+              Simpan
+            </>
+          )}
         </Button>
       </div>
     </div>

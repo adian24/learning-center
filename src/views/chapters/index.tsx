@@ -66,7 +66,7 @@ const Chapters = ({ courseId }: ChaptersProps) => {
     <Layout>
       <div className="mx-auto max-w-6xl">
         <Button variant="link" onClick={() => router.back()} className="p-0">
-          <ArrowLeft className="h-4 w-4 mr-2" />
+          <ArrowLeft className="h-4 w-4" />
           Kembali
         </Button>
         <div className="flex items-center justify-between mt-4">
@@ -91,11 +91,9 @@ const Chapters = ({ courseId }: ChaptersProps) => {
         </div>
 
         <Alert className="mt-6 bg-blue-500/10 dark:bg-blue-600/30 border-blue-300 dark:border-blue-600/70">
-          <LandPlot className="h-4 w-4 !text-blue-500" />
-          <AlertTitle className="font-semibold text-blue-500">
-            Course :
-          </AlertTitle>
-          <AlertDescription className="text-blue-500">
+          <LandPlot className="h-5 w-5 !text-blue-500" />
+          <AlertTitle className=" text-blue-500">Course :</AlertTitle>
+          <AlertDescription className="text-blue-500 font-semibold">
             {course?.title}
           </AlertDescription>
         </Alert>
