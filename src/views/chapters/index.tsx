@@ -4,22 +4,43 @@ import Layout from "@/layout";
 import { useChaptersQuery } from "@/hooks/use-chapters-query";
 import { useCourseQuery } from "@/hooks/use-course-query";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, LandPlot, PlusCircle } from "lucide-react";
+import {
+  ArrowLeft,
+  ChevronLeft,
+  ChevronRight,
+  LandPlot,
+  Loader2,
+  PlusCircle,
+} from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import TableChapter from "@/sections/chapters/TableChapter";
 import { useState } from "react";
 import { useCreateChapterStore } from "@/store/use-store-create-chapter";
 import { useRouter } from "next/navigation";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ChaptersProps {
   courseId: string;
 }
 
+const PAGE_SIZE_OPTIONS = [
+  { value: "5", label: "5 per page" },
+  { value: "10", label: "10 per page" },
+  { value: "25", label: "25 per page" },
+  { value: "50", label: "50 per page" },
+];
+
 const Chapters = ({ courseId }: ChaptersProps) => {
   const router = useRouter();
 
   const [page, setPage] = useState<number>(1);
-  const [limit, setLimit] = useState<number>(10);
+  const [limit, setLimit] = useState<number>(5);
 
   const onOpenCreateDialog = useCreateChapterStore((state) => state.onOpen);
 
@@ -33,6 +54,13 @@ const Chapters = ({ courseId }: ChaptersProps) => {
     limit,
   });
   const { data: course } = useCourseQuery(courseId);
+
+  const metadata = chapters?.metadata;
+
+  const handleLimitChange = (value: string) => {
+    setLimit(Number(value));
+    setPage(1); // Reset to first page when changing limit
+  };
 
   return (
     <Layout>
@@ -74,7 +102,75 @@ const Chapters = ({ courseId }: ChaptersProps) => {
 
         <div className="mt-8">
           <TableChapter chapters={chapters?.chapters} />
+          {isFetching && (
+            <div className="flex justify-center mt-10">
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Memuat Chapters...
+            </div>
+          )}
         </div>
+
+        {/* Pagination */}
+        {metadata && (
+          <div className="flex items-center justify-between px-2 mt-4">
+            <div className="flex items-center gap-4">
+              <div className="text-sm text-muted-foreground">
+                Showing {(page - 1) * limit + 1} to{" "}
+                {Math.min(page * limit, metadata.totalChapters)} of{" "}
+                {metadata.totalChapters} entries
+              </div>
+              <Select
+                value={limit.toString()}
+                onValueChange={handleLimitChange}
+              >
+                <SelectTrigger className="w-[140px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PAGE_SIZE_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPage(page - 1)}
+                disabled={!metadata.hasPreviousPage || isLoading}
+              >
+                <ChevronLeft className="h-4 w-4" />
+                Previous
+              </Button>
+              <div className="flex items-center gap-1">
+                {[...Array(metadata.totalPages)].map((_, index) => (
+                  <Button
+                    key={index + 1}
+                    variant={page === index + 1 ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setPage(index + 1)}
+                    disabled={isLoading}
+                    className="min-w-[40px]"
+                  >
+                    {index + 1}
+                  </Button>
+                ))}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPage(page + 1)}
+                disabled={!metadata.hasNextPage || isLoading}
+              >
+                Next
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </Layout>
   );
