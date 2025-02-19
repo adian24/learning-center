@@ -12,18 +12,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 // hooks
 import { useCourseQuery } from "@/hooks/use-course-query";
 import { useUpdateCourse } from "@/hooks/use-update-course";
-// import { useImageUpload } from "@/hooks/use-image-upload";
 
 // import
+import { Loader2 } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form } from "@/components/ui/form";
+import { BasicInfoFieldsDetail } from "@/sections/course/forms-course-detail/BasicInfoFields";
+import DetailInfoHeader from "@/sections/course/forms-course-detail/DetailInfoHeader";
+import DetailInfoFoms from "@/sections/course/forms-course-detail/DetailInfoFoms";
 
 // validation/schema
 import { courseFormSchema, CourseFormValues } from "@/lib/validations/courses";
-import { Loader2 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import DetailInfoHeader from "@/sections/course/forms-course-detail/DetailInfoHeader";
-import { Form } from "@/components/ui/form";
-import { BasicInfoFieldsDetail } from "@/sections/course/forms-course-detail/BasicInfoFields";
-import DetailInfoFoms from "@/sections/course/forms-course-detail/DetailInfoFoms";
 
 const CourseDetail = () => {
   const params = useParams();
@@ -32,18 +31,17 @@ const CourseDetail = () => {
   const { data: course, isLoading: isLoadingCourse } = useCourseQuery(courseId);
   const { mutate: updateCourse, isPending: isUpdating } =
     useUpdateCourse(courseId);
-  // const { uploadImage } = useImageUpload();
 
   const form = useForm<CourseFormValues>({
     resolver: zodResolver(courseFormSchema),
     defaultValues: {
-      title: course?.title || "",
-      description: course?.description || "",
-      imageUrl: course?.imageUrl || "",
-      price: course?.price || 0,
-      categoryId: course?.categoryId || "",
-      level: course?.level || "BEGINNER",
-      isPublished: course?.isPublished,
+      title: "",
+      description: "",
+      imageUrl: "",
+      price: 0,
+      categoryId: "",
+      level: "BEGINNER",
+      isPublished: false,
     },
   });
 
@@ -52,22 +50,15 @@ const CourseDetail = () => {
     if (course) {
       form.reset({
         title: course.title,
-        description: course.description || "",
-        imageUrl: course.imageUrl || "",
-        price: course.price || 0,
-        categoryId: course.categoryId || "",
+        description: course.description,
+        imageUrl: course.imageUrl,
+        price: course.price,
+        categoryId: course.categoryId,
         level: course.level,
         isPublished: course.isPublished,
       });
     }
   }, [course, form]);
-
-  // const handleImageUpload = async (file: File) => {
-  //   const imageUrl = await uploadImage(file);
-  //   if (imageUrl) {
-  //     form.setValue("imageUrl", imageUrl);
-  //   }
-  // };
 
   async function onSubmit(data: CourseFormValues) {
     updateCourse(data);

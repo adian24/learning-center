@@ -74,7 +74,7 @@ const DetailInfoFoms = ({ form, isSubmitting }: DetailInfoFomsProps) => {
                 <FormLabel>Pilih Level</FormLabel>
                 <Select
                   onValueChange={field.onChange}
-                  defaultValue={field.value}
+                  value={field.value}
                   disabled={isSubmitting}
                 >
                   <FormControl>
@@ -111,7 +111,7 @@ const DetailInfoFoms = ({ form, isSubmitting }: DetailInfoFomsProps) => {
                 <FormLabel>Pilih Kategori</FormLabel>
                 <Select
                   onValueChange={field.onChange}
-                  defaultValue={field.value}
+                  value={field.value}
                   disabled={isSubmitting}
                 >
                   <FormControl>
@@ -156,6 +156,7 @@ const DetailInfoFoms = ({ form, isSubmitting }: DetailInfoFomsProps) => {
                     step="0.01"
                     placeholder="e.g. 49.99"
                     disabled={isSubmitting}
+                    value={field.value}
                     // startContent="Rp"
                   />
                 </FormControl>
