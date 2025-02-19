@@ -1,3 +1,4 @@
+import Image from "next/image";
 import AuthForm from "./forms/auth-form";
 
 export default function HeroFormSignUpForm() {
@@ -48,10 +49,12 @@ export default function HeroFormSignUpForm() {
                 <footer className="mt-3">
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
-                      <img
+                      <Image
                         className="h-8 w-8 rounded-full"
                         src="https://placehold.co/100x100"
                         alt="Image Description"
+                        width={32}
+                        height={32}
                       />
                     </div>
                     <div className="grow ms-4">

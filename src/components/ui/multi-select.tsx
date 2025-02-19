@@ -60,7 +60,7 @@ export function MultiSelect({
   };
 
   // Flatten all options for search
-  const allOptions = options.flatMap((group) => group.options);
+  // const allOptions = options.flatMap((group) => group.options);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -103,7 +103,7 @@ export function MultiSelect({
                   className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary"
                 >
                   <Plus className="h-4 w-4" />
-                  Add "{inputValue}"
+                  Add {inputValue}
                 </button>
               )}
               {!inputValue && "No expertise found."}

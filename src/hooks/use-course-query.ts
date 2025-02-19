@@ -13,5 +13,6 @@ export const useCourseQuery = (courseId: string) => {
   return useQuery({
     queryKey: ["teacher-course", courseId],
     queryFn: () => fetchCourse(courseId),
+    enabled: typeof courseId === "string",
   });
 };

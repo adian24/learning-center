@@ -3,19 +3,20 @@ import { NextResponse } from "next/server";
 
 export async function POST(
   req: Request,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
   try {
+    const courseId = (await params).courseId;
     const json = await req.json();
     const { title, description, isFree = false } = json;
 
-    if (!title || !params.courseId) {
+    if (!title || !courseId) {
       return new NextResponse("Missing required fields", { status: 400 });
     }
 
     const lastChapter = await db.chapter.findFirst({
       where: {
-        courseId: params.courseId,
+        courseId: courseId,
       },
       orderBy: {
         position: "desc",
@@ -30,7 +31,7 @@ export async function POST(
         description,
         position: newPosition,
         isFree,
-        courseId: params.courseId,
+        courseId: courseId,
       },
     });
 
@@ -43,10 +44,10 @@ export async function POST(
 
 export async function GET(
   req: Request,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
   try {
-    const courseId = params.courseId;
+    const courseId = (await params).courseId;
 
     if (!courseId) {
       return new NextResponse("Missing required fields", { status: 400 });

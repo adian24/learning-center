@@ -4,6 +4,7 @@ import { ImagePlus, Loader2 } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import { CourseFormValues } from "@/lib/validations/courses";
 import { useDeleteImage } from "@/hooks/use-delete-image";
+import Image from "next/image";
 
 interface CourseMediaUploadProps {
   form: UseFormReturn<CourseFormValues>;
@@ -26,7 +27,7 @@ export const CourseMediaUpload = ({
     <div className="flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-8 space-y-4">
       {form.getValues("imageUrl") ? (
         <div className="w-full aspect-video rounded-lg">
-          <img
+          <Image
             src={form.getValues("imageUrl")}
             alt="Course thumbnail"
             className="object-cover"

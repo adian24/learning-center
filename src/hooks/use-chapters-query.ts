@@ -1,6 +1,6 @@
 // hooks/use-chapters-query.ts
-import { Chapter, Quiz, Resource } from '@/lib/types';
-import { useQuery } from '@tanstack/react-query';
+import { Chapter } from "@/lib/types";
+import { useQuery } from "@tanstack/react-query";
 
 interface PaginatedChaptersResponse {
   chapters: Chapter[];
@@ -24,12 +24,12 @@ const fetchChapters = async ({
   courseId,
   page = 1,
   limit = 10,
-  search = ''
+  search = "",
 }: ChapterQueryParams): Promise<PaginatedChaptersResponse> => {
   const queryParams = new URLSearchParams({
     page: page.toString(),
     limit: limit.toString(),
-    search: search
+    search: search,
   });
 
   const response = await fetch(
@@ -37,7 +37,7 @@ const fetchChapters = async ({
   );
 
   if (!response.ok) {
-    throw new Error('Failed to fetch chapters');
+    throw new Error("Failed to fetch chapters");
   }
 
   return response.json();
@@ -47,11 +47,11 @@ export const useChaptersQuery = ({
   courseId,
   page,
   limit,
-  search
+  search,
 }: ChapterQueryParams) => {
   return useQuery({
-    queryKey: ['chapters', courseId, page, limit, search],
-    queryFn: () => fetchChapters({ courseId, page, limit, search })
+    queryKey: ["chapters", courseId, page, limit, search],
+    queryFn: () => fetchChapters({ courseId, page, limit, search }),
     // placeholderData: true // Keeps the previous data while fetching new data
   });
 };

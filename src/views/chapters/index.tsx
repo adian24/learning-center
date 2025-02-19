@@ -80,8 +80,8 @@ const Chapters = ({ courseId }: ChaptersProps) => {
             className="text-white bg-blue-600 rounded-lg hover:bg-blue-700"
             onClick={() => {
               onOpenCreateDialog({
-                courseId: course?.id!,
-                courseTitle: course?.title!,
+                courseId: course?.id ?? "",
+                courseTitle: course?.title ?? "",
               });
             }}
           >

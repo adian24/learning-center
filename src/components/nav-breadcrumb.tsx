@@ -10,27 +10,32 @@ import {
 } from "@/components/ui/breadcrumb";
 import { generateBreadcrumb } from "@/lib/breadcrumb";
 import { Fragment } from "react";
-import { useCourseQuery } from "@/hooks/use-course-query";
+// import { useCourseQuery } from "@/hooks/use-course-query";
 
 export default function NavBreadcrumb() {
   const pathname = usePathname();
-  const courseIdMatch = pathname.match(/\/courses\/([^\/]+)/);
-  const courseId = courseIdMatch ? courseIdMatch[1] : null;
 
-  const { data: course } = courseId ? useCourseQuery(courseId) : { data: null };
-
+  // Early return for root path
   if (pathname === "/") return null;
+
+  // More precise course ID extraction
+  const courseIdMatch = pathname.match(/^\/courses\/([^\/]+)$/);
+  const courseId = courseIdMatch?.[1] || null;
+
+  // Only fetch course query if a valid course ID exists
+  // const { data: course } = courseId !== null ? useCourseQuery(courseId) : { data: null };
 
   const breadcrumbs = generateBreadcrumb(pathname);
 
   let updatedBreadcrumbs = breadcrumbs;
 
-  if (courseId && course) {
+  // Only modify breadcrumbs if course data is available
+  if (courseId) {
     updatedBreadcrumbs = breadcrumbs.map((breadcrumb) => {
-      if (breadcrumb.label.match(/[0-9]/)) {
+      if (/course|[0-9]/.test(breadcrumb.label.toLowerCase())) {
         return {
           ...breadcrumb,
-          label: course.title,
+          // label: course.title,
         };
       }
       return breadcrumb;

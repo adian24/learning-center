@@ -12,7 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 // hooks
 import { useCourseQuery } from "@/hooks/use-course-query";
 import { useUpdateCourse } from "@/hooks/use-update-course";
-import { useImageUpload } from "@/hooks/use-image-upload";
+// import { useImageUpload } from "@/hooks/use-image-upload";
 
 // import
 
@@ -32,7 +32,7 @@ const CourseDetail = () => {
   const { data: course, isLoading: isLoadingCourse } = useCourseQuery(courseId);
   const { mutate: updateCourse, isPending: isUpdating } =
     useUpdateCourse(courseId);
-  const { uploadImage, isUploading } = useImageUpload();
+  // const { uploadImage } = useImageUpload();
 
   const form = useForm<CourseFormValues>({
     resolver: zodResolver(courseFormSchema),
@@ -62,12 +62,12 @@ const CourseDetail = () => {
     }
   }, [course, form]);
 
-  const handleImageUpload = async (file: File) => {
-    const imageUrl = await uploadImage(file);
-    if (imageUrl) {
-      form.setValue("imageUrl", imageUrl);
-    }
-  };
+  // const handleImageUpload = async (file: File) => {
+  //   const imageUrl = await uploadImage(file);
+  //   if (imageUrl) {
+  //     form.setValue("imageUrl", imageUrl);
+  //   }
+  // };
 
   async function onSubmit(data: CourseFormValues) {
     updateCourse(data);

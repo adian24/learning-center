@@ -9,7 +9,7 @@ import { BasicInfoFieldsCreate } from "./forms-course-create/BasicInfoFields";
 
 interface CourseFormCreateProps {
   form: UseFormReturn<CourseFormValues>;
-  onSubmit: (data: CourseFormValues) => Promise<void>;
+  onSubmit: (data: CourseFormValues) => void;
   isSubmitting: boolean;
   categories?: Array<{ id: string; name: string }>;
 }
@@ -39,7 +39,7 @@ export const CourseFormCreate = ({
               Membuat Course...
             </>
           ) : (
-            "Buat Course"
+            "Buat Coursex"
           )}
         </Button>
       </form>

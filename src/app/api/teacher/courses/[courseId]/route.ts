@@ -6,9 +6,10 @@ import { NextResponse } from "next/server";
 // GET single course
 export async function GET(
   req: Request,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
   try {
+    const courseId = (await params).courseId;
     const session = await auth();
     const userId = session?.user?.id;
 
@@ -16,13 +17,13 @@ export async function GET(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    if (!params.courseId) {
+    if (!courseId) {
       return new NextResponse("Missing required fields", { status: 400 });
     }
 
     const course = await db.course.findUnique({
       where: {
-        id: params.courseId,
+        id: courseId,
       },
       include: {
         category: true,
@@ -55,9 +56,10 @@ export async function GET(
 // PATCH (Update) course
 export async function PATCH(
   req: Request,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
   try {
+    const courseId = (await params).courseId;
     const session = await auth();
     const userId = session?.user?.id;
 
@@ -68,7 +70,7 @@ export async function PATCH(
     const { title, description, imageUrl, price, categoryId, level } =
       await req.json();
 
-    if (!title || !params.courseId) {
+    if (!title || !courseId) {
       return new NextResponse("Missing required fields", { status: 400 });
     }
 
@@ -86,7 +88,7 @@ export async function PATCH(
     // Check if course exists and belongs to the teacher
     const existingCourse = await db.course.findUnique({
       where: {
-        id: params.courseId,
+        id: courseId,
       },
     });
 
@@ -97,7 +99,7 @@ export async function PATCH(
     // Update course
     const updatedCourse = await db.course.update({
       where: {
-        id: params.courseId,
+        id: courseId,
       },
       data: {
         title,
@@ -119,9 +121,10 @@ export async function PATCH(
 // DELETE course
 export async function DELETE(
   req: Request,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
   try {
+    const courseId = (await params).courseId;
     const session = await auth();
     const userId = session?.user?.id;
 
@@ -129,7 +132,7 @@ export async function DELETE(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    if (!params.courseId) {
+    if (!courseId) {
       return new NextResponse("Missing required fields", { status: 400 });
     }
 
@@ -147,7 +150,7 @@ export async function DELETE(
     // Check if course exists and belongs to the teacher
     const course = await db.course.findUnique({
       where: {
-        id: params.courseId,
+        id: courseId,
       },
     });
 
@@ -158,7 +161,7 @@ export async function DELETE(
     // Delete course
     await db.course.delete({
       where: {
-        id: params.courseId,
+        id: courseId,
       },
     });
 
