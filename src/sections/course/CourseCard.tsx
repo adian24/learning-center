@@ -11,12 +11,13 @@ import { Course } from "@/lib/types";
 import { BookOpen, Users } from "lucide-react";
 import CourseActions from "./CourseActions";
 import { formatPrice } from "@/utils/formatPrice";
+import Image from "next/image";
 
 const CourseCard = ({ course }: { course: Course }) => {
   return (
     <Card key={course.id} className="flex flex-col">
       <div className="aspect-video relative overflow-hidden rounded-t-lg">
-        <img
+        <Image
           src={course.imageUrl}
           alt={course.title}
           className="object-cover w-full h-full"

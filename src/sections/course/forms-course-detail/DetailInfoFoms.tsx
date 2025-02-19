@@ -36,7 +36,7 @@ interface DetailInfoFomsProps {
 }
 
 const DetailInfoFoms = ({ form, isSubmitting }: DetailInfoFomsProps) => {
-  const { data: categories, isLoading } = useCategories();
+  const { data: categories } = useCategories();
 
   return (
     <div className="space-y-6">
@@ -51,7 +51,9 @@ const DetailInfoFoms = ({ form, isSubmitting }: DetailInfoFomsProps) => {
                 Lihat bagaimana Student meninjau Course Anda
               </CardDescription>
             </div>
-            <Button variant="outline" type="button">Pratinjau</Button>
+            <Button variant="outline" type="button">
+              Pratinjau
+            </Button>
           </div>
         </CardHeader>
       </Card>
@@ -154,7 +156,7 @@ const DetailInfoFoms = ({ form, isSubmitting }: DetailInfoFomsProps) => {
                     step="0.01"
                     placeholder="e.g. 49.99"
                     disabled={isSubmitting}
-                  // startContent="Rp"
+                    // startContent="Rp"
                   />
                 </FormControl>
                 <FormMessage />

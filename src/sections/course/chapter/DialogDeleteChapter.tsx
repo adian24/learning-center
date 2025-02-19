@@ -61,15 +61,15 @@ export function DialogDeleteChapter() {
             <span>
               Kamu akan menghapus chapter{" "}
               <span className="font-bold text-black">
-                "{chapterToDelete?.title}"
+                {chapterToDelete?.title}
               </span>{" "}
               .
             </span>
             <br />
             <br />
             <span className="text-red-500">
-              Tindakan ini tidak dapat dibatalkan. Semua data dan progres Student
-              untuk chapter ini akan dihapus secara permanen.
+              Tindakan ini tidak dapat dibatalkan. Semua data dan progres
+              Student untuk chapter ini akan dihapus secara permanen.
             </span>
           </AlertDialogDescription>
         </AlertDialogHeader>

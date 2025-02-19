@@ -62,7 +62,7 @@ export function DialogDeleteCourse() {
             <span>
               Kamu akan menghapus{" "}
               <span className="font-bold text-black">
-                "{courseToDelete?.title}".
+                {courseToDelete?.title}
               </span>{" "}
             </span>
             <br />

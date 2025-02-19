@@ -1,30 +1,29 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React from "react";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
-  DialogTitle
-} from '@/components/ui/dialog';
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
-} from '@/components/ui/form';
-import { useEditChapterStore } from '@/store/use-store-edit-chapter';
-import { useForm } from 'react-hook-form';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
-import { Loader2 } from 'lucide-react';
+  FormMessage,
+} from "@/components/ui/form";
+import { useEditChapterStore } from "@/store/use-store-edit-chapter";
+import { useForm } from "react-hook-form";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import { Loader2 } from "lucide-react";
 
 interface ChapterFormValues {
   title: string;
@@ -38,27 +37,27 @@ const DialogEditChapter = () => {
   const { isOpen, chapterToEdit, isEditing, onClose, setIsEditing, reset } =
     useEditChapterStore();
 
-  console.log('chapterToEdit : ', chapterToEdit);
+  console.log("chapterToEdit : ", chapterToEdit);
   console.log(
-    'chapterToEdit.title.replace : ',
-    chapterToEdit?.title.replace(/^Chapter (\d+) :/, '')
+    "chapterToEdit.title.replace : ",
+    chapterToEdit?.title.replace(/^Chapter (\d+) :/, "")
   );
 
   const form = useForm<ChapterFormValues>({
     defaultValues: {
-      title: chapterToEdit?.title || '',
-      description: chapterToEdit?.description || '',
-      isFree: chapterToEdit?.isFree || false
-    }
+      title: chapterToEdit?.title || "",
+      description: chapterToEdit?.description || "",
+      isFree: chapterToEdit?.isFree || false,
+    },
   });
 
   // Reset form when chapter changes
   React.useEffect(() => {
     if (chapterToEdit) {
       form.reset({
-        title: chapterToEdit?.title.replace(/^Chapter (\d+) :/, ''), // Remove chapter prefix
-        description: chapterToEdit?.description || '',
-        isFree: chapterToEdit?.isFree
+        title: chapterToEdit?.title.replace(/^Chapter (\d+) :/, ""), // Remove chapter prefix
+        description: chapterToEdit?.description || "",
+        isFree: chapterToEdit?.isFree,
       });
     }
   }, [chapterToEdit, form]);
@@ -69,40 +68,40 @@ const DialogEditChapter = () => {
       const response = await fetch(
         `/api/teacher/courses/${chapterToEdit?.courseId}/chapters/${chapterToEdit?.id}`,
         {
-          method: 'PATCH',
+          method: "PATCH",
           headers: {
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify(values)
+          body: JSON.stringify(values),
         }
       );
 
       if (!response.ok) {
-        throw new Error('Failed to update chapter');
+        throw new Error("Failed to update chapter");
       }
 
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['chapters'] });
-      toast.success('Chapter updated successfully');
+      queryClient.invalidateQueries({ queryKey: ["chapters"] });
+      toast.success("Chapter updated successfully");
       reset();
       form.reset();
       setIsEditing(false);
     },
     onError: () => {
-      toast.error('Failed to update chapter');
+      toast.error("Failed to update chapter");
       setIsEditing(false);
-    }
+    },
   });
 
   const onSubmit = async (values: ChapterFormValues) => {
     // Preserve the original chapter number
     const chapterNumber =
-      chapterToEdit?.title.match(/^Chapter (\d+) :/)?.[0] || '';
+      chapterToEdit?.title.match(/^Chapter (\d+) :/)?.[0] || "";
     await editChapter.mutateAsync({
       ...values,
-      title: chapterNumber + ' ' + values.title
+      title: chapterNumber + " " + values.title,
     });
   };
 
@@ -117,7 +116,7 @@ const DialogEditChapter = () => {
             <FormField
               control={form.control}
               name="title"
-              rules={{ required: 'Title wajib diisi' }}
+              rules={{ required: "Title wajib diisi" }}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Title</FormLabel>
@@ -126,7 +125,7 @@ const DialogEditChapter = () => {
                       {...field}
                       placeholder="Masukan Title"
                       startContent={
-                        chapterToEdit?.title.match(/^Chapter \d+ :/)?.[0] || ''
+                        chapterToEdit?.title.match(/^Chapter \d+ :/)?.[0] || ""
                       }
                     />
                   </FormControl>
@@ -185,7 +184,7 @@ const DialogEditChapter = () => {
                     Menyimpan...
                   </>
                 ) : (
-                  'Simpan Perubahan'
+                  "Simpan Perubahan"
                 )}
               </Button>
             </div>

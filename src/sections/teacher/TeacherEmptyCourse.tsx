@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { BookOpen, FileText, LayoutGrid, Plus, UsersRound } from "lucide-react";
+import { BookOpen, FileText, LayoutGrid, UsersRound } from "lucide-react";
 import React from "react";
 
 const TeacherEmptyCourse = () => {

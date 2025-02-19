@@ -24,8 +24,6 @@ export function NavUser() {
   const { data } = useSession();
   const user = data?.user;
 
-  console.log("session weee", data);
-
   return (
     <SidebarMenu>
       <SidebarMenuItem>

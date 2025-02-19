@@ -1,30 +1,30 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React from "react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogTitle
-} from '@/components/ui/dialog';
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
-} from '@/components/ui/form';
-import { useCreateChapterStore } from '@/store/use-store-create-chapter';
-import { useForm } from 'react-hook-form';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
-import { Loader2 } from 'lucide-react';
+  FormMessage,
+} from "@/components/ui/form";
+import { useCreateChapterStore } from "@/store/use-store-create-chapter";
+import { useForm } from "react-hook-form";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import { Loader2 } from "lucide-react";
 
 interface ChapterFormValues {
   title: string;
@@ -40,61 +40,63 @@ const DialogCreateChapter = () => {
 
   const form = useForm<ChapterFormValues>({
     defaultValues: {
-      title: '',
-      description: '',
-      isFree: false
-    }
+      title: "",
+      description: "",
+      isFree: false,
+    },
   });
 
   const { data: chapters } = useQuery({
-    queryKey: ['chapters', chapterToCreate?.courseId],
+    queryKey: ["chapters", chapterToCreate?.courseId],
     queryFn: async () => {
       const response = await fetch(
         `/api/teacher/courses/${chapterToCreate?.courseId}/chapters`
       );
-      if (!response.ok) throw new Error('Failed to fetch chapters');
+      if (!response.ok) throw new Error("Failed to fetch chapters");
       return response.json();
-    }
+    },
   });
+
+  console.log("CHHHHPP : ", chapters);
 
   const createChapter = useMutation({
     mutationFn: async (values: ChapterFormValues) => {
       setIsCreating(true);
       const response = await fetch(
-        `/api/teacher/courses/${chapterToCreate?.courseId}/chapters`,
+        `/api/teacher/courses/${chapterToCreate?.courseId}/chapters?page=1&limit=3`,
         {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify(values)
+          body: JSON.stringify(values),
         }
       );
 
       if (!response.ok) {
-        throw new Error('Failed to create chapter');
+        throw new Error("Failed to create chapter");
       }
 
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['chapters'] });
-      toast.success('Chapter created successfully');
+      queryClient.invalidateQueries({ queryKey: ["chapters"] });
+      toast.success("Chapter created successfully");
       reset();
       form.reset();
       setIsCreating(false);
     },
     onError: () => {
-      toast.error('Failed to create chapter');
+      toast.error("Failed to create chapter");
       setIsCreating(false);
-    }
+    },
   });
 
   const onSubmit = async (values: ChapterFormValues) => {
-    const prefix = `Chapter ${chapters?.length + 1} : `;
+    const prefix = `Chapter ${chapters?.metadata?.totalChapters + 1} : `;
     await createChapter.mutateAsync({
       ...values,
-      title: prefix + ' ' + values.title
+      title: prefix + " " + values.title,
     });
   };
 
@@ -112,7 +114,7 @@ const DialogCreateChapter = () => {
             <FormField
               control={form.control}
               name="title"
-              rules={{ required: 'Title wajib diisi' }}
+              rules={{ required: "Title wajib diisi" }}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Title</FormLabel>
@@ -120,7 +122,9 @@ const DialogCreateChapter = () => {
                     <Input
                       {...field}
                       placeholder="Masukan Title"
-                      startContent={`Chapter ${chapters?.length + 1} : `}
+                      startContent={`Chapter ${
+                        chapters?.metadata?.totalChapters + 1
+                      } : `}
                     />
                   </FormControl>
                   <FormMessage />
@@ -178,7 +182,7 @@ const DialogCreateChapter = () => {
                     Membuat...
                   </>
                 ) : (
-                  'Buat Chapter'
+                  "Buat Chapter"
                 )}
               </Button>
             </div>

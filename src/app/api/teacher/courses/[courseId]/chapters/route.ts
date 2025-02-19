@@ -1,25 +1,26 @@
-import db from '@/lib/db/db';
-import { NextResponse } from 'next/server';
+import db from "@/lib/db/db";
+import { NextResponse } from "next/server";
 
 export async function POST(
   req: Request,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
   try {
+    const courseId = (await params).courseId;
     const json = await req.json();
     const { title, description, isFree = false } = json;
 
-    if (!title || !params.courseId) {
-      return new NextResponse('Missing required fields', { status: 400 });
+    if (!title || !courseId) {
+      return new NextResponse("Missing required fields", { status: 400 });
     }
 
     const lastChapter = await db.chapter.findFirst({
       where: {
-        courseId: params.courseId
+        courseId: courseId,
       },
       orderBy: {
-        position: 'desc'
-      }
+        position: "desc",
+      },
     });
 
     const newPosition = (lastChapter?.position ?? 0) + 1;
@@ -30,29 +31,31 @@ export async function POST(
         description,
         position: newPosition,
         isFree,
-        courseId: params.courseId
-      }
+        courseId: courseId,
+      },
     });
 
     return NextResponse.json(chapter);
   } catch (error) {
-    console.error('[CHAPTERS_POST]', error);
-    return new NextResponse('Internal Error', { status: 500 });
+    console.error("[CHAPTERS_POST]", error);
+    return new NextResponse("Internal Error", { status: 500 });
   }
 }
 
 export async function GET(
   req: Request,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
   try {
-    const { searchParams } = new URL(req.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
+    const courseId = (await params).courseId;
 
-    if (!params.courseId) {
-      return new NextResponse('Missing required fields', { status: 400 });
+    if (!courseId) {
+      return new NextResponse("Missing required fields", { status: 400 });
     }
+
+    const { searchParams } = new URL(req.url);
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
 
     // Calculate skip value for pagination
     const skip = (page - 1) * limit;
@@ -60,37 +63,37 @@ export async function GET(
     // Get total count for pagination
     const totalChapters = await db.chapter.count({
       where: {
-        courseId: params.courseId,
+        courseId,
         title: {
-          mode: 'insensitive'
-        }
-      }
+          mode: "insensitive",
+        },
+      },
     });
 
     // Get paginated chapters
     const chapters = await db.chapter.findMany({
       where: {
-        courseId: params.courseId,
+        courseId,
         title: {
-          mode: 'insensitive'
-        }
+          mode: "insensitive",
+        },
       },
       orderBy: {
-        position: 'asc'
+        position: "asc",
       },
       include: {
         course: {
           select: {
             id: true,
             title: true,
-            teacherId: true
-          }
+            teacherId: true,
+          },
         },
         resources: true,
-        quizzes: true
+        quizzes: true,
       },
       skip,
-      take: limit
+      take: limit,
     });
 
     return NextResponse.json({
@@ -100,11 +103,11 @@ export async function GET(
         currentPage: page,
         totalPages: Math.ceil(totalChapters / limit),
         hasNextPage: skip + chapters.length < totalChapters,
-        hasPreviousPage: page > 1
-      }
+        hasPreviousPage: page > 1,
+      },
     });
   } catch (error) {
-    console.error('[CHAPTERS_GET]', error);
-    return new NextResponse('Internal Error', { status: 500 });
+    console.error("[CHAPTERS_GET]", error);
+    return new NextResponse("Internal Error", { status: 500 });
   }
 }

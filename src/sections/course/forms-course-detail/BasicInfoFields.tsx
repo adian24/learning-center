@@ -27,7 +27,7 @@ interface BasicInfoFieldsProps {
 export const BasicInfoFieldsDetail = ({
   form,
   isSubmitting,
-  course
+  course,
 }: BasicInfoFieldsProps) => {
   const { uploadImage, isUploading } = useImageUpload();
   const onOpenCreateDialog = useCreateChapterStore((state) => state.onOpen);
@@ -89,7 +89,7 @@ export const BasicInfoFieldsDetail = ({
 
       <div className="mt-8">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold">Chapters ({course?.chapters.length})</h3>
+          <h3 className="text-lg font-semibold">Chapters</h3>
           <Button
             variant="ghost"
             className="text-blue-600 hover:text-blue-900 hover:bg-blue-50"

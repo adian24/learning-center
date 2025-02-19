@@ -7,7 +7,7 @@ export const useUpdateCourse = (courseId: string) => {
 
   return useMutation({
     mutationFn: async (data: CourseFormValues) => {
-      const response = await fetch(`/api/courses/${courseId}`, {
+      const response = await fetch(`/api/teacher/courses/${courseId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { useDeleteImage } from "@/hooks/use-delete-image";
 import { CourseFormValues } from "@/lib/validations/courses";
 import { ImagePlus, Loader2, RotateCw } from "lucide-react";
+import Image from "next/image";
 import React from "react";
 import { UseFormReturn } from "react-hook-form";
 
@@ -40,7 +41,7 @@ const CoverImage = ({
               <RotateCw /> Ubah Cover Image
             </Button>
           </div>
-          <img
+          <Image
             src={form.getValues("imageUrl")}
             alt="Course thumbnail"
             className="object-cover"

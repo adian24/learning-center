@@ -1,15 +1,17 @@
-import Chapters from '@/views/chapters';
+import DialogCreateChapter from "@/sections/course/chapter/DialogCreateChapter";
+import Chapters from "@/views/chapters";
 
-export default async function ChapterListPage({
-  params
-}: {
-  params: { courseId: string };
-}) {
-  const courseId = params.courseId;
+type Params = Promise<{
+  courseId: string;
+}>;
+
+export default async function ChapterListPage({ params }: { params: Params }) {
+  const courseId = (await params).courseId;
 
   return (
     <>
       <Chapters courseId={courseId} />
+      <DialogCreateChapter />
     </>
   );
 }
