@@ -20,7 +20,10 @@ const CourseCard = ({ course }: { course: Course }) => {
         <Image
           src={course.imageUrl}
           alt={course.title}
-          className="object-cover w-full h-full"
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          priority={false}
         />
         <Badge
           className={`absolute top-2 right-2 ${

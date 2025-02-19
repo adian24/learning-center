@@ -86,12 +86,11 @@ export async function POST(req: Request) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const { title, description, imageUrl, price, categoryId, level } =
-      await req.json();
+    const body = await req.json();
 
-    if (!title) {
-      return new NextResponse("Title is required", { status: 400 });
-    }
+    const { title, description, imageUrl, price, categoryId, level } = body;
+
+    const parsedPrice = price ? parseFloat(price) : 0;
 
     const teacherProfile = await db.teacherProfile.findUnique({
       where: {
@@ -108,7 +107,7 @@ export async function POST(req: Request) {
         title,
         description,
         imageUrl,
-        price,
+        price: parsedPrice,
         categoryId,
         level,
         teacherId: teacherProfile.id,

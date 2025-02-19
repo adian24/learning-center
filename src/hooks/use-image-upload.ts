@@ -1,4 +1,5 @@
-// hooks/use-image-upload.ts
+"use client";
+
 import { useState } from "react";
 import { toast } from "sonner";
 

@@ -1,5 +1,5 @@
-import Image from "next/image";
 import AuthForm from "./forms/auth-form";
+import { CircleUser } from "lucide-react";
 
 export default function HeroFormSignUpForm() {
   return (
@@ -49,13 +49,7 @@ export default function HeroFormSignUpForm() {
                 <footer className="mt-3">
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
-                      <Image
-                        className="h-8 w-8 rounded-full"
-                        src="https://placehold.co/100x100"
-                        alt="Image Description"
-                        width={32}
-                        height={32}
-                      />
+                      <CircleUser className="h-10 w-10 text-gray-500" />
                     </div>
                     <div className="grow ms-4">
                       <div className="font-semibold">Nelson Mandela</div>

@@ -1,4 +1,5 @@
-// hooks/use-delete-image.ts
+"use client";
+
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -21,9 +22,12 @@ export const useDeleteImage = ({ onSuccess }: UseDeleteImageProps = {}) => {
       const publicId = publicIdWithExt.split(".")[0];
 
       // Call delete API
-      const response = await fetch(`/api/courses/upload?publicId=${publicId}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `/api/teacher/courses/upload?publicId=${publicId}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (response.ok) {
         toast.success("Image deleted successfully");

@@ -24,15 +24,22 @@ export const CourseMediaUpload = ({
   });
 
   return (
-    <div className="flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-8 space-y-4">
+    <div className="group relative rounded-lg border-2 border-dashed border-gray-200 bg-white transition-all hover:border-gray-300">
       {form.getValues("imageUrl") ? (
-        <div className="w-full aspect-video rounded-lg">
-          <Image
-            src={form.getValues("imageUrl")}
-            alt="Course thumbnail"
-            className="object-cover"
-          />
-          <div className="mt-4 flex justify-center">
+        <div className="space-y-4 p-4">
+          <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-gray-50">
+            <div className="absolute inset-0 z-10 bg-gray-950 opacity-0 transition-opacity group-hover:opacity-10" />
+            <Image
+              src={form.getValues("imageUrl")}
+              alt="Course thumbnail"
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              priority
+            />
+          </div>
+
+          <div className="flex justify-center">
             <Button
               variant="link"
               size="sm"

@@ -60,7 +60,6 @@ const CreateCourse = () => {
   const { data: categories } = useCategories();
 
   const form = useForm<CourseFormValues>({
-    // resolver: zodResolver(courseFormSchema),
     defaultValues: {
       title: "",
       description: "",
@@ -88,18 +87,16 @@ const CreateCourse = () => {
     },
     onError: () => {
       toast.error("An error occurred while creating the course");
-      // console.error(error);
     },
   });
 
   const onSubmit = (data: CourseFormValues) => {
-    console.log("CEK SUBMUT : ", data);
     mutate(data);
   };
 
   return (
     <Layout>
-      <div className="max-w-5xl mx-auto p-6">
+      <div className="max-w-7xl mx-auto p-6">
         <div className="flex items-center mb-6">
           <Button
             variant="ghost"
@@ -113,16 +110,20 @@ const CreateCourse = () => {
         </div>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Course Information</CardTitle>
-                <CardDescription>
-                  Masukkan informasi dasar course Anda
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <CardContent>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="grid grid-cols-12 gap-6"
+          >
+            {/* Main Content - Left Column */}
+            <div className="col-span-8">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Course Information</CardTitle>
+                  <CardDescription>
+                    Masukkan informasi dasar untuk course Anda
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
                   <CourseMediaUpload
                     form={form}
                     isUploading={isUploading}
@@ -134,48 +135,60 @@ const CreateCourse = () => {
                       {form.formState.errors.imageUrl.message}
                     </p>
                   )}
+
+                  <FormField
+                    control={form.control}
+                    name="title"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Judul Course</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder="e.g. Web Development Fundamentals"
+                            disabled={isPending}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Buatlah judul yang menarik dan deskriptif
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Deskripsi</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            {...field}
+                            placeholder="Jelaskan apa yang akan dipelajari Student dalam Course ini..."
+                            rows={5}
+                            disabled={isPending}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </CardContent>
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Judul Course</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="e.g. Web Development Fundamentals"
-                          disabled={isPending}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Buat judul yang menarik dan deskriptif
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              </Card>
+            </div>
 
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Deskripsi</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          {...field}
-                          placeholder="Jelaskan apa yang akan dipelajari dalam course ini..."
-                          rows={5}
-                          disabled={isPending}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="grid grid-cols-2 gap-4">
+            {/* Sidebar - Right Column */}
+            <div className="col-span-4 space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Course Settings</CardTitle>
+                  <CardDescription>
+                    Konfigurasikan detail dan harga course
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
                   <FormField
                     control={form.control}
                     name="level"
@@ -189,7 +202,7 @@ const CreateCourse = () => {
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Pilih level" />
+                              <SelectValue placeholder="Select level" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -218,7 +231,7 @@ const CreateCourse = () => {
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Pilih kategori" />
+                              <SelectValue placeholder="Select category" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -233,44 +246,45 @@ const CreateCourse = () => {
                       </FormItem>
                     )}
                   />
-                </div>
 
-                <FormField
-                  control={form.control}
-                  name="price"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Harga (IDR)</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          type="number"
-                          min="0"
-                          step="0.01"
-                          placeholder="e.g. 49.99"
-                          disabled={isPending}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button
-                  type="submit"
-                  className="mt-5 w-full text-white bg-blue-600 rounded-lg hover:bg-blue-700"
-                  disabled={isPending}
-                >
-                  {isPending ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Membuat Course...
-                    </>
-                  ) : (
-                    "Buat Coursex"
-                  )}
-                </Button>
-              </CardContent>
-            </Card>
+                  <FormField
+                    control={form.control}
+                    name="price"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Harga (IDR)</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            placeholder="e.g. 49.99"
+                            disabled={isPending}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="pt-6">
+                  <Button type="submit" className="w-full" disabled={isPending}>
+                    {isPending ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Creating Course...
+                      </>
+                    ) : (
+                      "Create Course"
+                    )}
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
           </form>
         </Form>
       </div>
