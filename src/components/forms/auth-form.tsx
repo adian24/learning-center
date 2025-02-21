@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { executeAction } from "@/lib/executeAction";
 import { signIn } from "@/lib/auth";
 import Link from "next/link";
+import ActionButton from "./action-button";
 
 export default function LoginForm({
   className,
@@ -59,6 +60,7 @@ export default function LoginForm({
                 await executeAction({
                   actionFn: async () => {
                     await signIn("credentials", formData);
+                    // console.log("formData : ", formData);
                   },
                 });
               }}
@@ -68,6 +70,7 @@ export default function LoginForm({
                   <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
+                    name="email"
                     type="email"
                     placeholder="m@example.com"
                     required
@@ -83,11 +86,19 @@ export default function LoginForm({
                       Lupa password?
                     </a>
                   </div>
-                  <Input id="password" type="password" required />
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    required
+                  />
                 </div>
-                <Button type="submit" className="w-full">
-                  Masuk
-                </Button>
+                <ActionButton
+                  type="submit"
+                  className="w-full"
+                  defaultText="Masuk"
+                  loadingText="Mohon tunggu..."
+                />
               </div>
             </form>
             <div className="text-center text-sm">

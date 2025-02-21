@@ -38,6 +38,8 @@ interface DetailInfoFomsProps {
 const DetailInfoFoms = ({ form, isSubmitting }: DetailInfoFomsProps) => {
   const { data: categories } = useCategories();
 
+  console.log("form catID : ", form.watch("categoryId"));
+
   return (
     <div className="space-y-6">
       <Card className="bg-slate-800">
@@ -73,6 +75,7 @@ const DetailInfoFoms = ({ form, isSubmitting }: DetailInfoFomsProps) => {
               <FormItem>
                 <FormLabel>Pilih Level</FormLabel>
                 <Select
+                  {...field}
                   onValueChange={field.onChange}
                   value={field.value}
                   disabled={isSubmitting}
@@ -110,6 +113,7 @@ const DetailInfoFoms = ({ form, isSubmitting }: DetailInfoFomsProps) => {
               <FormItem>
                 <FormLabel>Pilih Kategori</FormLabel>
                 <Select
+                  {...field}
                   onValueChange={field.onChange}
                   value={field.value}
                   disabled={isSubmitting}

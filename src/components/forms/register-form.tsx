@@ -3,12 +3,13 @@ import { GalleryVerticalEnd } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { signUp } from "@/lib/actions";
 import { redirect } from "next/navigation";
+import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { executeAction } from "@/lib/executeAction";
 import { signIn } from "@/lib/auth";
+import ActionButton from "./action-button";
 
 export default function RegisterForm({
   className,
@@ -41,34 +42,50 @@ export default function RegisterForm({
               const res = await signUp(formData);
               if (res.success) {
                 redirect("/");
+              } else {
+                console.error("Failed to sign up");
               }
             }}
           >
-            <div className="grid gap-3">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="name"
-                name="name"
-                type="text"
-                placeholder="Nama lengkap"
-                required
+            <div className="grid gap-3 space-y-3">
+              <div className="grid gap-3">
+                <Label htmlFor="email">Nama</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  type="text"
+                  placeholder="Nama lengkap"
+                  required
+                />
+              </div>
+              <div className="grid gap-3">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="m@example.com"
+                  required
+                />
+              </div>
+              <div className="grid gap-3">
+                {" "}
+                <Label htmlFor="email">Password</Label>
+                <Input
+                  id="password"
+                  name="password"
+                  placeholder="Password"
+                  type="password"
+                  required
+                  autoComplete="password"
+                />
+              </div>
+              <ActionButton
+                type="submit"
+                className="w-full"
+                defaultText="Daftar"
+                loadingText="Mendaftar..."
               />
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                required
-              />
-              <Input
-                name="password"
-                placeholder="Password"
-                type="password"
-                required
-                autoComplete="password"
-              />
-              <Button type="submit" className="w-full">
-                Daftar
-              </Button>
             </div>
           </form>
         </div>

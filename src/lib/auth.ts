@@ -9,6 +9,7 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import argon2 from "argon2";
+import { ZodError } from "zod";
 
 const adapter = PrismaAdapter(db);
 
@@ -20,18 +21,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       credentials: {
         email: {},
         password: {},
-        name: {},
       },
       authorize: async (credentials) => {
-        const { email, password } = loginSchema.parse(credentials);
+        let user = null;
+
+        const { email, password } = await loginSchema.parseAsync(credentials);
 
         const emailExists = await checkEmailExists(email);
 
-        if (emailExists) {
-          throw new Error("User already exists.");
+        if (!emailExists) {
+          throw new Error("User not found.");
         }
 
-        const user = await db.user.findFirst({
+        user = await db.user.findFirst({
           where: {
             email: email,
           },

@@ -4,7 +4,10 @@ const nextConfig: NextConfig = {
   experimental: {
     serverActions: {
       bodySizeLimit: "2mb",
-      allowedOrigins: ["http://localhost:3000"],
+      allowedOrigins: [
+        "http://localhost:3000",
+        "https://learning.manajemensistem.com",
+      ],
     },
   },
   reactStrictMode: false,
