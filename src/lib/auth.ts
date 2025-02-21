@@ -9,7 +9,6 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import argon2 from "argon2";
-import { ZodError } from "zod";
 
 const adapter = PrismaAdapter(db);
 

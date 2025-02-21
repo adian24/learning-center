@@ -32,7 +32,6 @@ import {
 } from "@/components/ui/form";
 import { BasicInfoFieldsDetail } from "@/sections/course/forms-course-detail/BasicInfoFields";
 import DetailInfoHeader from "@/sections/course/forms-course-detail/DetailInfoHeader";
-import DetailInfoFoms from "@/sections/course/forms-course-detail/DetailInfoFoms";
 
 // validation/schema
 import { courseFormSchema, CourseFormValues } from "@/lib/validations/courses";
