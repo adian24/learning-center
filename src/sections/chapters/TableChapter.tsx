@@ -1,35 +1,42 @@
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu';
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
-} from '@/components/ui/table';
-import { Chapter } from '@/lib/types';
+  TableRow,
+} from "@/components/ui/table";
+import { Chapter } from "@/lib/types";
+import { useDeleteChapterStore } from "@/store/use-store-delete-chapter";
+import { useEditChapterStore } from "@/store/use-store-edit-chapter";
 import {
   FileText,
   GraduationCap,
   MoreVertical,
   Pencil,
   Trash,
-  VideoIcon
-} from 'lucide-react';
-import Link from 'next/link';
+  VideoIcon,
+} from "lucide-react";
+import Link from "next/link";
 
 interface TableChapterProps {
   chapters: Chapter[] | undefined;
 }
 
 const TableChapter = ({ chapters }: TableChapterProps) => {
+  const openEditChapterDialog = useEditChapterStore((state) => state.onOpen);
+  const openDeleteChapterDialog = useDeleteChapterStore(
+    (state) => state.onOpen
+  );
+
   return (
     <div className="rounded-md border">
       <Table>
@@ -57,13 +64,13 @@ const TableChapter = ({ chapters }: TableChapterProps) => {
                 </Link>
               </TableCell>
               <TableCell>
-                <Badge variant={chapter.isPublished ? 'default' : 'secondary'}>
-                  {chapter.isPublished ? 'Published' : 'Draft'}
+                <Badge variant={chapter.isPublished ? "default" : "secondary"}>
+                  {chapter.isPublished ? "Published" : "Draft"}
                 </Badge>
               </TableCell>
               <TableCell>
-                <Badge variant={chapter.isFree ? 'default' : 'secondary'}>
-                  {chapter.isFree ? 'Free' : 'Paid'}
+                <Badge variant={chapter.isFree ? "default" : "secondary"}>
+                  {chapter.isFree ? "Free" : "Paid"}
                 </Badge>
               </TableCell>
               <TableCell>
@@ -83,29 +90,36 @@ const TableChapter = ({ chapters }: TableChapterProps) => {
                 </div>
               </TableCell>
               <TableCell>
-                <DropdownMenu>
+                <DropdownMenu modal={false}>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="h-8 w-8 p-0">
                       <span className="sr-only">Open menu</span>
                       <MoreVertical className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
+                  <DropdownMenuContent align="end" className="cursor-pointer">
                     <DropdownMenuItem
-                    // onClick={() => onEdit?.(chapter.id)}
+                      className="cursor-pointer"
+                      onClick={() => {
+                        openEditChapterDialog(chapter);
+                      }}
                     >
                       <Pencil className="h-4 w-4 mr-2" />
                       Edit
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                    // onClick={() => router.push(`/teacher/courses/${params.courseId}/chapters/${chapter.id}`)}
+                    <Link
+                      href={`/teacher/courses/${chapter.course?.id}/chapters/${chapter.id}`}
                     >
-                      <VideoIcon className="h-4 w-4 mr-2" />
-                      Manage
-                    </DropdownMenuItem>
+                      <DropdownMenuItem className="cursor-pointer">
+                        <VideoIcon className="h-4 w-4 mr-2" />
+                        Manage
+                      </DropdownMenuItem>
+                    </Link>
                     <DropdownMenuItem
-                      className="text-red-600"
-                      // onClick={() => onDelete?.(chapter.id)}
+                      className="text-red-600 cursor-pointer"
+                      onClick={() => {
+                        openDeleteChapterDialog(chapter);
+                      }}
                     >
                       <Trash className="h-4 w-4 mr-2" />
                       Delete

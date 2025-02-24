@@ -2,10 +2,10 @@ import {
   Accordion,
   AccordionContent,
   AccordionItem,
-  AccordionTrigger
-} from '@/components/ui/accordion';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Video,
   FileText,
@@ -16,18 +16,16 @@ import {
   FileQuestion,
   Plus,
   PlayCircle,
-  MoveUpRight
-} from 'lucide-react';
-import { useEditChapterStore } from '@/store/use-store-edit-chapter';
-import { Chapter } from '@/lib/types';
-import { useDeleteChapterStore } from '@/store/use-store-delete-chapter';
-import { Separator } from '@/components/ui/separator';
-import { useChaptersQuery } from '@/hooks/use-chapters-query';
-import { useRouter } from 'next/navigation';
+  MoveUpRight,
+} from "lucide-react";
+import { Chapter } from "@/lib/types";
+import { Separator } from "@/components/ui/separator";
+import { useChaptersQuery } from "@/hooks/use-chapters-query";
+import { useRouter } from "next/navigation";
 
 interface Resource {
   id: string;
-  type: 'PDF' | 'LINK' | 'FILE';
+  type: "PDF" | "LINK" | "FILE";
 }
 
 interface ChapterListProps {
@@ -37,15 +35,10 @@ interface ChapterListProps {
 export function ChapterList({ courseId }: ChapterListProps) {
   const router = useRouter();
 
-  const openEditChapterDialog = useEditChapterStore((state) => state.onOpen);
-  const openDeleteChapterDialog = useDeleteChapterStore(
-    (state) => state.onOpen
-  );
-
   const { data: chapters, isLoading } = useChaptersQuery({
     courseId,
     page: 1,
-    limit: 3
+    limit: 3,
   });
 
   if (isLoading) {
@@ -54,11 +47,11 @@ export function ChapterList({ courseId }: ChapterListProps) {
 
   const getResourceIcon = (type: string) => {
     switch (type) {
-      case 'PDF':
+      case "PDF":
         return <FileText className="h-4 w-4" />;
-      case 'LINK':
+      case "LINK":
         return <Link className="h-4 w-4" />;
-      case 'FILE':
+      case "FILE":
         return <FileBox className="h-4 w-4" />;
       default:
         return null;
@@ -236,33 +229,6 @@ export function ChapterList({ courseId }: ChapterListProps) {
                     </p>
                   )}
                 </div>
-
-                <Separator />
-
-                {/* Settings Button */}
-                <div className="flex justify-end items-center mt-4 gap-2">
-                  <Button
-                    onClick={() => {
-                      openEditChapterDialog(chapter);
-                    }}
-                    size="sm"
-                    variant="outline"
-                    type="button"
-                  >
-                    <Pencil />
-                    Edit Chapter
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      openDeleteChapterDialog(chapter);
-                    }}
-                    size="sm"
-                    variant="outline"
-                    type="button"
-                  >
-                    <Trash2 />
-                  </Button>
-                </div>
               </div>
             </AccordionContent>
           </AccordionItem>
@@ -272,12 +238,12 @@ export function ChapterList({ courseId }: ChapterListProps) {
       <div className="flex justify-center mt-8">
         <Button
           variant="link"
-          size={'sm'}
+          size={"sm"}
           type="button"
           className="underline text-blue-600 hover:text-blue-900"
           onClick={() => router.push(`/teacher/courses/${courseId}/chapters`)}
         >
-          Lihat semua Chapters ({chapters?.metadata.totalChapters}){' '}
+          Lihat semua Chapters ({chapters?.metadata.totalChapters}){" "}
           <MoveUpRight />
         </Button>
       </div>

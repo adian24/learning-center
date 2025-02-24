@@ -4,8 +4,8 @@ import { create } from "zustand";
 interface DeleteChapterStore {
   isOpen: boolean;
   isDeleting: boolean;
-  chapterToDelete: Chapter | null;
-  onOpen: (chapter: Chapter) => void;
+  chapterToDelete: Chapter | null | undefined;
+  onOpen: (chapter: Chapter | undefined) => void;
   onClose: () => void;
   setIsDeleting: (isDeleting: boolean) => void;
   reset: () => void;

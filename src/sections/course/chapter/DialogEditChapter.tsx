@@ -37,12 +37,6 @@ const DialogEditChapter = () => {
   const { isOpen, chapterToEdit, isEditing, onClose, setIsEditing, reset } =
     useEditChapterStore();
 
-  console.log("chapterToEdit : ", chapterToEdit);
-  console.log(
-    "chapterToEdit.title.replace : ",
-    chapterToEdit?.title.replace(/^Chapter (\d+) :/, "")
-  );
-
   const form = useForm<ChapterFormValues>({
     defaultValues: {
       title: chapterToEdit?.title || "",

@@ -14,9 +14,11 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { useDeleteChapterStore } from "@/store/use-store-delete-chapter";
+import { useRouter } from "next/navigation";
 
 export function DialogDeleteChapter() {
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   const { isOpen, chapterToDelete, isDeleting, onClose, setIsDeleting, reset } =
     useDeleteChapterStore();
@@ -42,6 +44,8 @@ export function DialogDeleteChapter() {
       queryClient.invalidateQueries({
         queryKey: ["chapters"],
       });
+
+      router.push(`/teacher/courses/${chapterToDelete?.courseId}/chapters`);
 
       reset();
     } catch (error) {
