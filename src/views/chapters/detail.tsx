@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import { useChapterQuery } from "@/hooks/use-chapter-query";
 import { Badge } from "@/components/ui/badge";
 import { useDeleteChapterStore } from "@/store/use-store-delete-chapter";
+import ContentVideo from "@/sections/chapters/detail/ContentVideo";
 
 const DetailChapter = ({
   chapterId,
@@ -114,7 +115,7 @@ const DetailChapter = ({
 
         {/* Main Content Tabs */}
         <Tabs defaultValue="content" className="mt-10 w-full">
-          <TabsList className="grid w-full grid-cols-4 lg:w-1/2">
+          <TabsList className="mb-4 grid w-full grid-cols-4 lg:w-1/2">
             <TabsTrigger value="content" className="flex items-center gap-2">
               <Book className="w-4 h-4" />
               Content
@@ -135,19 +136,7 @@ const DetailChapter = ({
 
           {/* Content Tab */}
           <TabsContent value="content">
-            <Card>
-              <CardContent className="p-6">
-                <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center mb-6">
-                  <PlayCircle className="w-16 h-16 text-blue-500" />
-                </div>
-                <div className="prose max-w-none">
-                  <h3 className="text-xl font-semibold mb-4">
-                    Chapter Content
-                  </h3>
-                  <p className="text-gray-600">{mockChapter.description}</p>
-                </div>
-              </CardContent>
-            </Card>
+            <ContentVideo />
           </TabsContent>
 
           {/* Quiz Tab */}
