@@ -80,17 +80,17 @@ const ContentVideo = ({
         clearInterval(interval);
         setUploadProgress(100);
         setVideoUrl(data?.url);
+        toast.success("Video uploaded successfully");
+        queryClient.invalidateQueries({
+          queryKey: ["chapter", chapter?.courseId, chapter?.id],
+        });
       }
     } catch (error) {
       setError("Failed to upload video. Please try again.");
       setIsUploading(false);
     } finally {
-      toast.success("Video uploaded successfully");
       setIsUploading(false);
       setUploadProgress(0);
-      queryClient.invalidateQueries({
-        queryKey: ["chapter", chapter?.courseId, chapter?.id],
-      });
     }
   };
 
