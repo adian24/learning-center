@@ -21,6 +21,13 @@ function extractPublicIdFromUrl(url: string): string {
   }
 }
 
+export const config = {
+  api: {
+    bodyParser: false,
+    responseLimit: false,
+  },
+};
+
 type RouteParams = {
   params: Promise<{
     courseId: string;
@@ -53,7 +60,7 @@ export async function POST(req: Request, context: RouteParams) {
             resource_type: "video",
             folder: `courses/${courseId}/chapters/${chapterId}`,
             allowed_formats: ["mp4", "mov", "avi", "webm"],
-            chunk_size: 6000000, // 6MB chunks
+            chunk_size: 20000000, // 20MB chunks
           },
           (error, result) => {
             if (error) reject(error);
