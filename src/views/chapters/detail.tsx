@@ -7,7 +7,6 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import {
   CheckCircle,
-  PlayCircle,
   FileText,
   Book,
   HelpCircle,
@@ -38,8 +37,6 @@ const DetailChapter = ({
   );
 
   const { data: chapter } = useChapterQuery({ courseId, chapterId });
-
-  console.log("chapter : ", chapter);
 
   // Mock data - in real app would come from API/props
   const mockChapter = {
