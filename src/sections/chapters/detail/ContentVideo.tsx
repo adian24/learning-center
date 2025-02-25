@@ -4,21 +4,37 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Loader2, Upload, Video } from "lucide-react";
+import { Chapter } from "@/lib/types";
+import { useDeleteVideoStore } from "@/store/use-store delete-video";
+import { useQueryClient } from "@tanstack/react-query";
+import { Loader2, Trash2, Upload, Video } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 interface ContentVideoProps {
+  chapter: Chapter | undefined;
   initialVideo?: string | undefined;
   onUploadComplete?: (url: string) => void;
   onDelete?: () => void;
   isTeacher?: boolean;
+  chapterId: string;
+  courseId: string;
 }
 
-const ContentVideo = ({ initialVideo, isTeacher }: ContentVideoProps) => {
+const ContentVideo = ({
+  chapter,
+  initialVideo,
+  courseId,
+  chapterId,
+}: ContentVideoProps) => {
+  const queryClient = useQueryClient();
+
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [videoUrl, setVideoUrl] = useState<string | undefined>(initialVideo);
   const [error, setError] = useState<string>("");
+
+  const onOpenDeleteDialog = useDeleteVideoStore((state) => state.onOpen);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -35,19 +51,55 @@ const ContentVideo = ({ initialVideo, isTeacher }: ContentVideoProps) => {
       setError("Video must be less than 100MB");
       return;
     }
-  };
 
-  const handleDelete = async () => {
     try {
-      setVideoUrl("");
-      //   onDelete?.();
+      setIsUploading(true);
+      setError("");
+
+      // Simulate upload progress
+      const interval = setInterval(() => {
+        setUploadProgress((prev) => {
+          if (prev >= 95) {
+            clearInterval(interval);
+            return 95;
+          }
+          return prev + 5;
+        });
+      }, 500);
+
+      // TODO: Replace with your actual upload logic
+      const formData = new FormData();
+      formData.append("file", file);
+      const response = await fetch(
+        `/api/teacher/courses/${courseId}/chapters/${chapterId}/upload`,
+        { method: "POST", body: formData }
+      );
+      const data = await response.json();
+
+      if (response.ok) {
+        clearInterval(interval);
+        setUploadProgress(100);
+        setVideoUrl(data?.url);
+      }
     } catch (error) {
-      setError("Failed to delete video");
+      setError("Failed to upload video. Please try again.");
+      setIsUploading(false);
+    } finally {
+      toast.success("Video uploaded successfully");
+      setIsUploading(false);
+      setUploadProgress(0);
+      queryClient.invalidateQueries({
+        queryKey: ["chapter", chapter?.courseId, chapter?.id],
+      });
     }
   };
 
+  const handleDelete = async () => {
+    onOpenDeleteDialog(chapter);
+  };
+
   // Empty State - No Video
-  if (!videoUrl && !isUploading) {
+  if (!chapter?.videoUrl && !isUploading) {
     return (
       <Card className="border-2 border-dashed">
         <CardContent className="p-6">
@@ -98,7 +150,7 @@ const ContentVideo = ({ initialVideo, isTeacher }: ContentVideoProps) => {
             </div>
             <Progress value={uploadProgress} className="w-full" />
             <p className="text-center text-sm text-gray-500">
-              Uploading video... {uploadProgress}%
+              Mengunggah video... {uploadProgress}%
             </p>
           </div>
         </CardContent>
@@ -114,21 +166,19 @@ const ContentVideo = ({ initialVideo, isTeacher }: ContentVideoProps) => {
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
+        <div className="flex items-center justify-end">
+          <Button size="sm" variant="destructive" onClick={handleDelete}>
+            <Trash2 className="w-4 h-4" />
+            Hapus Video
+          </Button>
+        </div>
         <div className="relative aspect-video rounded-lg overflow-hidden bg-black">
           <video
-            src={videoUrl}
+            src={chapter?.videoUrl || videoUrl}
             controls
             className="w-full h-full"
-            poster="/api/placeholder/640/360"
+            // poster="/api/placeholder/640/360"
           />
-        </div>
-
-        {/* Video Details */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-500">Uploaded video</span>
-            <span className="text-sm font-medium">chapter-video.mp4</span>
-          </div>
         </div>
       </CardContent>
     </Card>

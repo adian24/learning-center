@@ -11,13 +11,11 @@ import {
   Book,
   HelpCircle,
   ArrowLeft,
-  Trash2,
 } from "lucide-react";
 import Layout from "@/layout";
 import { useRouter } from "next/navigation";
 import { useChapterQuery } from "@/hooks/use-chapter-query";
 import { Badge } from "@/components/ui/badge";
-import { useDeleteChapterStore } from "@/store/use-store-delete-chapter";
 import ContentVideo from "@/sections/chapters/detail/ContentVideo";
 
 const DetailChapter = ({
@@ -31,10 +29,6 @@ const DetailChapter = ({
 
   const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<any>({});
-
-  const openDeleteChapterDialog = useDeleteChapterStore(
-    (state) => state.onOpen
-  );
 
   const { data: chapter } = useChapterQuery({ courseId, chapterId });
 
@@ -75,7 +69,7 @@ const DetailChapter = ({
           Kembali
         </Button>
 
-        <div className="flex items-center justify-between mt-4">
+        <div className="flex items-center justify-between">
           <div className="pr-6">
             <h1 className="text-2xl font-bold line-clamp-2">
               {chapter?.title}
@@ -84,15 +78,6 @@ const DetailChapter = ({
               {chapter?.description}
             </p>
           </div>
-          <Button
-            variant={"destructive"}
-            onClick={() => {
-              openDeleteChapterDialog(chapter);
-            }}
-          >
-            <Trash2 />
-            Hapus
-          </Button>
         </div>
 
         <div className="mt-3 flex items-center">
@@ -133,7 +118,11 @@ const DetailChapter = ({
 
           {/* Content Tab */}
           <TabsContent value="content">
-            <ContentVideo />
+            <ContentVideo
+              chapter={chapter}
+              courseId={courseId}
+              chapterId={chapterId}
+            />
           </TabsContent>
 
           {/* Quiz Tab */}

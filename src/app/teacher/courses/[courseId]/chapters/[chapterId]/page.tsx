@@ -1,3 +1,4 @@
+import DialogDeleteVideo from "@/sections/chapters/detail/DialogDeleteVideo";
 import { DialogDeleteChapter } from "@/sections/course/chapter/DialogDeleteChapter";
 import DetailChapter from "@/views/chapters/detail";
 
@@ -14,6 +15,7 @@ export default async function ChapterDetail({ params }: { params: Params }) {
     <>
       <DetailChapter chapterId={chapterId} courseId={courseId} />
       <DialogDeleteChapter />
+      <DialogDeleteVideo />
     </>
   );
 }
