@@ -17,13 +17,15 @@ import {
 import { Chapter } from "@/lib/types";
 import { useDeleteChapterStore } from "@/store/use-store-delete-chapter";
 import { useEditChapterStore } from "@/store/use-store-edit-chapter";
+import { formatVideoDuration } from "@/utils/formatVideoDuration";
 import {
-  FileText,
   GraduationCap,
   MoreVertical,
   Pencil,
   Trash,
+  Video,
   VideoIcon,
+  VideoOff,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -46,7 +48,7 @@ const TableChapter = ({ chapters }: TableChapterProps) => {
             <TableHead>Title</TableHead>
             <TableHead className="w-24">Status</TableHead>
             <TableHead className="w-24">Akses</TableHead>
-            <TableHead className="w-32">Sumberdaya</TableHead>
+            <TableHead className="w-32">Video</TableHead>
             <TableHead className="w-32">Quis</TableHead>
             <TableHead className="w-20">Aksi</TableHead>
           </TableRow>
@@ -76,8 +78,14 @@ const TableChapter = ({ chapters }: TableChapterProps) => {
               <TableCell>
                 <div className="flex items-center gap-2">
                   <Badge variant="outline" className="flex items-center gap-1">
-                    <FileText className="h-4 w-4" />
-                    {chapter?.resources?.length}
+                    {chapter?.videoUrl ? (
+                      <>
+                        <Video className="h-4 w-4 text-green-600" />
+                        {formatVideoDuration(chapter?.duration as number)}
+                      </>
+                    ) : (
+                      <VideoOff className="h-4 w-4 text-red-600" />
+                    )}
                   </Badge>
                 </div>
               </TableCell>

@@ -44,6 +44,9 @@ const DialogDeleteVideo = () => {
         queryClient.invalidateQueries({
           queryKey: ["chapter", videoToDelete.courseId, videoToDelete.id],
         });
+        queryClient.invalidateQueries({
+          queryKey: ["chapters", videoToDelete.courseId],
+        });
         toast.success("Video deleted successfully");
         onClose();
       }

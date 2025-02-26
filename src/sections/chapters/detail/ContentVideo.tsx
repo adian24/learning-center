@@ -84,6 +84,9 @@ const ContentVideo = ({
         queryClient.invalidateQueries({
           queryKey: ["chapter", chapter?.courseId, chapter?.id],
         });
+        queryClient.invalidateQueries({
+          queryKey: ["chapters", chapter?.courseId],
+        });
       }
     } catch (error) {
       setError("Failed to upload video. Please try again.");

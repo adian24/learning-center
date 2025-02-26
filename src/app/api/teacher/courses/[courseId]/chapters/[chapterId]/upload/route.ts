@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import cloudinary from "@/lib/cloudinary";
 import db from "@/lib/db/db";
 import { auth } from "@/lib/auth";
+import { UploadApiResponse } from "cloudinary";
 
 // Helper function to extract public ID from Cloudinary URL
 function extractPublicIdFromUrl(url: string): string {
@@ -45,7 +46,7 @@ export async function POST(req: Request, context: RouteParams) {
     const file = formData.get("file") as File;
 
     if (!file) {
-      return NextResponse.json({ error: "No file pmrovided" }, { status: 400 });
+      return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
     // Convert File to Buffer for Cloudinary
@@ -53,22 +54,24 @@ export async function POST(req: Request, context: RouteParams) {
     const buffer = Buffer.from(bytes);
 
     // Upload to Cloudinary
-    const response = await new Promise((resolve, reject) => {
-      cloudinary.uploader
-        .upload_stream(
-          {
-            resource_type: "video",
-            folder: `courses/${courseId}/chapters/${chapterId}`,
-            allowed_formats: ["mp4", "mov", "avi", "webm"],
-            chunk_size: 20000000, // 20MB chunks
-          },
-          (error, result) => {
-            if (error) reject(error);
-            resolve(result);
-          }
-        )
-        .end(buffer);
-    });
+    const response = await new Promise<UploadApiResponse | undefined>(
+      (resolve, reject) => {
+        cloudinary.uploader
+          .upload_stream(
+            {
+              resource_type: "video",
+              folder: `courses/${courseId}/chapters/${chapterId}`,
+              allowed_formats: ["mp4", "mov", "avi", "webm"],
+              chunk_size: 20000000, // 20MB chunks
+            },
+            (error, result) => {
+              if (error) reject(error);
+              resolve(result as UploadApiResponse | undefined);
+            }
+          )
+          .end(buffer);
+      }
+    );
 
     if (
       !response ||
@@ -78,20 +81,26 @@ export async function POST(req: Request, context: RouteParams) {
       throw new Error("Invalid response from Cloudinary");
     }
 
-    // Update chapter in database with new video URL
+    // Convert duration from seconds to minutes and round up
+    // This matches the schema which seems to store duration in minutes
+    // const durationInMinutes = Math.ceil(response.duration / 60);
+
+    // Update chapter in database with new video URL and duration
     await db.chapter.update({
       where: {
         id: chapterId,
         courseId: courseId,
       },
       data: {
-        videoUrl: response.secure_url as string,
+        videoUrl: response.secure_url,
+        duration: response.duration,
       },
     });
 
     return NextResponse.json({
       success: true,
       url: response.secure_url,
+      duration: response.duration,
     });
   } catch (error) {
     console.error("[UPLOAD_VIDEO]", error);
@@ -177,6 +186,7 @@ export async function DELETE(req: Request, context: RouteParams) {
       },
       data: {
         videoUrl: null,
+        duration: null,
       },
     });
 
