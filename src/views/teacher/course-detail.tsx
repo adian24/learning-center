@@ -59,31 +59,15 @@ const CourseDetail = () => {
   const form = useForm<CourseFormValues>({
     resolver: zodResolver(courseFormSchema),
     defaultValues: {
-      title: "",
-      description: "",
-      imageUrl: "",
-      price: 0,
-      categoryId: "",
-      level: "BEGINNER",
-      isPublished: false,
+      title: course?.title || "",
+      description: course?.description || "",
+      imageUrl: course?.imageUrl || "",
+      price: course?.price || 0,
+      categoryId: course?.categoryId || "",
+      level: course?.level || "BEGINNER",
+      isPublished: course?.isPublished || false,
     },
   });
-
-  // Update form values when course data is loaded
-  React.useEffect(() => {
-    if (course) {
-      console.log("Course data:", course);
-      form.reset({
-        title: course.title || "",
-        description: course.description || "",
-        imageUrl: course.imageUrl || "",
-        price: course.price || 0,
-        categoryId: course.categoryId || "", // Ensure fallback to empty string
-        level: course.level || "BEGINNER", // Fallback to default level
-        isPublished: course.isPublished || false,
-      });
-    }
-  }, [course, form.reset]);
 
   async function onSubmit(data: CourseFormValues) {
     updateCourse(data);
