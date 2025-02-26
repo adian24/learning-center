@@ -127,74 +127,79 @@ const DetailChapter = ({
 
           {/* Quiz Tab */}
           <TabsContent value="quiz">
-            <Card>
-              <CardContent className="p-6">
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-xl font-semibold">
-                      {mockChapter.quiz.title}
-                    </h3>
-                    <Progress value={33} className="w-1/3" />
-                  </div>
-
-                  {mockChapter.quiz.questions.map((question, index) => (
-                    <div
-                      key={question.id}
-                      className={`p-4 border rounded-lg ${
-                        index === activeQuestionIndex ? "border-blue-500" : ""
-                      }`}
-                    >
-                      <p className="font-medium mb-4">{question.text}</p>
-                      <div className="space-y-2">
-                        {question.options.map((option) => (
-                          <Button
-                            key={option.id}
-                            variant={
-                              userAnswers[question.id] === option.id
-                                ? "default"
-                                : "outline"
-                            }
-                            className="w-full justify-start"
-                            onClick={() =>
-                              setUserAnswers({
-                                ...userAnswers,
-                                [question.id]: option.id,
-                              })
-                            }
-                          >
-                            {option.text}
-                          </Button>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-
-                  <div className="flex justify-between mt-6">
-                    <Button
-                      variant="outline"
-                      disabled={activeQuestionIndex === 0}
-                      onClick={() => setActiveQuestionIndex((prev) => prev - 1)}
-                    >
-                      Previous
-                    </Button>
-                    <Button
-                      disabled={
-                        activeQuestionIndex ===
-                        mockChapter.quiz.questions.length - 1
-                      }
-                      onClick={() => setActiveQuestionIndex((prev) => prev + 1)}
-                    >
-                      Next
-                    </Button>
-                  </div>
+            {/* <Card>
+            <CardContent className="p-6">
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xl font-semibold">
+                    {mockChapter.quiz.title}
+                  </h3>
+                  <Progress value={33} className="w-1/3" />
                 </div>
+
+                {mockChapter.quiz.questions.map((question, index) => (
+                  <div
+                    key={question.id}
+                    className={`p-4 border rounded-lg ${
+                      index === activeQuestionIndex ? "border-blue-500" : ""
+                    }`}
+                  >
+                    <p className="font-medium mb-4">{question.text}</p>
+                    <div className="space-y-2">
+                      {question.options.map((option) => (
+                        <Button
+                          key={option.id}
+                          variant={
+                            userAnswers[question.id] === option.id
+                              ? "default"
+                              : "outline"
+                          }
+                          className="w-full justify-start"
+                          onClick={() =>
+                            setUserAnswers({
+                              ...userAnswers,
+                              [question.id]: option.id,
+                            })
+                          }
+                        >
+                          {option.text}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+
+                <div className="flex justify-between mt-6">
+                  <Button
+                    variant="outline"
+                    disabled={activeQuestionIndex === 0}
+                    onClick={() => setActiveQuestionIndex((prev) => prev - 1)}
+                  >
+                    Previous
+                  </Button>
+                  <Button
+                    disabled={
+                      activeQuestionIndex ===
+                      mockChapter.quiz.questions.length - 1
+                    }
+                    onClick={() => setActiveQuestionIndex((prev) => prev + 1)}
+                  >
+                    Next
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card> */}
+            <Card>
+              <CardContent className="p-6 flex items-center justify-center">
+                <h3 className="text-xl font-semibold">Quiz Coming Soon</h3>
               </CardContent>
             </Card>
           </TabsContent>
 
           {/* Resources Tab */}
           <TabsContent value="resources">
-            <Card>
+            {/* <Card>
               <CardContent className="p-6">
                 <div className="space-y-4">
                   {mockChapter.resources.map((resource) => (
@@ -213,12 +218,17 @@ const DetailChapter = ({
                   ))}
                 </div>
               </CardContent>
+            </Card> */}
+            <Card>
+              <CardContent className="p-6 flex items-center justify-center">
+                <h3 className="text-xl font-semibold">Resource Coming Soon</h3>
+              </CardContent>
             </Card>
           </TabsContent>
 
           {/* Progress Tab */}
           <TabsContent value="progress">
-            <Card>
+            {/* <Card>
               <CardContent className="p-6">
                 <div className="space-y-6">
                   <div>
@@ -235,6 +245,11 @@ const DetailChapter = ({
                     </div>
                   </div>
                 </div>
+              </CardContent>
+            </Card> */}
+            <Card>
+              <CardContent className="p-6 flex items-center justify-center">
+                <h3 className="text-xl font-semibold">Progress Coming Soon</h3>
               </CardContent>
             </Card>
           </TabsContent>
