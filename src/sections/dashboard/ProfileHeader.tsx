@@ -3,10 +3,9 @@
 import React from "react";
 import Image from "next/image";
 
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { useSession } from "next-auth/react";
-import { Card } from "@/components/ui/card";
 
 interface ProfileHeaderProps {
   currentXp: number;
@@ -21,13 +20,23 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ currentXp, maxXp }) => {
   );
 
   React.useEffect(() => {
-    const timer = setTimeout(() => setProgress(66), 500);
+    const timer = setTimeout(() => setProgress(currentXp), 500);
     return () => clearTimeout(timer);
   }, []);
 
+  const getInitials = (name?: string) => {
+    if (!name) return "U";
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .substring(0, 3);
+  };
+
   return (
-    <Card className="p-6">
-      <div className="flex items-center space-x-4 mb-6">
+    <div className="bg-white rounded-lg border shadow-sm p-6">
+      <div className="flex items-center space-x-4">
         {session?.user?.image ? (
           <div className="flex items-center h-16 sm:h-24 lg:h-28 w-16 sm:w-24 lg:w-28 aspect-square">
             <Avatar className="h-20 w-20 rounded-full">
@@ -35,6 +44,9 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ currentXp, maxXp }) => {
                 src={session?.user?.image ?? undefined}
                 alt={session?.user?.name ?? undefined}
               />
+              <AvatarFallback>
+                {getInitials(session?.user?.name as string)}
+              </AvatarFallback>
             </Avatar>
           </div>
         ) : (
@@ -50,14 +62,14 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ currentXp, maxXp }) => {
           <h1 className="font-bold sm:text-xl lg:text-3xl">
             {session?.user?.name}
           </h1>
-          <Progress value={progress} className="h-2 bg-zinc-200" />
           <div className="flex justify-between mt-1">
             <span className="text-sm text-gray-400">{currentXp} XP</span>
             <span className="text-sm text-gray-400">{maxXp} XP</span>
           </div>
+          <Progress value={progress} className="h-2 bg-zinc-200" />
         </div>
       </div>
-    </Card>
+    </div>
   );
 };
 

@@ -5,14 +5,16 @@ interface AchievementCardProps {
   xp: number;
 }
 
-const AchievementCard: React.FC<AchievementCardProps> = ({ title, xp }) => (
-  <div className="flex items-center justify-between p-3 bg-gray-400 rounded-lg cursor-pointer hover:bg-gray-300 transition-colors">
-    <span className="text-gray-900">{title}</span>
-    <div className="flex items-center space-x-2">
-      <span className="text-gray-900">{xp} XP</span>
-      <ChevronRight className="w-5 h-5 text-gray-900" />
+const AchievementCard = ({ title, xp }: AchievementCardProps) => {
+  return (
+    <div className="flex items-center justify-between bg-gray-100 rounded-lg p-4 hover:bg-gray-200 transition-colors">
+      <span>{title}</span>
+      <div className="flex items-center space-x-2">
+        <span className="font-medium">{xp} XP</span>
+        <ChevronRight className="h-5 w-5 text-gray-400" />
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default AchievementCard;

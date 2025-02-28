@@ -1,24 +1,36 @@
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
+import { LucideIcon } from "lucide-react";
 
-// Types and Interfaces
 interface ProgressCardProps {
   title: string;
   count: number | string;
-  icon: React.ElementType;
+  icon: LucideIcon;
+  isLoading?: boolean;
 }
 
-const ProgressCard: React.FC<ProgressCardProps> = ({
+const ProgressCard = ({
   title,
   count,
   icon: Icon,
-}) => {
+  isLoading = false,
+}: ProgressCardProps) => {
   return (
-    <Card className="p-4 flex items-center space-x-3">
-      <Icon className="w-6 h-6 text-gray-500" />
-      <div>
-        <h3 className="text-gray-500 font-medium">{title}</h3>
-        <p className="text-gray-500 text-sm">{count} Courses</p>
-      </div>
+    <Card>
+      <CardContent className="p-6">
+        <div className="flex items-center space-x-4">
+          <div className="bg-blue-100 p-3 rounded-full">
+            <Icon className="h-6 w-6 text-blue-600" />
+          </div>
+          <div>
+            <p className="text-sm text-gray-500">{title}</p>
+            {isLoading ? (
+              <h3 className="text-sm">Loading...</h3>
+            ) : (
+              <h3 className="text-xl font-semibold">{count}</h3>
+            )}
+          </div>
+        </div>
+      </CardContent>
     </Card>
   );
 };
