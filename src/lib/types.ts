@@ -1,37 +1,37 @@
-import { User } from 'next-auth';
+import { User } from "next-auth";
 
 // Types for course level
-export type CourseLevel = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
+export type CourseLevel = "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
 
 // Types for course status (bisa ditambahkan sesuai kebutuhan)
-export type CourseStatus = 'PUBLISHED' | 'DRAFT' | 'ARCHIVED';
+export type CourseStatus = "PUBLISHED" | "DRAFT" | "ARCHIVED";
 
 // Enums
 export enum PurchaseStatus {
-  PENDING = 'PENDING',
-  COMPLETED = 'COMPLETED',
-  REFUNDED = 'REFUNDED',
-  FAILED = 'FAILED'
+  PENDING = "PENDING",
+  COMPLETED = "COMPLETED",
+  REFUNDED = "REFUNDED",
+  FAILED = "FAILED",
 }
 
 export enum QuestionType {
-  MULTIPLE_CHOICE = 'MULTIPLE_CHOICE',
-  SINGLE_CHOICE = 'SINGLE_CHOICE',
-  TRUE_FALSE = 'TRUE_FALSE',
-  TEXT = 'TEXT',
-  NUMBER = 'NUMBER'
+  MULTIPLE_CHOICE = "MULTIPLE_CHOICE",
+  SINGLE_CHOICE = "SINGLE_CHOICE",
+  TRUE_FALSE = "TRUE_FALSE",
+  TEXT = "TEXT",
+  NUMBER = "NUMBER",
 }
 
 export enum Level {
-  BEGINNER = 'BEGINNER',
-  INTERMEDIATE = 'INTERMEDIATE',
-  ADVANCED = 'ADVANCED'
+  BEGINNER = "BEGINNER",
+  INTERMEDIATE = "INTERMEDIATE",
+  ADVANCED = "ADVANCED",
 }
 
 export enum ResourceType {
-  PDF = 'PDF',
-  LINK = 'LINK',
-  FILE = 'FILE'
+  PDF = "PDF",
+  LINK = "LINK",
+  FILE = "FILE",
 }
 
 // Interface untuk data course
@@ -222,9 +222,9 @@ export interface Certificate {
 // Props untuk komponen Course Card
 export interface CourseCardProps {
   course: Course;
-  onEdit?: (courseId: Course['id']) => void;
-  onDelete?: (courseId: Course['id']) => void;
-  onPublish?: (courseId: Course['id']) => void;
+  onEdit?: (courseId: Course["id"]) => void;
+  onDelete?: (courseId: Course["id"]) => void;
+  onPublish?: (courseId: Course["id"]) => void;
 }
 
 // Props untuk Course List Container
@@ -237,11 +237,45 @@ export interface CourseListProps {
   // onFilterLevel?: (level: CourseLevel | "all") => void;
 }
 
+export type StudentCourse = {
+  id: string;
+  title: string;
+  description?: string | null;
+  imageUrl?: string | null;
+  price?: number | null;
+  isPublished: boolean;
+  level: string;
+  language?: string | null;
+  duration?: number | null;
+  totalSteps: number;
+  rating?: number | null;
+  reviewCount: number;
+  categoryId?: string | null;
+  categoryName?: string | null;
+  teacherId?: string | null;
+  teacherName?: string | null;
+  teacherImage?: string | null;
+  chapterCount: number;
+  enrolledCount: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type StudentCourseListProps = {
+  courses: StudentCourse[];
+  view: "grid" | "list";
+  onViewChange: (view: "grid" | "list") => void;
+};
+
 // Type untuk filter options
 export interface CourseFilters {
   search?: string;
-  status?: CourseStatus | 'all';
-  level?: CourseLevel | 'all';
+  status?: CourseStatus | "all";
+  level?: CourseLevel | "all";
+  language?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  minRating?: number;
 }
 
 // Interface untuk statistik course
@@ -256,14 +290,14 @@ export interface CourseStats {
 export interface CourseTableRowProps {
   course: Course;
   onAction: (
-    action: 'edit' | 'delete' | 'publish' | 'chapters' | 'quiz',
-    courseId: Course['id']
+    action: "edit" | "delete" | "publish" | "chapters" | "quiz",
+    courseId: Course["id"]
   ) => void;
 }
 
 // Props untuk Course Actions
 export interface CourseActionsProps {
-  courseId: Course['id'];
+  courseId: Course["id"];
   isPublished: boolean;
   onAction: (action: string) => void;
 }
