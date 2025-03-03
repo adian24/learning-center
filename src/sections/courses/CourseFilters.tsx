@@ -1,22 +1,16 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Search, SlidersHorizontal, X } from "lucide-react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Label } from "@/components/ui/label";
+import { Search, SearchIcon, X } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Checkbox } from "@/components/ui/checkbox";
 
 type FilterValues = {
   search: string;
@@ -32,27 +26,20 @@ type FilterProps = {
   categories: { id: string; name: string }[];
   filters: FilterValues;
   onFilterChange: (filters: FilterValues) => void;
+  variant?: "sidebar" | "drawer" | "inline";
 };
 
 const CourseFilters: React.FC<FilterProps> = ({
   categories,
   filters,
   onFilterChange,
+  variant = "inline",
 }) => {
   const [searchInput, setSearchInput] = useState(filters.search);
-  const [openFilters, setOpenFilters] = useState(false);
   const [tempFilters, setTempFilters] = useState<FilterValues>(filters);
 
   // Filter options
   const levels = ["BEGINNER", "INTERMEDIATE", "ADVANCED"];
-  const languages = [
-    "English",
-    "Spanish",
-    "Indonesian",
-    "French",
-    "German",
-    "Chinese",
-  ];
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,12 +50,13 @@ const CourseFilters: React.FC<FilterProps> = ({
     key: keyof FilterValues,
     value: string | number
   ) => {
-    setTempFilters((prev) => ({ ...prev, [key]: value }));
-  };
+    const newFilters = { ...tempFilters, [key]: value };
+    setTempFilters(newFilters);
 
-  const applyFilters = () => {
-    onFilterChange(tempFilters);
-    setOpenFilters(false);
+    // For sidebar and drawer variants, apply changes immediately
+    if (variant === "sidebar" || variant === "drawer") {
+      onFilterChange(newFilters);
+    }
   };
 
   const resetFilters = () => {
@@ -78,13 +66,12 @@ const CourseFilters: React.FC<FilterProps> = ({
       level: "",
       language: "",
       minPrice: 0,
-      maxPrice: 1000,
+      maxPrice: 1000000,
       minRating: 0,
     };
     setTempFilters(resetValues);
-    onFilterChange(resetValues);
     setSearchInput("");
-    setOpenFilters(false);
+    onFilterChange(resetValues);
   };
 
   // Count active filters (excluding search)
@@ -93,154 +80,183 @@ const CourseFilters: React.FC<FilterProps> = ({
       key !== "search" &&
       value !== "" &&
       value !== 0 &&
-      (key !== "maxPrice" || value !== 1000)
+      (key !== "maxPrice" || value !== 1000000)
   ).length;
 
-  return (
-    <div className="mb-8 space-y-4">
-      <form onSubmit={handleSearchSubmit} className="flex gap-2">
+  // Render search form (common across all variants)
+  const renderSearchForm = () => (
+    <form onSubmit={handleSearchSubmit} className="w-full mb-4">
+      <div className="relative flex gap-2">
         <div className="relative flex-grow">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
           <Input
-            placeholder="Search courses..."
+            placeholder="Cari courses..."
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             className="pl-10"
           />
         </div>
-        <Button type="submit">Search</Button>
-        <Popover open={openFilters} onOpenChange={setOpenFilters}>
-          <PopoverTrigger asChild>
-            <Button variant="outline" className="relative">
-              <SlidersHorizontal className="h-4 w-4 mr-2" />
-              Filters
-              {activeFilterCount > 0 && (
-                <Badge className="ml-2 bg-primary">{activeFilterCount}</Badge>
-              )}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-80 p-4" align="end">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="category">Category</Label>
-                <Select
-                  value={tempFilters.category}
-                  onValueChange={(value) =>
-                    handleFilterChange("category", value)
-                  }
-                >
-                  <SelectTrigger id="category">
-                    <SelectValue placeholder="All categories" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All categories</SelectItem>
-                    {categories.map((category) => (
-                      <SelectItem key={category.id} value={category.id}>
-                        {category.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+        <Button type="submit">
+          <SearchIcon />
+        </Button>
+      </div>
+    </form>
+  );
 
-              <div className="space-y-2">
-                <Label htmlFor="level">Level</Label>
-                <Select
-                  value={tempFilters.level}
-                  onValueChange={(value) => handleFilterChange("level", value)}
-                >
-                  <SelectTrigger id="level">
-                    <SelectValue placeholder="All levels" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All levels</SelectItem>
-                    {levels.map((level) => (
-                      <SelectItem key={level} value={level}>
-                        {level}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+  // Render sidebar/drawer filters
+  const renderSidebarFilters = () => (
+    <div className="space-y-6">
+      {renderSearchForm()}
 
-              <div className="space-y-2">
-                <Label htmlFor="language">Language</Label>
-                <Select
-                  value={tempFilters.language}
-                  onValueChange={(value) =>
-                    handleFilterChange("language", value)
-                  }
-                >
-                  <SelectTrigger id="language">
-                    <SelectValue placeholder="All languages" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All languages</SelectItem>
-                    {languages.map((language) => (
-                      <SelectItem key={language} value={language}>
-                        {language}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <Label>Price Range</Label>
-                  <span className="text-sm text-gray-500">
-                    ${tempFilters.minPrice} - $
-                    {tempFilters.maxPrice === 1000
-                      ? "1000+"
-                      : tempFilters.maxPrice}
-                  </span>
-                </div>
-                <Slider
-                  defaultValue={[tempFilters.minPrice, tempFilters.maxPrice]}
-                  max={1000}
-                  step={10}
-                  onValueChange={(value) => {
-                    handleFilterChange("minPrice", value[0]);
-                    handleFilterChange("maxPrice", value[1]);
-                  }}
-                  className="py-4"
+      <Accordion
+        type="multiple"
+        defaultValue={["category", "level", "price", "language", "rating"]}
+      >
+        <AccordionItem value="category">
+          <AccordionTrigger>Kategori</AccordionTrigger>
+          <AccordionContent>
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="all-categories"
+                  checked={filters.category === ""}
+                  onCheckedChange={() => handleFilterChange("category", "")}
                 />
+                <label htmlFor="all-categories" className="text-sm">
+                  All categories
+                </label>
               </div>
-
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <Label>Minimum Rating</Label>
-                  <span className="text-sm text-gray-500">
-                    {tempFilters.minRating}+ stars
-                  </span>
+              {categories.map((category) => (
+                <div key={category.id} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`category-${category.id}`}
+                    checked={filters.category === category.id}
+                    onCheckedChange={() =>
+                      handleFilterChange("category", category.id)
+                    }
+                  />
+                  <label
+                    htmlFor={`category-${category.id}`}
+                    className="text-sm"
+                  >
+                    {category.name}
+                  </label>
                 </div>
-                <Slider
-                  defaultValue={[tempFilters.minRating]}
-                  max={5}
-                  step={0.5}
-                  onValueChange={(value) =>
-                    handleFilterChange("minRating", value[0])
-                  }
-                  className="py-4"
-                />
-              </div>
-
-              <div className="flex justify-between pt-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                  onClick={resetFilters}
-                >
-                  <X className="h-4 w-4 mr-1" />
-                  Reset
-                </Button>
-                <Button onClick={applyFilters}>Apply Filters</Button>
-              </div>
+              ))}
             </div>
-          </PopoverContent>
-        </Popover>
-      </form>
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="level">
+          <AccordionTrigger>Level</AccordionTrigger>
+          <AccordionContent>
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="all-levels"
+                  checked={filters.level === ""}
+                  onCheckedChange={() => handleFilterChange("level", "")}
+                />
+                <label htmlFor="all-levels" className="text-sm">
+                  Semua level
+                </label>
+              </div>
+              {levels.map((level) => (
+                <div key={level} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`level-${level}`}
+                    checked={filters.level === level}
+                    onCheckedChange={() => handleFilterChange("level", level)}
+                  />
+                  <label htmlFor={`level-${level}`} className="text-sm">
+                    {level}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="price">
+          <AccordionTrigger>Rentang Harga</AccordionTrigger>
+          <AccordionContent>
+            <div className="space-y-4">
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-500">
+                  Rp{tempFilters.minPrice} - Rp
+                  {tempFilters.maxPrice === 1000000
+                    ? "1.000.000+"
+                    : tempFilters.maxPrice}
+                </span>
+              </div>
+              <Slider
+                value={[tempFilters.minPrice, tempFilters.maxPrice]}
+                max={1000000}
+                step={1000}
+                onValueChange={(value) => {
+                  setTempFilters((prev) => ({
+                    ...prev,
+                    minPrice: value[0],
+                    maxPrice: value[1],
+                  }));
+                }}
+                onValueCommit={(value) => {
+                  handleFilterChange("minPrice", value[0]);
+                  handleFilterChange("maxPrice", value[1]);
+                }}
+                className="py-4"
+              />
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="rating">
+          <AccordionTrigger>Penilaian</AccordionTrigger>
+          <AccordionContent>
+            <div className="space-y-4">
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-500">
+                  {tempFilters.minRating}+ stars
+                </span>
+              </div>
+              <Slider
+                value={[tempFilters.minRating]}
+                max={5}
+                step={0.5}
+                onValueChange={(value) => {
+                  setTempFilters((prev) => ({
+                    ...prev,
+                    minRating: value[0],
+                  }));
+                }}
+                onValueCommit={(value) => {
+                  handleFilterChange("minRating", value[0]);
+                }}
+                className="py-4"
+              />
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+
+      {activeFilterCount > 0 && (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-red-500 hover:text-red-700 hover:bg-red-50 mt-4 w-full"
+          onClick={resetFilters}
+        >
+          <X className="h-4 w-4 mr-1" />
+          Reset All Filters
+        </Button>
+      )}
+    </div>
+  );
+
+  // Default inline filtering UI (the one we had previously)
+  const renderInlineFilters = () => (
+    <div className="space-y-4">
+      {renderSearchForm()}
 
       {/* Active filter badges */}
       {activeFilterCount > 0 && (
@@ -264,23 +280,14 @@ const CourseFilters: React.FC<FilterProps> = ({
               />
             </Badge>
           )}
-          {filters.language && (
+          {(filters.minPrice > 0 || filters.maxPrice < 1000000) && (
             <Badge variant="outline" className="flex items-center gap-1">
-              Language: {filters.language}
-              <X
-                className="h-3 w-3 cursor-pointer"
-                onClick={() => onFilterChange({ ...filters, language: "" })}
-              />
-            </Badge>
-          )}
-          {(filters.minPrice > 0 || filters.maxPrice < 1000) && (
-            <Badge variant="outline" className="flex items-center gap-1">
-              Price: ${filters.minPrice} - $
-              {filters.maxPrice === 1000 ? "1000+" : filters.maxPrice}
+              Harga: ${filters.minPrice} - $
+              {filters.maxPrice === 1000000 ? "1.000.000+" : filters.maxPrice}
               <X
                 className="h-3 w-3 cursor-pointer"
                 onClick={() =>
-                  onFilterChange({ ...filters, minPrice: 0, maxPrice: 1000 })
+                  onFilterChange({ ...filters, minPrice: 0, maxPrice: 1000000 })
                 }
               />
             </Badge>
@@ -298,6 +305,12 @@ const CourseFilters: React.FC<FilterProps> = ({
       )}
     </div>
   );
+
+  if (variant === "sidebar" || variant === "drawer") {
+    return renderSidebarFilters();
+  }
+
+  return renderInlineFilters();
 };
 
 export default CourseFilters;

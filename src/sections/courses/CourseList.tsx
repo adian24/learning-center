@@ -9,17 +9,46 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, Grid, List, Star, Users } from "lucide-react";
+import {
+  BookOpen,
+  Calendar,
+  Clock,
+  Grid,
+  List,
+  Star,
+  Users,
+} from "lucide-react";
 import { formatPrice } from "@/utils/formatPrice";
+import { formatVideoDuration } from "@/utils/formatVideoDuration";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { StudentCourse } from "@/lib/types";
+
+// Student-specific Course type
+type StudentCourse = {
+  id: string;
+  title: string;
+  description?: string | null;
+  imageUrl?: string | null;
+  price?: number | null;
+  level: string;
+  duration?: number | null;
+  totalSteps: number;
+  rating?: number | null;
+  reviewCount: number;
+  language?: string | null;
+  teacherName?: string | null;
+  enrolledCount: number;
+  chapterCount: number;
+  updatedAt: Date;
+};
 
 type CourseListProps = {
   courses: StudentCourse[];
   view: "grid" | "list";
   onViewChange: (view: "grid" | "list") => void;
+  showToggle?: boolean;
+  showHeader?: boolean;
 };
 
 const CourseList: React.FC<CourseListProps> = ({
@@ -63,7 +92,7 @@ const CourseList: React.FC<CourseListProps> = ({
       </div>
 
       {view === "grid" ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
           {courses.map((course) => (
             <CourseCard key={course.id} course={course} />
           ))}
@@ -104,7 +133,7 @@ const CourseList: React.FC<CourseListProps> = ({
                   <TableCell className="text-center">
                     <div className="flex items-center justify-center">
                       <Clock className="h-4 w-4 mr-1" />
-                      {course.duration ? `${course.duration} min` : "N/A"}
+                      {formatVideoDuration(course.duration as number)}
                     </div>
                   </TableCell>
                   <TableCell className="text-center">
@@ -122,7 +151,7 @@ const CourseList: React.FC<CourseListProps> = ({
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center font-medium">
-                      {formatPrice(Number(course.price))}
+                      {formatPrice(course.price as number)}
                     </div>
                   </TableCell>
                   <TableCell>
