@@ -1,5 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import Layout from "@/layout";
+import SimpleLayout from "@/layout/SimpleLayout.tsx";
 import CoursesClient from "@/sections/courses/CourseClient";
 import { Suspense } from "react";
 
@@ -33,11 +34,11 @@ const CoursesLoading = () => (
 
 const Courses = () => {
   return (
-    <Layout>
+    <SimpleLayout>
       <Suspense fallback={<CoursesLoading />}>
         <CoursesClient />
       </Suspense>
-    </Layout>
+    </SimpleLayout>
   );
 };
 
