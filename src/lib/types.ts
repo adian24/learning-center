@@ -316,3 +316,23 @@ export interface PaginatedResponse {
     total: number;
   };
 }
+
+export interface LearningObjective {
+  id: string;
+  text: string;
+  position: number;
+  courseId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface CreateLearningObjectiveParams {
+  text: string;
+  position: number;
+  courseId: string;
+}
+
+export interface UpdateLearningObjectiveParams {
+  text?: string;
+  position?: number;
+}

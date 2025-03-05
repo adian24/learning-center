@@ -17,42 +17,65 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useCourse } from "@/hooks/use-course";
+import { formatPrice } from "@/utils/formatPrice";
 import { Clock, FileText, User } from "lucide-react";
-import React from "react";
+import Image from "next/image";
 
-const CardEnrollment = ({ courseMock }: any) => {
+interface CardEnrollmentProps {
+  courseId: string;
+}
+
+const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
+  const { data, isLoading } = useCourse(courseId);
+  const course = data?.course;
+
+  if (isLoading) {
+    return <CardEnrollmentSkeleton />;
+  }
+
   return (
-    <div className="md:w-1/3">
+    <div className="md:w-full">
       <Card className="sticky top-4">
+        <div className="relative w-full h-48 overflow-hidden rounded-t-lg">
+          <Image
+            src={course?.imageUrl || ""}
+            alt={course?.title || "Course cover"}
+            className="object-cover"
+            fill
+            sizes="(max-width: 768px) 100vw, 400px"
+          />
+        </div>
         <CardHeader>
           <CardTitle className="text-2xl font-bold">
-            ${courseMock.price}
+            {formatPrice(course?.price as number)}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <Button className="w-full bg-green-600 hover:bg-green-700">
-            Start Course Now
+            Mulai Course Sekarang
           </Button>
 
-          <div className="border rounded-md p-4 space-y-3">
+          <div className="border rounded-md p-4 space-y-3 text-sm">
             <div className="flex items-center gap-2">
               <Clock className="h-5 w-5 text-gray-500" />
-              <span>Duration: {courseMock.duration} minutes</span>
+              <span>Durasi: {course?.duration ?? 0} menit</span>
             </div>
             <div className="flex items-center gap-2">
               <FileText className="h-5 w-5 text-gray-500" />
-              <span>{courseMock.totalSteps} modules</span>
+              <span>{course?.chapters?.length ?? 0} module</span>
             </div>
             <div className="flex items-center gap-2">
               <User className="h-5 w-5 text-gray-500" />
-              <span>Access: Full Lifetime Access</span>
+              <span>Akses: Akses Penuh Seumur Hidup</span>
             </div>
           </div>
 
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="outline" className="w-full">
-                Get a Demo
+                Dapatkan Demo
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
@@ -70,12 +93,12 @@ const CardEnrollment = ({ courseMock }: any) => {
           </AlertDialog>
         </CardContent>
         <CardFooter className="flex flex-col items-start space-y-2">
-          <p className="text-sm text-gray-500">30-Day Money-Back Guarantee</p>
+          <p className="text-sm text-gray-500">30-Hari Jaminan Uang Kembali</p>
           <div className="w-full">
-            <p className="text-sm font-medium mb-1">Share this course:</p>
+            <p className="text-xs font-medium mb-1">Bagikan Course ini:</p>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-                <span className="sr-only">Share on Twitter</span>
+                <span className="sr-only">Bagikan ke X</span>
                 <svg
                   className="h-4 w-4"
                   fill="currentColor"
@@ -85,7 +108,7 @@ const CardEnrollment = ({ courseMock }: any) => {
                 </svg>
               </Button>
               <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-                <span className="sr-only">Share on Facebook</span>
+                <span className="sr-only">Bagikan ke Facebook</span>
                 <svg
                   className="h-4 w-4"
                   fill="currentColor"
@@ -95,7 +118,7 @@ const CardEnrollment = ({ courseMock }: any) => {
                 </svg>
               </Button>
               <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-                <span className="sr-only">Share on LinkedIn</span>
+                <span className="sr-only">Bagikan ke LinkedIn</span>
                 <svg
                   className="h-4 w-4"
                   fill="currentColor"
@@ -104,6 +127,63 @@ const CardEnrollment = ({ courseMock }: any) => {
                   <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
                 </svg>
               </Button>
+            </div>
+          </div>
+        </CardFooter>
+      </Card>
+    </div>
+  );
+};
+
+const CardEnrollmentSkeleton = () => {
+  return (
+    <div className="md:w-full">
+      <Card className="sticky top-4">
+        {/* Course cover image skeleton */}
+        <Skeleton className="w-full h-48 rounded-t-lg" />
+
+        <CardHeader>
+          {/* Price skeleton */}
+          <Skeleton className="h-8 w-36" />
+        </CardHeader>
+
+        <CardContent className="space-y-4">
+          {/* Button skeleton */}
+          <Skeleton className="w-full h-10 rounded-md" />
+
+          {/* Course details box skeleton */}
+          <div className="border rounded-md p-4 space-y-3">
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-5 w-5 rounded-full" />
+              <Skeleton className="h-4 w-32" />
+            </div>
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-5 w-5 rounded-full" />
+              <Skeleton className="h-4 w-24" />
+            </div>
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-5 w-5 rounded-full" />
+              <Skeleton className="h-4 w-48" />
+            </div>
+          </div>
+
+          {/* Demo button skeleton */}
+          <Skeleton className="w-full h-10 rounded-md" />
+        </CardContent>
+
+        <CardFooter className="flex flex-col items-start space-y-2">
+          {/* Guarantee text skeleton */}
+          <Skeleton className="h-4 w-56" />
+
+          <div className="w-full">
+            {/* Share text skeleton */}
+            <Skeleton className="h-4 w-32 mb-1" />
+
+            {/* Social buttons skeleton */}
+            <div className="flex gap-2">
+              <Skeleton className="h-8 w-8 rounded-md" />
+              <Skeleton className="h-8 w-8 rounded-md" />
+              <Skeleton className="h-8 w-8 rounded-md" />
             </div>
           </div>
         </CardFooter>

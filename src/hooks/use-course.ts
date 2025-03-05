@@ -14,6 +14,8 @@ export interface Course {
       name: string | null;
       image: string | null;
     };
+    bio: string | null;
+    expertise: string[] | null;
   };
   categoryId: string | null;
   category: {
@@ -50,6 +52,8 @@ export interface Course {
   duration: number | null;
   createdAt: string;
   updatedAt: string;
+  rating: number | null;
+  reviewCount: number | null;
 }
 
 export interface Certificate {

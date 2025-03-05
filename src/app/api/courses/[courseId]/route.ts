@@ -31,7 +31,9 @@ export async function GET(
       },
       include: {
         teacher: {
-          include: {
+          select: {
+            bio: true,
+            expertise: true,
             user: {
               select: {
                 name: true,

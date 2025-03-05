@@ -148,6 +148,8 @@ model Course {
 
   chapters    Chapter[]
   certificates Certificate[]
+
+  learningObjectives LearningObjective[]
   
   // Link to StudentProfile through purchases
   enrolledStudents EnrolledCourse[]
@@ -165,6 +167,21 @@ model Course {
 
   @@index([categoryId])
   @@index([teacherId])
+}
+
+model LearningObjective {
+  id          String    @id @default(uuid()) @map("_id")
+  text        String
+  position    Int       // For ordering the objectives
+  
+  // Relation to Course
+  courseId    String
+  course      Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([courseId])
 }
 
 model Category {
