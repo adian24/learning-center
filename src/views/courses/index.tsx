@@ -5,7 +5,7 @@ import { Suspense } from "react";
 
 const CoursesLoading = () => (
   <div className="space-y-4">
-    <div className="container py-8">
+    <div className="container max-w-max mx-auto py-8">
       <div className="mb-8">
         <Skeleton className="h-10 w-1/3 mb-2" />
         <Skeleton className="h-5 w-2/3" />
@@ -34,7 +34,7 @@ const CoursesLoading = () => (
 const Courses = () => {
   return (
     <SimpleLayout>
-      <Suspense fallback={<CoursesLoading />}>
+      <Suspense>
         <CoursesClient />
       </Suspense>
     </SimpleLayout>

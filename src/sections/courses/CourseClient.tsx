@@ -68,7 +68,7 @@ export default function CoursesClient() {
   };
 
   return (
-    <div className="container max-w-max mx-auto p-8">
+    <div className="container max-w-max p-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Explore Courses</h1>
         <p className="text-gray-500">
@@ -107,12 +107,16 @@ export default function CoursesClient() {
         <div className="hidden lg:block lg:w-1/5 shrink-0">
           <div className="bg-white dark:bg-gray-950 rounded-lg border p-4 sticky top-20">
             <h3 className="font-medium text-lg mb-4">Filters</h3>
-            <CourseFilters
-              categories={data?.categories || []}
-              filters={filters}
-              onFilterChange={handleFilterChange}
-              variant="sidebar"
-            />
+            {isLoading ? (
+              <FiltersSkeleton />
+            ) : (
+              <CourseFilters
+                categories={data?.categories || []}
+                filters={filters}
+                onFilterChange={handleFilterChange}
+                variant="sidebar"
+              />
+            )}
           </div>
         </div>
 
@@ -130,23 +134,10 @@ export default function CoursesClient() {
           {/* Loading state */}
           {isLoading && (
             <div className="space-y-4">
+              {/* Course card skeleton layout */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[...Array(6)].map((_, index) => (
-                  <div
-                    key={index}
-                    className="border rounded-lg overflow-hidden"
-                  >
-                    <Skeleton className="h-48 w-full" />
-                    <div className="p-4 space-y-3">
-                      <Skeleton className="h-6 w-3/4" />
-                      <Skeleton className="h-4 w-full" />
-                      <Skeleton className="h-4 w-full" />
-                      <div className="flex justify-between pt-2">
-                        <Skeleton className="h-4 w-1/4" />
-                        <Skeleton className="h-4 w-1/4" />
-                      </div>
-                    </div>
-                  </div>
+                  <CourseCardSkeleton key={index} />
                 ))}
               </div>
             </div>
@@ -166,3 +157,102 @@ export default function CoursesClient() {
     </div>
   );
 }
+
+const FiltersSkeleton = () => {
+  return (
+    <div className="space-y-6 w-full">
+      {/* Search Skeleton */}
+      <div className="space-y-2 w-full">
+        <Skeleton className="h-4 w-16" />
+        <Skeleton className="h-10 w-full rounded-md" />
+      </div>
+
+      {/* Category Skeleton */}
+      <div className="space-y-2 w-full">
+        <Skeleton className="h-4 w-20" />
+        <Skeleton className="h-10 w-full rounded-md" />
+      </div>
+
+      {/* Level Skeleton */}
+      <div className="space-y-2 w-full">
+        <Skeleton className="h-4 w-14" />
+        <Skeleton className="h-10 w-full rounded-md" />
+      </div>
+
+      {/* Language Skeleton */}
+      <div className="space-y-2 w-full">
+        <Skeleton className="h-4 w-24" />
+        <Skeleton className="h-10 w-full rounded-md" />
+      </div>
+
+      {/* Price Range Skeleton */}
+      <div className="space-y-2 w-full">
+        <div className="flex justify-between w-full">
+          <Skeleton className="h-4 w-24" />
+          <Skeleton className="h-4 w-20" />
+        </div>
+        <div className="my-6 py-1 w-full">
+          <Skeleton className="h-2 w-full rounded-full" />
+        </div>
+      </div>
+
+      {/* Rating Skeleton */}
+      <div className="space-y-3 w-full">
+        <Skeleton className="h-4 w-32" />
+        <div className="flex gap-1 w-full">
+          {[...Array(5)].map((_, i) => (
+            <Skeleton key={i} className="h-5 w-5 rounded-full flex-shrink-0" />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const CourseCardSkeleton = () => {
+  return (
+    <div className="bg-white dark:bg-gray-950 border rounded-lg overflow-hidden flex flex-col h-full shadow-sm">
+      {/* Image skeleton */}
+      <div className="relative">
+        <Skeleton className="h-48 w-full" />
+        {/* Category badge skeleton */}
+        <div className="absolute top-3 left-3">
+          <Skeleton className="h-6 w-16 rounded-full" />
+        </div>
+      </div>
+
+      {/* Card content skeleton */}
+      <div className="p-5 space-y-4 flex-1 flex flex-col">
+        {/* Title skeleton */}
+        <div>
+          <Skeleton className="h-6 w-5/6 mb-1" />
+          <Skeleton className="h-6 w-4/6" />
+        </div>
+
+        {/* Description skeleton */}
+        <div className="space-y-2 flex-1">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-3/4" />
+        </div>
+
+        {/* Instructor skeleton */}
+        <div className="flex items-center gap-2 pt-2">
+          <Skeleton className="h-8 w-8 rounded-full" />
+          <Skeleton className="h-4 w-28" />
+        </div>
+
+        {/* Footer skeleton */}
+        <div className="flex justify-between items-center pt-2 mt-auto">
+          {/* Price skeleton */}
+          <Skeleton className="h-6 w-20 font-bold" />
+          {/* Rating skeleton */}
+          <div className="flex items-center gap-1">
+            <Skeleton className="h-4 w-4 rounded-full" />
+            <Skeleton className="h-4 w-12" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
