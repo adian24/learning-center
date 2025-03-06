@@ -13,15 +13,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useChaptersQuery } from "@/hooks/use-chapters-query";
 import { formatVideoDuration } from "@/utils/formatVideoDuration";
-import { Check, Clock, Play } from "lucide-react";
+import { BadgeCheck, Check, Clock, Play } from "lucide-react";
 import React, { useState } from "react";
 
 interface ContentTabsProps {
   courseId: string;
-  courseMock: any;
 }
 
-const ContentTabs = ({ courseMock, courseId }: ContentTabsProps) => {
+const ContentTabs = ({ courseId }: ContentTabsProps) => {
   const [activeTab, setActiveTab] = useState("courseModules");
 
   const { data, isLoading } = useChaptersQuery({ courseId, page: 1, limit: 5 });
@@ -100,12 +99,8 @@ const ContentTabs = ({ courseMock, courseId }: ContentTabsProps) => {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex flex-col md:flex-row gap-6 items-center">
-              <div className="md:w-1/3">
-                <img
-                  src="/api/placeholder/300/200"
-                  alt="Certificate sample"
-                  className="rounded-lg border"
-                />
+              <div className="md:w-1/3 flex justify-center items-center">
+                <BadgeCheck size={75} className="text-green-500" />
               </div>
               <div className="md:w-2/3 space-y-4">
                 <h3 className="text-lg font-medium">
@@ -153,7 +148,7 @@ const ContentTabs = ({ courseMock, courseId }: ContentTabsProps) => {
                   </div>
                 </div>
 
-                <Button className="bg-green-600 hover:bg-green-700">
+                <Button className="bg-blue-600 hover:bg-blue-700">
                   Mulai Belajar
                 </Button>
               </div>

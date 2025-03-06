@@ -165,7 +165,7 @@ const CourseDetailPage = () => {
           <div className="lg:col-span-2">
             <CourseHeader courseId={courseId} />
             {/* <CourseSylabus courseId={courseId} /> */}
-            <ContentTabs courseMock={courseMock} courseId={courseId} />
+            <ContentTabs courseId={courseId} />
             <InstructorSection courseMock={courseMock} courseId={courseId} />
             <ReviewsSection reviews={reviews} courseId={courseId} />
             <SimilarCourse
