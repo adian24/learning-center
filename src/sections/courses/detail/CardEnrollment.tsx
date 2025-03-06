@@ -53,7 +53,7 @@ const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Button className="w-full bg-green-600 hover:bg-green-700">
+          <Button className="w-full bg-blue-600 hover:bg-blue-700">
             Mulai Course Sekarang
           </Button>
 

@@ -6,7 +6,6 @@ import { useCourse } from "@/hooks/use-course";
 
 interface InstructorSectionProps {
   courseId: string;
-  courseMock: any;
 }
 
 const InstructorSection = ({ courseId }: InstructorSectionProps) => {

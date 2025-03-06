@@ -85,7 +85,7 @@ const ContentTabs = ({ courseId }: ContentTabsProps) => {
                 </AccordionItem>
               ))}
             </Accordion>
-            <Button className="w-full bg-green-600 hover:bg-green-700 mt-4">
+            <Button className="w-full bg-blue-600 hover:bg-blue-700 mt-4">
               Mulai Kursus Sekarang
             </Button>
           </>

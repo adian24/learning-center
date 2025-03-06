@@ -47,6 +47,9 @@ export interface Course {
   level: CourseLevel;
   updatedAt: string;
   categoryId: string;
+  category: Category;
+  rating: number;
+  reviewCount: number;
   chapters: Chapter[];
 }
 

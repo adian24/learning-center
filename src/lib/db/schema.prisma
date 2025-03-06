@@ -115,6 +115,7 @@ model StudentProfile {
   certificates    Certificate[]
   progress        UserProgress[]
   quizAttempts    QuizAttempt[]
+  reviews         CourseReview[]
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }
@@ -148,8 +149,7 @@ model Course {
 
   chapters    Chapter[]
   certificates Certificate[]
-
-  learningObjectives LearningObjective[]
+  reviews     CourseReview[]
   
   // Link to StudentProfile through purchases
   enrolledStudents EnrolledCourse[]
@@ -169,19 +169,34 @@ model Course {
   @@index([teacherId])
 }
 
-model LearningObjective {
+model CourseReview {
   id          String    @id @default(uuid()) @map("_id")
-  text        String
-  position    Int       // For ordering the objectives
+  rating      Float     // Rating from 1-5
+  comment     String?   // Optional review text
   
-  // Relation to Course
+  // Link to student who left the review
+  studentId   String
+  student     StudentProfile @relation(fields: [studentId], references: [id])
+  
+  // Link to the course being reviewed
   courseId    String
   course      Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  
+  // Helpful features
+  isVerifiedPurchase Boolean @default(false) // Did student actually purchase the course
+  status      ReviewStatus @default(PUBLISHED)
+  helpfulCount Int      @default(0)   // How many users found this review helpful
+  
+  // Optional: Instructor response
+  instructorResponse String?
+  instructorResponseDate DateTime?
   
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
+  @@unique([studentId, courseId]) // One review per course per student
   @@index([courseId])
+  @@index([studentId])
 }
 
 model Category {
@@ -411,4 +426,11 @@ enum ResourceType {
   PDF
   LINK
   FILE
+}
+
+enum ReviewStatus {
+  PENDING
+  PUBLISHED
+  REJECTED
+  HIDDEN
 }
