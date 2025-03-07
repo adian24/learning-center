@@ -7,24 +7,77 @@ export async function GET(
   { params }: { params: Promise<{ courseId: string }> }
 ) {
   try {
-    const session = await auth();
     const courseId = (await params).courseId;
+    const session = await auth();
 
-    if (!session?.user?.id) {
-      return new NextResponse("Unauthorized", { status: 401 });
+    // Handle authenticated users with student profile
+    if (session?.user?.id) {
+      const studentProfile = await db.studentProfile.findUnique({
+        where: {
+          userId: session.user.id,
+        },
+      });
+
+      // If user has a student profile, include progress information
+      if (studentProfile) {
+        const course = await db.course.findUnique({
+          where: {
+            id: courseId,
+          },
+          include: {
+            teacher: {
+              select: {
+                bio: true,
+                expertise: true,
+                user: {
+                  select: {
+                    name: true,
+                    image: true,
+                  },
+                },
+              },
+            },
+            category: true,
+            chapters: {
+              orderBy: {
+                position: "asc",
+              },
+              include: {
+                userProgress: {
+                  where: {
+                    studentId: studentProfile.id,
+                  },
+                },
+                resources: true,
+                quizzes: true,
+              },
+            },
+          },
+        });
+
+        if (!course) {
+          return new NextResponse("Course not found", { status: 404 });
+        }
+
+        // Check for certificate
+        const certificate = await db.certificate.findUnique({
+          where: {
+            studentId_courseId: {
+              studentId: studentProfile.id,
+              courseId: courseId,
+            },
+          },
+        });
+
+        return NextResponse.json({
+          course,
+          certificate,
+          studentId: studentProfile.id,
+        });
+      }
     }
 
-    const studentProfile = await db.studentProfile.findUnique({
-      where: {
-        userId: session.user.id,
-      },
-    });
-
-    if (!studentProfile) {
-      return new NextResponse("Student profile not found", { status: 404 });
-    }
-
-    // Fetch the course with teacher and category
+    // For unauthenticated users or users without student profile
     const course = await db.course.findUnique({
       where: {
         id: courseId,
@@ -48,11 +101,6 @@ export async function GET(
             position: "asc",
           },
           include: {
-            userProgress: {
-              where: {
-                studentId: studentProfile.id,
-              },
-            },
             resources: true,
             quizzes: true,
           },
@@ -64,21 +112,8 @@ export async function GET(
       return new NextResponse("Course not found", { status: 404 });
     }
 
-    // Check if there's a certificate
-    const certificate = await db.certificate.findUnique({
-      where: {
-        studentId_courseId: {
-          studentId: studentProfile.id,
-          courseId: courseId,
-        },
-      },
-    });
-
-    return NextResponse.json({
-      course,
-      certificate,
-      studentId: studentProfile.id,
-    });
+    // Return just the course data without student info
+    return NextResponse.json({ course });
   } catch (error) {
     console.error("[COURSE_GET]", error);
     return new NextResponse("Internal Error", { status: 500 });
