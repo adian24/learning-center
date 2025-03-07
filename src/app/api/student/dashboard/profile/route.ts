@@ -53,7 +53,7 @@ export async function GET() {
     // Find the student profile for the current user
     const studentProfile = await db.studentProfile.findUnique({
       where: {
-        userId: studentProfileId,
+        id: studentProfileId,
       },
       include: {
         user: {

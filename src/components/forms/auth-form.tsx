@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,15 +11,49 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { executeAction } from "@/lib/executeAction";
-import { signIn } from "@/lib/auth";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
 import ActionButton from "./action-button";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Alert, AlertDescription } from "../ui/alert";
 
 export default function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const router = useRouter();
+  const [error, setError] = useState("");
+
+  async function handleCredential(formData: FormData) {
+    setError("");
+
+    try {
+      const result = await signIn("credentials", {
+        email: formData.get("email"),
+        password: formData.get("password"),
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError("Email atau password yang Anda masukkan salah");
+      } else {
+        router.push("/dashboard");
+      }
+    } catch (error) {
+      console.error("Authentication error:", error);
+      setError("Terjadi kesalahan saat proses login. Silakan coba lagi.");
+    }
+  }
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await signIn("google", { callbackUrl: "/dashboard" });
+    } catch (error) {
+      console.error("Google sign-in error:", error);
+    }
+  };
+
   return (
     <div className={cn("flex flex-col gap-4", className)} {...props}>
       <Card>
@@ -31,14 +67,7 @@ export default function LoginForm({
               <Button
                 variant="outline"
                 className="w-full"
-                onClick={async () => {
-                  "use server";
-                  await executeAction({
-                    actionFn: async () => {
-                      await signIn("google");
-                    },
-                  });
-                }}
+                onClick={handleGoogleSignIn}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                   <path
@@ -54,17 +83,12 @@ export default function LoginForm({
                 Atau
               </span>
             </div>
-            <form
-              action={async (formData) => {
-                "use server";
-                await executeAction({
-                  actionFn: async () => {
-                    await signIn("credentials", formData);
-                    // console.log("formData : ", formData);
-                  },
-                });
-              }}
-            >
+            {error && (
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+            <form action={handleCredential}>
               <div className="grid gap-6">
                 <div className="grid gap-2">
                   <Label htmlFor="email">Email</Label>
