@@ -1,5 +1,5 @@
-import HeroFormSignUpForm from "@/components/hero";
 import { auth } from "@/lib/auth";
+import Landing from "@/views/landing";
 import { redirect } from "next/navigation";
 
 const Page = async () => {
@@ -7,7 +7,7 @@ const Page = async () => {
 
   if (session?.user) redirect("/dashboard");
 
-  return <HeroFormSignUpForm />;
+  return <Landing />;
 };
 
 export default Page;
