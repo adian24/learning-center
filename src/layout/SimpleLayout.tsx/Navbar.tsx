@@ -78,7 +78,7 @@ const Navbar = () => {
             ) : (
               /* Unauthenticated - Signup Button */
               <Button asChild>
-                <Link href="/signup">Sign up</Link>
+                <Link href="/sign-up">Sign up</Link>
               </Button>
             )}
           </div>
