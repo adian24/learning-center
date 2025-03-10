@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 
 import { useParams } from "next/navigation";
 import Layout from "@/layout";
@@ -69,11 +69,26 @@ const CourseDetail = () => {
     },
   });
 
+  useEffect(() => {
+    if (course) {
+      console.log("course DATA : ", course);
+      form.reset({
+        title: course?.title,
+        description: course?.description,
+        imageUrl: course?.imageUrl,
+        price: course?.price,
+        categoryId: course?.categoryId,
+        level: course?.level,
+        isPublished: course?.isPublished,
+      });
+    }
+  }, [course, isLoadingCourse, courseId]);
+
   async function onSubmit(data: CourseFormValues) {
     updateCourse(data);
   }
 
-  if (isLoadingCourse) {
+  if (!course) {
     return (
       <Layout>
         <div className="flex items-center justify-center min-h-[200px]">
@@ -141,12 +156,13 @@ const CourseDetail = () => {
                       control={form.control}
                       name="level"
                       render={({ field }) => (
-                        <FormItem>
+                        <FormItem key={field.value}>
                           <FormLabel>Pilih Level</FormLabel>
                           <Select
                             {...field}
                             onValueChange={field.onChange}
-                            value={field.value}
+                            value={field.value || ""}
+                            defaultValue={field.value}
                             disabled={isUpdating}
                           >
                             <FormControl>
@@ -181,12 +197,13 @@ const CourseDetail = () => {
                       control={form.control}
                       name="categoryId"
                       render={({ field }) => (
-                        <FormItem>
+                        <FormItem key={field.value}>
                           <FormLabel>Pilih Kategori</FormLabel>
                           <Select
                             {...field}
                             onValueChange={field.onChange}
-                            value={field.value}
+                            value={field.value || ""}
+                            defaultValue={field.value}
                             disabled={isUpdating}
                           >
                             <FormControl>
