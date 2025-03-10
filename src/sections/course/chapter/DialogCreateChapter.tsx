@@ -57,8 +57,6 @@ const DialogCreateChapter = () => {
     },
   });
 
-  console.log("CHHHHPP : ", chapters);
-
   const createChapter = useMutation({
     mutationFn: async (values: ChapterFormValues) => {
       setIsCreating(true);

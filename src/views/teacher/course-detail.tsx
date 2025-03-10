@@ -71,7 +71,6 @@ const CourseDetail = () => {
 
   useEffect(() => {
     if (course) {
-      console.log("course DATA : ", course);
       form.reset({
         title: course?.title,
         description: course?.description,
