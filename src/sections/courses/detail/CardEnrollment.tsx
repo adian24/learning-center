@@ -45,7 +45,7 @@ const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
 
   const handleEnrollCourse = () => {
     if (session?.user) {
-      router.push(`/courses/${courseId}/learn`);
+      router.push(`/courses/${courseId}/checkout`);
     } else {
       router.push("/sign-up");
     }

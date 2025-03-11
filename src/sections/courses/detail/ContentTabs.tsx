@@ -14,6 +14,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useChaptersQuery } from "@/hooks/use-chapters-query";
 import { formatVideoDuration } from "@/utils/formatVideoDuration";
 import { BadgeCheck, Check, Clock, Play } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 interface ContentTabsProps {
@@ -21,10 +23,21 @@ interface ContentTabsProps {
 }
 
 const ContentTabs = ({ courseId }: ContentTabsProps) => {
+  const { data: session } = useSession();
+  const router = useRouter();
+
   const [activeTab, setActiveTab] = useState("courseModules");
 
   const { data, isLoading } = useChaptersQuery({ courseId, page: 1, limit: 5 });
   const chapters = data?.chapters || [];
+
+  const handleCourseStart = () => {
+    if (session?.user) {
+      router.push(`/courses/${courseId}/checkout`);
+    } else {
+      router.push("/sign-up");
+    }
+  };
 
   return (
     <Tabs
@@ -85,7 +98,10 @@ const ContentTabs = ({ courseId }: ContentTabsProps) => {
                 </AccordionItem>
               ))}
             </Accordion>
-            <Button className="w-full bg-blue-600 hover:bg-blue-700 mt-4">
+            <Button
+              className="w-full mt-4 text-blue-600 bg-transparent hover:bg-transparent hover:underline"
+              onClick={handleCourseStart}
+            >
               Mulai Kursus Sekarang
             </Button>
           </>
