@@ -46,7 +46,18 @@ export async function GET(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    return NextResponse.json(course);
+    // Calculate total duration from chapters
+    const totalDuration = course.chapters.reduce((total, chapter) => {
+      return total + (chapter.duration || 0);
+    }, 0);
+
+    // Update course with calculated duration
+    const courseWithDuration = {
+      ...course,
+      duration: totalDuration,
+    };
+
+    return NextResponse.json(courseWithDuration);
   } catch (error) {
     console.error("[COURSE_GET]", error);
     return new NextResponse("Internal Error", { status: 500 });

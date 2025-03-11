@@ -55,12 +55,25 @@ export async function GET(req: Request) {
       take: perPage,
     });
 
+    // Calculate total duration for each course
+    const coursesWithDuration = courses.map((course) => {
+      // Calculate total duration from chapters
+      const totalDuration = course.chapters.reduce((total, chapter) => {
+        return total + (chapter.duration || 0);
+      }, 0);
+
+      return {
+        ...course,
+        duration: totalDuration,
+      };
+    });
+
     // Calculate total pages
     const totalPages = Math.ceil(total / perPage);
 
     // Prepare response
     const response = {
-      courses: courses ?? [],
+      courses: coursesWithDuration ?? [],
       meta: {
         currentPage: page,
         totalPages,

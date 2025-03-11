@@ -11,6 +11,7 @@ import {
 import Image from "next/image";
 import { BookOpen, Clock, Star, Users } from "lucide-react";
 import { formatPrice } from "@/utils/formatPrice";
+import { formatVideoDuration } from "@/utils/formatVideoDuration";
 
 // Adjust the Course type to include student-specific properties
 type StudentCourseProps = {
@@ -71,7 +72,9 @@ const CourseCard = ({ course }: { course: StudentCourseProps }) => {
         <div className="flex justify-between text-xs text-gray-500 mb-3">
           <div className="flex items-center">
             <Clock className="h-4 w-4 mr-1" />
-            {course.duration ? `${course.duration} min` : "N/A"}
+            {course.duration
+              ? `${formatVideoDuration(course.duration)}`
+              : "N/A"}
           </div>
           <div className="flex items-center">
             <Star className="h-4 w-4 mr-1 fill-yellow-400 text-yellow-400" />

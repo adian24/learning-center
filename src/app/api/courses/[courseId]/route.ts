@@ -59,6 +59,17 @@ export async function GET(
           return new NextResponse("Course not found", { status: 404 });
         }
 
+        // Calculate total duration from chapters
+        const totalDuration = course.chapters.reduce((total, chapter) => {
+          return total + (chapter.duration || 0);
+        }, 0);
+
+        // Update course with calculated duration
+        const courseWithDuration = {
+          ...course,
+          duration: totalDuration,
+        };
+
         // Check for certificate
         const certificate = await db.certificate.findUnique({
           where: {
@@ -70,7 +81,7 @@ export async function GET(
         });
 
         return NextResponse.json({
-          course,
+          course: courseWithDuration,
           certificate,
           studentId: studentProfile.id,
         });
@@ -112,8 +123,19 @@ export async function GET(
       return new NextResponse("Course not found", { status: 404 });
     }
 
+    // Calculate total duration from chapters
+    const totalDuration = course.chapters.reduce((total, chapter) => {
+      return total + (chapter.duration || 0);
+    }, 0);
+
+    // Update course with calculated duration
+    const courseWithDuration = {
+      ...course,
+      duration: totalDuration,
+    };
+
     // Return just the course data without student info
-    return NextResponse.json({ course });
+    return NextResponse.json({ course: courseWithDuration });
   } catch (error) {
     console.error("[COURSE_GET]", error);
     return new NextResponse("Internal Error", { status: 500 });

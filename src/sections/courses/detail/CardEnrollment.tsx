@@ -1,3 +1,5 @@
+"use client";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,23 +19,37 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import Image from "next/image";
+
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCourse } from "@/hooks/use-course";
 import { formatPrice } from "@/utils/formatPrice";
+import { formatVideoDuration } from "@/utils/formatVideoDuration";
 import { Clock, FileText, User } from "lucide-react";
-import Image from "next/image";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 interface CardEnrollmentProps {
   courseId: string;
 }
 
 const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
+  const { data: session } = useSession();
+  const router = useRouter();
   const { data, isLoading } = useCourse(courseId);
   const course = data?.course;
 
   if (isLoading) {
     return <CardEnrollmentSkeleton />;
   }
+
+  const handleEnrollCourse = () => {
+    if (session?.user) {
+      router.push(`/courses/${courseId}/learn`);
+    } else {
+      router.push("/sign-up");
+    }
+  };
 
   return (
     <div className="md:w-full">
@@ -53,14 +69,12 @@ const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Button className="w-full bg-blue-600 hover:bg-blue-700">
-            Mulai Course Sekarang
-          </Button>
-
           <div className="border rounded-md p-4 space-y-3 text-sm">
             <div className="flex items-center gap-2">
               <Clock className="h-5 w-5 text-gray-500" />
-              <span>Durasi: {course?.duration ?? 0} menit</span>
+              <span>
+                Durasi: {formatVideoDuration(course?.duration as number) ?? 0}
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <FileText className="h-5 w-5 text-gray-500" />
@@ -74,20 +88,24 @@ const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
 
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="outline" className="w-full">
-                Dapatkan Demo
+              <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                Enroll Course Sekarang
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Request a Demo</AlertDialogTitle>
+                <AlertDialogTitle>Enroll Course?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Fill out this form to get a demo of the course content.
+                  {session?.user
+                    ? "Course ini dapat Anda akses selamanya"
+                    : "Anda harus masuk terlebih dahulu"}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction>Submit Request</AlertDialogAction>
+                <AlertDialogCancel>Batal</AlertDialogCancel>
+                <AlertDialogAction onClick={handleEnrollCourse}>
+                  {session?.user ? "Enroll" : "Masuk"}
+                </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
@@ -148,9 +166,6 @@ const CardEnrollmentSkeleton = () => {
         </CardHeader>
 
         <CardContent className="space-y-4">
-          {/* Button skeleton */}
-          <Skeleton className="w-full h-10 rounded-md" />
-
           {/* Course details box skeleton */}
           <div className="border rounded-md p-4 space-y-3">
             <div className="flex items-center gap-2">

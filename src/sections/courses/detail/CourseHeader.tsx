@@ -2,6 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCourse } from "@/hooks/use-course";
+import { formatVideoDuration } from "@/utils/formatVideoDuration";
 import { Clock, Star } from "lucide-react";
 
 const CourseHeaderSkeleton = () => {
@@ -85,7 +86,7 @@ const CourseHeader = ({ courseId }: CourseHeaderProps) => {
           <div className="flex items-center">
             <Clock className="h-5 w-5 text-gray-500" />
             <span className="ml-1 text-gray-500">
-              {course?.duration ?? 0} menit
+              {formatVideoDuration(course?.duration as number) ?? 0}
             </span>
           </div>
         </div>

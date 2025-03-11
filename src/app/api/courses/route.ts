@@ -103,6 +103,7 @@ export async function GET(req: NextRequest) {
         chapters: {
           select: {
             id: true,
+            duration: true,
           },
         },
         enrolledStudents: {
@@ -117,29 +118,36 @@ export async function GET(req: NextRequest) {
     });
 
     // Transform data to add computed properties
-    const transformedCourses = courses.map((course) => ({
-      id: course.id,
-      title: course.title,
-      description: course.description,
-      imageUrl: course.imageUrl,
-      price: course.price,
-      isPublished: course.isPublished,
-      level: course.level,
-      language: course.language,
-      duration: course.duration,
-      totalSteps: course.totalSteps,
-      rating: course.rating,
-      reviewCount: course.reviewCount,
-      createdAt: course.createdAt,
-      updatedAt: course.updatedAt,
-      categoryId: course.category?.id,
-      categoryName: course.category?.name,
-      teacherId: course.teacher?.id,
-      teacherName: course.teacher?.user?.name,
-      teacherImage: course.teacher?.user?.image,
-      chapterCount: course.chapters.length,
-      enrolledCount: course.enrolledStudents.length,
-    }));
+    const transformedCourses = courses.map((course) => {
+      // Calculate total duration from chapters
+      const totalDuration = course.chapters.reduce((total, chapter) => {
+        return total + (chapter.duration || 0);
+      }, 0);
+
+      return {
+        id: course.id,
+        title: course.title,
+        description: course.description,
+        imageUrl: course.imageUrl,
+        price: course.price,
+        isPublished: course.isPublished,
+        level: course.level,
+        language: course.language,
+        duration: totalDuration, // Use calculated duration instead of course.duration
+        totalSteps: course.totalSteps,
+        rating: course.rating,
+        reviewCount: course.reviewCount,
+        createdAt: course.createdAt,
+        updatedAt: course.updatedAt,
+        categoryId: course.category?.id,
+        categoryName: course.category?.name,
+        teacherId: course.teacher?.id,
+        teacherName: course.teacher?.user?.name,
+        teacherImage: course.teacher?.user?.image,
+        chapterCount: course.chapters.length,
+        enrolledCount: course.enrolledStudents.length,
+      };
+    });
 
     // Get all categories for filters
     const categories = await db.category.findMany({
