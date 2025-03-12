@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Layout from "@/layout";
 
 // rhf
@@ -14,7 +14,14 @@ import { useCourseQuery } from "@/hooks/use-course-query";
 import { useUpdateCourse } from "@/hooks/use-update-course";
 
 // import
-import { Eye, HandCoins, LibraryBig, Loader2, Rocket } from "lucide-react";
+import {
+  ArrowRight,
+  Eye,
+  HandCoins,
+  LibraryBig,
+  Loader2,
+  Rocket,
+} from "lucide-react";
 import {
   Card,
   CardContent,
@@ -46,9 +53,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { useCategories } from "@/hooks/use-categories";
+import LearningObjectives from "@/sections/course/forms-course-detail/LearningObjectives";
 
 const CourseDetail = () => {
   const params = useParams();
+  const router = useRouter();
   const courseId = params.courseId as string;
 
   const { data: course, isLoading: isLoadingCourse } = useCourseQuery(courseId);
@@ -87,6 +96,10 @@ const CourseDetail = () => {
     updateCourse(data);
   }
 
+  const handlePreviewCourse = () => {
+    router.push(`/courses/${courseId}`);
+  };
+
   if (!course) {
     return (
       <Layout>
@@ -107,12 +120,10 @@ const CourseDetail = () => {
 
             {/* Main Content */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2">
+              <div className="lg:col-span-2 space-y-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-xl">
-                      Course Information
-                    </CardTitle>
+                    <CardTitle>Course Information</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <BasicInfoFieldsDetail
@@ -136,8 +147,38 @@ const CourseDetail = () => {
                           Lihat bagaimana Student meninjau Course Anda
                         </CardDescription>
                       </div>
-                      <Button variant="outline" type="button">
+                      <Button
+                        variant="outline"
+                        type="button"
+                        onClick={handlePreviewCourse}
+                      >
                         Pratinjau
+                      </Button>
+                    </div>
+                  </CardHeader>
+                </Card>
+
+                <Card className="border-teal-800">
+                  <CardHeader>
+                    <div className="flex flex-row justify-between">
+                      <div>
+                        <CardTitle className="text-xl ">
+                          Kelola Chapter
+                        </CardTitle>
+                        <CardDescription className="">
+                          Unggah materi dan konten video Anda di setiap Chapter
+                        </CardDescription>
+                      </div>
+                      <Button
+                        variant="outline"
+                        type="button"
+                        className="text-white bg-teal-900 hover:bg-teal-700 hover:text-white"
+                        onClick={() =>
+                          router.push(`/teacher/courses/${courseId}/chapters`)
+                        }
+                      >
+                        Kelola
+                        <ArrowRight />
                       </Button>
                     </div>
                   </CardHeader>
@@ -295,6 +336,8 @@ const CourseDetail = () => {
           </div>
         </form>
       </Form>
+
+      <LearningObjectives />
     </Layout>
   );
 };
