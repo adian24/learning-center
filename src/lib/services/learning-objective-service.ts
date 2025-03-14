@@ -18,6 +18,22 @@ export const createLearningObjective = async (
 };
 
 /**
+ * Create multiple learning objectives for a course in a single transaction
+ */
+export const createManyLearningObjectives = async (
+  objectivesData: CreateLearningObjectiveParams[]
+) => {
+  // Use a transaction to ensure all objectives are created together
+  return await db.$transaction(
+    objectivesData.map((data) =>
+      db.learningObjective.create({
+        data,
+      })
+    )
+  );
+};
+
+/**
  * Get all learning objectives for a specific course
  */
 export const getLearningObjectivesByCourse = async (courseId: string) => {

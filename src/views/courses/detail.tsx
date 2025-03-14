@@ -4,7 +4,7 @@ import SimpleLayout from "@/layout/SimpleLayout.tsx";
 import CardEnrollment from "@/sections/courses/detail/CardEnrollment";
 import ContentTabs from "@/sections/courses/detail/ContentTabs";
 import CourseHeader from "@/sections/courses/detail/CourseHeader";
-// import CourseSylabus from "@/sections/courses/detail/CourseSylabus";
+import CourseSylabus from "@/sections/courses/detail/CourseSylabus";
 import InstructorSection from "@/sections/courses/detail/InstructorSection";
 import ReviewsSection from "@/sections/courses/detail/ReviewsSection";
 import SimilarCourse from "@/sections/courses/detail/SimilarCourse";
@@ -21,7 +21,7 @@ const CourseDetailPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <CourseHeader courseId={courseId} />
-            {/* <CourseSylabus courseId={courseId} /> */}
+            <CourseSylabus courseId={courseId} />
             <ContentTabs courseId={courseId} />
             <InstructorSection courseId={courseId} />
             <ReviewsSection courseId={courseId} />

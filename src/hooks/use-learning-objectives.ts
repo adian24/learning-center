@@ -16,14 +16,14 @@ const fetchLearningObjectives = async (courseId: string) => {
 // Function to create a learning objective
 const createLearningObjective = async ({
   courseId,
-  text,
+  objectives,
 }: {
   courseId: string;
-  text: string;
+  objectives: { text: string }[] | { text: string };
 }) => {
   const response = await axios.post(
     `/api/courses/${courseId}/learning-objectives`,
-    { text }
+    objectives
   );
   return response.data.learningObjective;
 };
@@ -41,14 +41,6 @@ const updateLearningObjective = async ({
     data
   );
   return response.data.learningObjective;
-};
-
-// Function to delete a learning objective
-const deleteLearningObjective = async (objectiveId: string) => {
-  const response = await axios.delete(
-    `/api/learning-objectives/${objectiveId}`
-  );
-  return response.data;
 };
 
 // Function to reorder learning objectives
@@ -87,11 +79,18 @@ export const useCreateLearningObjective = () => {
       queryClient.invalidateQueries({
         queryKey: ["learningObjectives", variables.courseId],
       });
-      toast.success("Learning objective added");
+
+      const objectCount = Array.isArray(data) ? data.length : 1;
+      const message =
+        objectCount > 1
+          ? `${objectCount} learning objectives added`
+          : "Learning objective added";
+
+      toast.success(message);
     },
     onError: (error) => {
       console.error(error);
-      toast.error("Failed to add learning objective");
+      toast.error("Failed to add learning objectives");
     },
   });
 };
@@ -120,7 +119,12 @@ export const useDeleteLearningObjective = (courseId: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: deleteLearningObjective,
+    mutationFn: async (data: { objectiveId: string }) => {
+      const response = await axios.delete(
+        `/api/courses/${courseId}/learning-objectives/${data.objectiveId}`
+      );
+      return response.data;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["learningObjectives", courseId],

@@ -17,21 +17,21 @@ const CourseSylabus = ({ courseId }: CourseSylabusProps) => {
     return <SylabusSkeleton />;
   }
 
-  if (!objectives) {
+  if (objectives?.length === 0) {
     return null;
   }
 
   return (
     <Card className="mb-8">
       <CardHeader>
-        <CardTitle>What You Will Learn in This Course</CardTitle>
+        <CardTitle>Apa yang akan Anda pelajari dalam Course ini</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {objectives?.map((item: any, index: number) => (
             <div key={index} className="flex items-start gap-2">
               <Check className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span>{item}</span>
+              <span>{item.text}</span>
             </div>
           ))}
         </div>

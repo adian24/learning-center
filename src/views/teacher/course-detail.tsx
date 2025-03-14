@@ -133,6 +133,7 @@ const CourseDetail = () => {
                     />
                   </CardContent>
                 </Card>
+                <LearningObjectives courseId={courseId} />
               </div>
 
               <div className="space-y-6">
@@ -336,8 +337,6 @@ const CourseDetail = () => {
           </div>
         </form>
       </Form>
-
-      <LearningObjectives />
     </Layout>
   );
 };
