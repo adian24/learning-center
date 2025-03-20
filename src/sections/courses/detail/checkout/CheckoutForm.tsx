@@ -1,13 +1,13 @@
-// src/app/courses/[courseId]/checkout/_components/checkout-form.tsx
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Form,
   FormControl,
@@ -16,81 +16,77 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { CreditCard, Wallet } from "lucide-react";
-import { formatVideoDuration } from "@/utils/formatVideoDuration";
-import { formatPrice } from "@/utils/formatPrice";
+import { toast } from "sonner";
+import { User } from "next-auth";
+import PaymentButton from "../../checkout/PaymentButton";
+import { Course } from "@/hooks/use-course";
 
-const formSchema = z.object({
-  fullName: z.string().min(2, { message: "Name is required" }),
-  email: z.string().email({ message: "Valid email is required" }),
-  paymentMethod: z.enum(["credit_card", "bank_transfer", "e_wallet"]),
-  cardNumber: z.string().optional(),
-  expiryDate: z.string().optional(),
-  cvv: z.string().optional(),
-  bankAccount: z.string().optional(),
+// Define form schema with Zod
+const checkoutFormSchema = z.object({
+  name: z.string().min(3, { message: "Name must be at least 3 characters" }),
+  email: z.string().email({ message: "Please enter a valid email address" }),
+  paymentMethod: z.enum(["midtrans"], {
+    required_error: "Please select a payment method",
+  }),
 });
 
-type FormValues = z.infer<typeof formSchema>;
+type CheckoutFormValues = z.infer<typeof checkoutFormSchema>;
 
-export function CheckoutForm({ course, user }: { course: any; user: any }) {
-  const router = useRouter();
+interface CheckoutFormProps {
+  course: Course | undefined; // You can type this properly based on your Course model
+  user: User | undefined;
+}
+
+export function CheckoutForm({ course, user }: CheckoutFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+  // Initialize form with default values from user (if available)
+  const form = useForm<CheckoutFormValues>({
+    resolver: zodResolver(checkoutFormSchema),
     defaultValues: {
-      fullName: user?.name || "",
+      name: user?.name || "",
       email: user?.email || "",
-      paymentMethod: "credit_card",
-      cardNumber: "",
-      expiryDate: "",
-      cvv: "",
-      bankAccount: "",
+      paymentMethod: "midtrans",
     },
   });
 
-  const paymentMethod = form.watch("paymentMethod");
+  // Form submission handler
+  const onSubmit = async (data: CheckoutFormValues) => {
+    setIsSubmitting(true);
 
-  async function onSubmit(values: FormValues) {
     try {
-      setIsSubmitting(true);
+      // The actual payment will be handled by the PaymentButton component
+      // This form submission just validates the fields
 
-      // TODO: Implement actual payment processing with Flip
-      // This is a placeholder for future integration
-      console.log("Processing payment", values);
+      // Clear form errors if any
+      form.clearErrors();
 
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      toast.success("Enrollment successful!");
-
-      // Redirect to course page or confirmation page
-      router.push(`/courses/${course.id}`);
-      router.refresh();
+      // Show the payment button (handled in the JSX below)
     } catch (error) {
-      console.error(error);
-      toast.error("Something went wrong. Please try again.");
+      console.error("Checkout error:", error);
+      toast.error("There was a problem processing your request");
     } finally {
       setIsSubmitting(false);
     }
-  }
+  };
+
+  // Get form values to check if form is valid
+  const { formState } = form;
+  const isFormValid = formState.isValid;
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        {/* Contact Information */}
         <div className="space-y-4">
           <FormField
             control={form.control}
-            name="fullName"
+            name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Nama Lengkap</FormLabel>
+                <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Your name" {...field} />
+                  <Input placeholder="Your full name" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -104,11 +100,7 @@ export function CheckoutForm({ course, user }: { course: any; user: any }) {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input
-                    type="email"
-                    placeholder="your.email@example.com"
-                    {...field}
-                  />
+                  <Input placeholder="your@email.com" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -118,69 +110,32 @@ export function CheckoutForm({ course, user }: { course: any; user: any }) {
 
         <Separator />
 
-        <div>
-          <h3 className="text-lg font-medium mb-3">Metode Pembayaran</h3>
+        {/* Payment Method Selection */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium">Payment Method</h3>
 
           <FormField
             control={form.control}
             name="paymentMethod"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="space-y-3">
                 <FormControl>
                   <RadioGroup
-                    className="flex flex-col space-y-3"
-                    value={field.value}
                     onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    className="space-y-3"
                   >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="credit_card" id="credit_card" />
-                      <label
-                        htmlFor="credit_card"
-                        className="flex items-center gap-2 cursor-pointer"
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="midtrans" id="midtrans" />
+                      </FormControl>
+                      <FormLabel
+                        htmlFor="midtrans"
+                        className="font-normal cursor-pointer"
                       >
-                        <CreditCard className="h-5 w-5" />
-                        <span>Kartu Kredit/Debit</span>
-                      </label>
-                    </div>
-
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem
-                        value="bank_transfer"
-                        id="bank_transfer"
-                      />
-                      <label
-                        htmlFor="bank_transfer"
-                        className="flex items-center gap-2 cursor-pointer"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="20"
-                          height="20"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <rect x="3" y="8" width="18" height="12" rx="2" />
-                          <path d="M7 8V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2" />
-                          <path d="M12 14v.01" />
-                        </svg>
-                        <span>Bank Transfer</span>
-                      </label>
-                    </div>
-
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="e_wallet" id="e_wallet" />
-                      <label
-                        htmlFor="e_wallet"
-                        className="flex items-center gap-2 cursor-pointer"
-                      >
-                        <Wallet className="h-5 w-5" />
-                        <span>E-Wallet</span>
-                      </label>
-                    </div>
+                        Midtrans (Credit Card, Bank Transfer, E-Wallet)
+                      </FormLabel>
+                    </FormItem>
                   </RadioGroup>
                 </FormControl>
                 <FormMessage />
@@ -189,107 +144,44 @@ export function CheckoutForm({ course, user }: { course: any; user: any }) {
           />
         </div>
 
-        {paymentMethod === "credit_card" && (
-          <div className="space-y-4 pt-2">
-            <FormField
-              control={form.control}
-              name="cardNumber"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nomor Kartu</FormLabel>
-                  <FormControl>
-                    <Input placeholder="1234 5678 9012 3456" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="expiryDate"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Expiry Date</FormLabel>
-                    <FormControl>
-                      <Input placeholder="MM/YY" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="cvv"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>CVV</FormLabel>
-                    <FormControl>
-                      <Input placeholder="123" type="password" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+        {/* Payment Details - Dynamic based on selected payment method */}
+        <div className="space-y-4">
+          <div className="rounded-md bg-blue-50 p-4">
+            <div className="flex">
+              <div className="text-sm text-blue-700">
+                <p>
+                  You'll be redirected to Midtrans secure payment page to
+                  complete your purchase.
+                </p>
+              </div>
             </div>
           </div>
-        )}
+        </div>
 
-        {paymentMethod === "bank_transfer" && (
-          <div className="space-y-4 pt-2">
-            <div className="rounded-md border p-4 bg-gray-50">
-              <p className="text-sm mb-2">Bank transfer instructions:</p>
-              <ul className="text-sm space-y-1 text-muted-foreground">
-                <li>
-                  1. Lengkapi formulir pembayaran dan klik "Konfirmasi
-                  Pendaftaran"
-                </li>
-                <li>2. Anda akan menerima rincian rekening bank</li>
-                <li>3. Lakukan pembayaran dalam waktu 24 jam</li>
-                <li>4. Akses akan diberikan setelah konfirmasi pembayaran</li>
-              </ul>
-            </div>
-          </div>
-        )}
-
-        {paymentMethod === "e_wallet" && (
-          <div className="space-y-4 pt-2">
-            <div className="rounded-md border p-4 bg-gray-50">
-              <p className="text-sm mb-2">E-Wallet payment options:</p>
-              <p className="text-sm text-muted-foreground">
-                Setelah mengklik "Konfirmasi Pendaftaran", Anda akan diarahkan
-                untuk memilih penyedia dompet elektronik pilihan Anda.
-              </p>
-            </div>
-          </div>
-        )}
-
+        {/* Checkout Button */}
         <div className="pt-4">
-          <Button
-            type="submit"
-            className="w-full h-12 text-lg"
-            disabled={isSubmitting}
-          >
-            {isSubmitting
-              ? "Memproses..."
-              : `Konfirmasi Pembayaran • ${
-                  formatPrice(course.price) || "0.00"
-                }`}
-          </Button>
+          {/* Use our custom PaymentButton component instead of a regular submit button */}
+          {isFormValid ? (
+            <PaymentButton
+              courseId={course?.id}
+              price={course?.price || 0}
+              label="Complete Payment"
+              className="w-full h-12"
+              disabled={isSubmitting}
+            />
+          ) : (
+            <Button
+              type="submit"
+              className="w-full h-12"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Processing..." : "Continue to Payment"}
+            </Button>
+          )}
 
-          <p className="text-xs text-center mt-3 text-muted-foreground">
-            Dengan menyelesaikan pembelian Anda, Anda menyetujui ketentuan
-            berikut:{" "}
-            <a href="/terms" className="underline">
-              Ketentuan Layanan
-            </a>{" "}
-            and{" "}
-            <a href="/privacy" className="underline">
-              Kebijakan Privasi
-            </a>
-            .
+          <p className="text-center text-xs text-muted-foreground mt-3">
+            By completing your purchase, you agree to our Terms of Service and
+            Privacy Policy.
           </p>
         </div>
       </form>
