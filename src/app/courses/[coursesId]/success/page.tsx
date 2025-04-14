@@ -87,21 +87,21 @@ export default async function SuccessPage({
 
   switch (enrollment.status) {
     case "COMPLETED":
-      statusMessage = "Your payment has been completed successfully.";
+      statusMessage = "Pembayaran Anda telah berhasil diselesaikan.";
       statusColor = "text-green-600";
       break;
     case "PENDING":
       statusMessage =
-        "Your payment is being processed. You will gain access once the payment is confirmed.";
+        "Pembayaran Anda sedang diproses. Anda akan mendapatkan akses setelah pembayaran dikonfirmasi.";
       statusColor = "text-amber-600";
       break;
     case "FAILED":
       statusMessage =
-        "Payment failed. Please try again or contact customer support.";
+        "Pembayaran gagal. Silakan coba lagi atau hubungi layanan pelanggan.";
       statusColor = "text-red-600";
       break;
     default:
-      statusMessage = "Enrollment status: " + enrollment.status;
+      statusMessage = "Status pendaftaran: " + enrollment.status;
       statusColor = "text-gray-600";
   }
 
@@ -122,10 +122,10 @@ export default async function SuccessPage({
 
         <h1 className="text-3xl font-bold mb-2">
           {enrollment.status === "COMPLETED"
-            ? "Enrollment Successful!"
+            ? "Pendaftaran Berhasil!"
             : enrollment.status === "PENDING"
-            ? "Enrollment Pending"
-            : "Enrollment Failed"}
+            ? "Pendaftaran Tertunda"
+            : "Pendaftaran Gagal"}
         </h1>
 
         <p className={`mb-6 ${statusColor}`}>{statusMessage}</p>
@@ -133,24 +133,24 @@ export default async function SuccessPage({
         {enrollment.status === "COMPLETED" ||
         enrollment.status === "PENDING" ? (
           <p className="text-gray-600 mb-6">
-            Thank you for enrolling in "{enrollment.course.title}"
+            Terima kasih telah mendaftar di "{enrollment.course.title}"
           </p>
         ) : (
           <p className="text-gray-600 mb-6">
-            There was an issue with your enrollment in "
+            Terjadi masalah dengan pendaftaran Anda di "
             {enrollment.course.title}"
           </p>
         )}
 
         {enrollment.amount > 0 && (
           <p className="text-gray-600 mb-6">
-            Amount: {formatPrice(enrollment.amount)}
+            Jumlah: {formatPrice(enrollment.amount)}
           </p>
         )}
 
         {enrollment.paymentId && (
           <p className="text-gray-500 text-sm mb-6">
-            Transaction ID: {enrollment.paymentId}
+            ID Transaksi: {enrollment.paymentId}
           </p>
         )}
       </div>
@@ -158,31 +158,31 @@ export default async function SuccessPage({
       <div className="flex flex-col md:flex-row gap-4">
         {firstChapter && enrollment.status === "COMPLETED" && (
           <Link href={`/courses/${courseId}/chapters/${firstChapter.id}`}>
-            <Button size="lg">Start Learning</Button>
+            <Button size="lg">Mulai Belajar</Button>
           </Link>
         )}
 
         {enrollment.status === "PENDING" && (
           <div className="text-center text-sm text-gray-600 mb-6">
             <p>
-              Once your payment is confirmed, you'll be able to access the
-              course.
+              Setelah pembayaran Anda dikonfirmasi, Anda akan dapat mengakses
+              kursus.
               <br />
-              This may take a few moments to process.
+              Proses ini mungkin memakan waktu beberapa saat.
             </p>
           </div>
         )}
 
         {enrollment.status === "FAILED" && (
           <Link href={`/checkout/${courseId}/checkout`}>
-            <Button size="lg">Try Again</Button>
+            <Button size="lg">Coba Lagi</Button>
           </Link>
         )}
 
         {enrollment.status === "PENDING" && (
           <Link href="/courses">
             <Button variant="outline" size="lg">
-              Go to the Courses
+              Lihat Semua Kursus
             </Button>
           </Link>
         )}
@@ -190,7 +190,7 @@ export default async function SuccessPage({
         {enrollment.status === "COMPLETED" && (
           <Link href={`/courses/${courseId}`}>
             <Button variant="outline" size="lg">
-              Go to My Course
+              Lihat Kursus Saya
             </Button>
           </Link>
         )}
