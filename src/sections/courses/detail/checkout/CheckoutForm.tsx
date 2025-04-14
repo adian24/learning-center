@@ -84,7 +84,7 @@ export function CheckoutForm({ course, user }: CheckoutFormProps) {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <FormLabel>Nama</FormLabel>
                 <FormControl>
                   <Input placeholder="Your full name" {...field} />
                 </FormControl>
@@ -112,7 +112,7 @@ export function CheckoutForm({ course, user }: CheckoutFormProps) {
 
         {/* Payment Method Selection */}
         <div className="space-y-4">
-          <h3 className="text-lg font-medium">Payment Method</h3>
+          <h3 className="text-lg font-medium">Metode Pembayaran</h3>
 
           <FormField
             control={form.control}
@@ -150,8 +150,8 @@ export function CheckoutForm({ course, user }: CheckoutFormProps) {
             <div className="flex">
               <div className="text-sm text-blue-700">
                 <p>
-                  You'll be redirected to Midtrans secure payment page to
-                  complete your purchase.
+                  Anda akan dialihkan ke halaman pembayaran aman Midtrans untuk
+                  menyelesaikan pembelian Anda.
                 </p>
               </div>
             </div>
@@ -180,8 +180,8 @@ export function CheckoutForm({ course, user }: CheckoutFormProps) {
           )}
 
           <p className="text-center text-xs text-muted-foreground mt-3">
-            By completing your purchase, you agree to our Terms of Service and
-            Privacy Policy.
+            Dengan menyelesaikan pembelian Anda, Anda menyetujui Ketentuan
+            Layanan dan Kebijakan Privasi kami.
           </p>
         </div>
       </form>
