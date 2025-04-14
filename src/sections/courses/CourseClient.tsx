@@ -68,7 +68,7 @@ export default function CoursesClient() {
   };
 
   return (
-    <div className="container max-w-max p-8">
+    <div className="p-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Explore Courses</h1>
         <p className="text-gray-500">
@@ -104,7 +104,7 @@ export default function CoursesClient() {
         </div>
 
         {/* Desktop sidebar filters */}
-        <div className="hidden lg:block lg:w-1/5 shrink-0">
+        <div className="hidden lg:block shrink-0">
           <div className="bg-white dark:bg-gray-950 rounded-lg border p-4 sticky top-20">
             <h3 className="font-medium text-lg mb-4">Filters</h3>
             {isLoading ? (
@@ -144,14 +144,44 @@ export default function CoursesClient() {
           )}
 
           {/* Course list */}
-          {!isLoading && data && (
-            <CourseList
-              courses={data.courses}
-              view={view}
-              onViewChange={handleViewChange}
-              showToggle={false}
-            />
-          )}
+          {!isLoading &&
+            data &&
+            (data.courses.length > 0 ? (
+              <CourseList
+                courses={data.courses}
+                view={view}
+                onViewChange={handleViewChange}
+                showToggle={false}
+              />
+            ) : (
+              <div className="flex justify-center items-center">
+                <div className="bg-white dark:bg-gray-950 rounded-lg shadow-sm p-8 max-w-md w-full text-center">
+                  <div className="mb-4">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-16 w-16 mx-auto text-gray-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">
+                    Tidak ada kursus yang ditemukan
+                  </h3>
+                  <p className="text-gray-500 mb-4">
+                    Maaf, kami tidak dapat menemukan kursus yang sesuai dengan
+                    kriteria pencarian Anda.
+                  </p>
+                </div>
+              </div>
+            ))}
         </div>
       </div>
     </div>
