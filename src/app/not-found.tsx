@@ -5,12 +5,10 @@ export default function NotFound() {
   return (
     <div className="h-screen w-full flex flex-col items-center justify-center bg-slate-50 px-4">
       <div className="max-w-md w-full text-center space-y-8">
-        {/* 404 text */}
         <h1 className="text-9xl font-extrabold text-primary tracking-widest">
           404
         </h1>
 
-        {/* SVG illustration */}
         <div className="relative w-full h-40 my-8">
           <svg
             className="w-full h-full"
@@ -42,7 +40,6 @@ export default function NotFound() {
           </svg>
         </div>
 
-        {/* Message */}
         <div className="space-y-4">
           <h2 className="text-2xl font-bold text-slate-800">
             Oops! Page Not Found
@@ -52,7 +49,6 @@ export default function NotFound() {
           </p>
         </div>
 
-        {/* Action buttons */}
         <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
           <Link
             href="/"
