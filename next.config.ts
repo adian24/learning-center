@@ -13,24 +13,8 @@ const nextConfig: NextConfig = {
   reactStrictMode: false,
   images: {
     remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "res.cloudinary.com",
-        port: "",
-        pathname: "/*",
-      },
-      {
-        protocol: "https",
-        hostname: "*.googleusercontent.com",
-        port: "",
-        pathname: "/*",
-      },
-      {
-        protocol: "https",
-        hostname: "ui-avatars.com",
-        port: "",
-        pathname: "/*",
-      },
+      new URL("https://res.cloudinary.com/**"),
+      new URL("https://lh3.googleusercontent.com/**"),
     ],
   },
 };
