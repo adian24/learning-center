@@ -11,10 +11,10 @@ import { z } from "zod";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ courseId: string }> }
+  { params }: { params: { courseId: string } }
 ) {
   try {
-    const courseId = (await params).courseId;
+    const courseId = params.courseId;
 
     if (!courseId) {
       return NextResponse.json(
@@ -37,7 +37,7 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ courseId: string }> }
+  { params }: { params: { courseId: string } }
 ) {
   try {
     const session = await auth();
@@ -46,7 +46,7 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const courseId = (await params).courseId;
+    const courseId = params.courseId;
 
     if (!courseId) {
       return NextResponse.json(

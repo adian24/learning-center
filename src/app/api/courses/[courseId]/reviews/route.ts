@@ -13,10 +13,10 @@ const createReviewSchema = z.object({
 // GET /api/courses/:courseId/reviews
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ courseId: string }> }
+  { params }: { params: { courseId: string } }
 ) {
   try {
-    const courseId = (await params).courseId;
+    const courseId = params.courseId;
 
     // Get query parameters for pagination
     const url = new URL(req.url);
@@ -74,7 +74,7 @@ export async function GET(
 // POST /api/courses/:courseId/reviews
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ courseId: string }> }
+  { params }: { params: { courseId: string } }
 ) {
   try {
     const session = await auth();
@@ -83,7 +83,7 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const courseId = (await params).courseId;
+    const courseId = params.courseId;
     const body = await req.json();
 
     // Validate request body
