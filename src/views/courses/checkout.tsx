@@ -364,7 +364,7 @@ export default function CustomCheckout({
                   className="w-full h-12"
                   disabled={isSubmitting || !selectedMethod}
                 >
-                  {isSubmitting ? "Processing..." : "Lanjutkan Pembayaran"}
+                  {isSubmitting ? "Memproses..." : "Lanjutkan Pembayaran"}
                 </Button>
 
                 <p className="text-center text-xs text-muted-foreground mt-3">
