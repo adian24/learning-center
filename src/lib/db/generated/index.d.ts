@@ -28417,20 +28417,20 @@ export namespace Prisma {
 
   export type CertificateWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    courseId?: string
     certificateNumber?: string
     studentId_courseId?: CertificateStudentIdCourseIdCompoundUniqueInput
     AND?: CertificateWhereInput | CertificateWhereInput[]
     OR?: CertificateWhereInput[]
     NOT?: CertificateWhereInput | CertificateWhereInput[]
     studentId?: StringFilter<"Certificate"> | string
-    courseId?: StringFilter<"Certificate"> | string
     issueDate?: DateTimeFilter<"Certificate"> | Date | string
     pdfUrl?: StringNullableFilter<"Certificate"> | string | null
     createdAt?: DateTimeFilter<"Certificate"> | Date | string
     updatedAt?: DateTimeFilter<"Certificate"> | Date | string
     student?: XOR<StudentProfileScalarRelationFilter, StudentProfileWhereInput>
     course?: XOR<CourseScalarRelationFilter, CourseWhereInput>
-  }, "id" | "certificateNumber" | "studentId_courseId">
+  }, "id" | "courseId" | "certificateNumber" | "studentId_courseId">
 
   export type CertificateOrderByWithAggregationInput = {
     id?: SortOrder
@@ -28743,16 +28743,16 @@ export namespace Prisma {
 
   export type LearningObjectiveWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    courseId?: string
     AND?: LearningObjectiveWhereInput | LearningObjectiveWhereInput[]
     OR?: LearningObjectiveWhereInput[]
     NOT?: LearningObjectiveWhereInput | LearningObjectiveWhereInput[]
     text?: StringFilter<"LearningObjective"> | string
     position?: IntFilter<"LearningObjective"> | number
-    courseId?: StringFilter<"LearningObjective"> | string
     createdAt?: DateTimeFilter<"LearningObjective"> | Date | string
     updatedAt?: DateTimeFilter<"LearningObjective"> | Date | string
     course?: XOR<CourseScalarRelationFilter, CourseWhereInput>
-  }, "id">
+  }, "id" | "courseId">
 
   export type LearningObjectiveOrderByWithAggregationInput = {
     id?: SortOrder
@@ -28819,6 +28819,7 @@ export namespace Prisma {
 
   export type CourseReviewWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    courseId?: string
     studentId_courseId?: CourseReviewStudentIdCourseIdCompoundUniqueInput
     AND?: CourseReviewWhereInput | CourseReviewWhereInput[]
     OR?: CourseReviewWhereInput[]
@@ -28826,7 +28827,6 @@ export namespace Prisma {
     rating?: FloatFilter<"CourseReview"> | number
     comment?: StringNullableFilter<"CourseReview"> | string | null
     studentId?: StringFilter<"CourseReview"> | string
-    courseId?: StringFilter<"CourseReview"> | string
     isVerifiedPurchase?: BoolFilter<"CourseReview"> | boolean
     status?: EnumReviewStatusFilter<"CourseReview"> | $Enums.ReviewStatus
     helpfulCount?: IntFilter<"CourseReview"> | number
@@ -28836,7 +28836,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"CourseReview"> | Date | string
     student?: XOR<StudentProfileScalarRelationFilter, StudentProfileWhereInput>
     course?: XOR<CourseScalarRelationFilter, CourseWhereInput>
-  }, "id" | "studentId_courseId">
+  }, "id" | "courseId" | "studentId_courseId">
 
   export type CourseReviewOrderByWithAggregationInput = {
     id?: SortOrder
@@ -28962,6 +28962,7 @@ export namespace Prisma {
 
   export type ChapterWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    courseId?: string
     AND?: ChapterWhereInput | ChapterWhereInput[]
     OR?: ChapterWhereInput[]
     NOT?: ChapterWhereInput | ChapterWhereInput[]
@@ -28972,14 +28973,13 @@ export namespace Prisma {
     isPublished?: BoolFilter<"Chapter"> | boolean
     isFree?: BoolFilter<"Chapter"> | boolean
     duration?: IntNullableFilter<"Chapter"> | number | null
-    courseId?: StringFilter<"Chapter"> | string
     createdAt?: DateTimeFilter<"Chapter"> | Date | string
     updatedAt?: DateTimeFilter<"Chapter"> | Date | string
     course?: XOR<CourseScalarRelationFilter, CourseWhereInput>
     userProgress?: UserProgressListRelationFilter
     resources?: ResourceListRelationFilter
     quizzes?: QuizListRelationFilter
-  }, "id">
+  }, "id" | "courseId">
 
   export type ChapterOrderByWithAggregationInput = {
     id?: SortOrder
@@ -29562,12 +29562,12 @@ export namespace Prisma {
 
   export type EnrolledCourseWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    courseId?: string
     studentId_courseId?: EnrolledCourseStudentIdCourseIdCompoundUniqueInput
     AND?: EnrolledCourseWhereInput | EnrolledCourseWhereInput[]
     OR?: EnrolledCourseWhereInput[]
     NOT?: EnrolledCourseWhereInput | EnrolledCourseWhereInput[]
     studentId?: StringFilter<"EnrolledCourse"> | string
-    courseId?: StringFilter<"EnrolledCourse"> | string
     amount?: FloatFilter<"EnrolledCourse"> | number
     currency?: StringFilter<"EnrolledCourse"> | string
     paymentId?: StringNullableFilter<"EnrolledCourse"> | string | null
@@ -29578,7 +29578,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"EnrolledCourse"> | Date | string
     student?: XOR<StudentProfileScalarRelationFilter, StudentProfileWhereInput>
     course?: XOR<CourseScalarRelationFilter, CourseWhereInput>
-  }, "id" | "studentId_courseId">
+  }, "id" | "courseId" | "studentId_courseId">
 
   export type EnrolledCourseOrderByWithAggregationInput = {
     id?: SortOrder

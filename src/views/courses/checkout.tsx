@@ -46,6 +46,7 @@ import {
   Landmark,
   Wallet,
   ChevronRight,
+  Loader2,
 } from "lucide-react";
 
 // Payment method types
@@ -154,7 +155,14 @@ export default function CustomCheckout({
     try {
       setIsSubmitting(true);
 
-      // Create an enrollment with the selected payment method
+      // Handle credit card payment differently
+      if (selectedMethod === "credit_card") {
+        // Redirect to credit card payment page
+        router.push(`/courses/${course.id}/payment/credit-card`);
+        return;
+      }
+
+      // Handle other payment methods (bank transfer, e-wallet)
       const paymentData = {
         courseId: course.id,
         amount: course.price || 0,
@@ -364,7 +372,14 @@ export default function CustomCheckout({
                   className="w-full h-12"
                   disabled={isSubmitting || !selectedMethod}
                 >
-                  {isSubmitting ? "Memproses..." : "Lanjutkan Pembayaran"}
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    "Lanjutkan Pembayaran"
+                  )}
                 </Button>
 
                 <p className="text-center text-xs text-muted-foreground mt-3">

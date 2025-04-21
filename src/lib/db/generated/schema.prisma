@@ -89,7 +89,7 @@ model Certificate {
   studentId String
   student   StudentProfile @relation(fields: [studentId], references: [id])
 
-  courseId String
+  courseId String @unique
   course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   // Certificate details
@@ -177,7 +177,7 @@ model LearningObjective {
   position Int // Order of the learning objective in the course
 
   // Relation to Course
-  courseId String
+  courseId String @unique
   course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   // Timestamps
@@ -197,7 +197,7 @@ model CourseReview {
   student   StudentProfile @relation(fields: [studentId], references: [id])
 
   // Link to the course being reviewed
-  courseId String
+  courseId String @unique
   course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   // Helpful features
@@ -234,7 +234,7 @@ model Chapter {
   isFree      Boolean @default(false)
   duration    Int? // Video duration in minutes
 
-  courseId String
+  courseId String @unique
   course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   // Track student progress
@@ -398,7 +398,7 @@ model EnrolledCourse {
   studentId String // Changed from userId to match StudentProfile
   student   StudentProfile @relation(fields: [studentId], references: [id])
 
-  courseId String
+  courseId String @unique
   course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   // Payment and pricing information
