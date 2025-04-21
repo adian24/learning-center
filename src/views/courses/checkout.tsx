@@ -9,13 +9,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { toast } from "sonner";
 
-// Import bank logos
-import bcaLogo from "@/assets/banks/bca.png";
-import bniLogo from "@/assets/banks/bni.png";
-import briLogo from "@/assets/banks/bri.png";
-import mandiriLogo from "@/assets/banks/mandiri.png";
-import permataLogo from "@/assets/banks/permata.png";
-// import creditCardLogo from "@/assets/banks/credit-card.png";
+// Import bank logos and components
+import { BankMethodSelector } from "@/sections/courses/detail/checkout/BankMethodSelector";
 
 // Import ewallet logos
 import gopayLogo from "@/assets/ewallet/gopay.png";
@@ -56,21 +51,7 @@ const paymentMethods = [
     name: "Bank Transfer",
     description: "Bayar dengan virtual account",
     icon: Landmark,
-    options: [
-      { id: "bca", name: "BCA Virtual Account", logo: bcaLogo },
-      { id: "bni", name: "BNI Virtual Account", logo: bniLogo },
-      { id: "bri", name: "BRI Virtual Account", logo: briLogo },
-      {
-        id: "mandiri",
-        name: "Mandiri Virtual Account",
-        logo: mandiriLogo,
-      },
-      {
-        id: "permata",
-        name: "Permata Virtual Account",
-        logo: permataLogo,
-      },
-    ],
+    options: [],
   },
   {
     id: "credit_card",
@@ -82,7 +63,7 @@ const paymentMethods = [
   {
     id: "ewallet",
     name: "E-Wallet",
-    description: "GoPay, OVO, DANA, LinkAja",
+    description: "GoPay, OVO, DANA, SPay",
     icon: Wallet,
     options: [
       { id: "gopay", name: "GoPay", logo: gopayLogo },
@@ -162,7 +143,9 @@ export default function CustomCheckout({
         return;
       }
 
-      // Handle other payment methods (bank transfer, e-wallet)
+      // Handle bank transfer - redirect already happens in BankMethodSelector
+
+      // Handle other payment methods (e-wallet)
       const paymentData = {
         courseId: course.id,
         amount: course.price || 0,
@@ -277,9 +260,17 @@ export default function CustomCheckout({
                           <Icon className="h-5 w-5 text-primary" />
                           <div>
                             <h4 className="font-medium">{category.name}</h4>
-                            <p className="text-xs text-muted-foreground">
-                              {category.description}
-                            </p>
+                            {category.id === "bank_transfer" ? (
+                              <div className="flex items-center gap-1">
+                                <p className="text-xs text-muted-foreground mr-1">
+                                  Virtual Account:
+                                </p>
+                              </div>
+                            ) : (
+                              <p className="text-xs text-muted-foreground">
+                                {category.description}
+                              </p>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -290,12 +281,50 @@ export default function CustomCheckout({
 
               {/* Specific Payment Methods */}
               {(() => {
-                if (!selectedCategory || selectedCategory === "credit_card")
-                  return null;
+                if (!selectedCategory) return null;
 
                 const selectedPaymentCategory = paymentMethods.find(
                   (c) => c.id === selectedCategory
                 );
+
+                // Use our custom BankMethodSelector for bank transfers
+                if (selectedCategory === "bank_transfer") {
+                  return (
+                    <BankMethodSelector
+                      courseId={course.id}
+                      courseName={course.title}
+                      coursePrice={course.price}
+                    />
+                  );
+                }
+
+                // Handle credit card selection with notice
+                if (selectedCategory === "credit_card") {
+                  return (
+                    <div className="space-y-4 animate-in fade-in-50 duration-300">
+                      <div className="p-3 border-2 border-primary bg-primary/5 rounded-md flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-12 relative">
+                            <div className="w-full h-full flex items-center justify-center">
+                              <CreditCard className="h-8 w-8 text-primary" />
+                            </div>
+                          </div>
+                          <div>
+                            <span className="font-medium text-sm">
+                              Pembayaran Kartu Kredit
+                            </span>
+                            <p className="text-xs text-muted-foreground">
+                              Visa, Mastercard, JCB, dan lainnya
+                            </p>
+                          </div>
+                        </div>
+                        <CheckCircle className="h-5 w-5 text-primary" />
+                      </div>
+                    </div>
+                  );
+                }
+
+                // For other payment methods with options, render them as before
                 if (!selectedPaymentCategory?.options?.length) return null;
 
                 return (
@@ -341,36 +370,16 @@ export default function CustomCheckout({
                 );
               })()}
 
-              {/* Credit Card Selected Notice */}
-              {selectedCategory === "credit_card" && (
-                <div className="space-y-4 animate-in fade-in-50 duration-300">
-                  <div className="p-3 border-2 border-primary bg-primary/5 rounded-md flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-12 relative">
-                        <div className="w-full h-full flex items-center justify-center">
-                          <CreditCard className="h-8 w-8 text-primary" />
-                        </div>
-                      </div>
-                      <div>
-                        <span className="font-medium text-sm">
-                          Pembayaran Kartu Kredit
-                        </span>
-                        <p className="text-xs text-muted-foreground">
-                          Visa, Mastercard, JCB, dan lainnya
-                        </p>
-                      </div>
-                    </div>
-                    <CheckCircle className="h-5 w-5 text-primary" />
-                  </div>
-                </div>
-              )}
-
               {/* Payment Details */}
               <div className="pt-4">
                 <Button
                   type="submit"
                   className="w-full h-12"
-                  disabled={isSubmitting || !selectedMethod}
+                  disabled={
+                    isSubmitting ||
+                    !selectedMethod ||
+                    selectedCategory === "bank_transfer"
+                  }
                 >
                   {isSubmitting ? (
                     <>
