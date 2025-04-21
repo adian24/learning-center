@@ -1,5 +1,3 @@
-// src/app/api/courses/[courseId]/learning-objectives/route.ts
-
 import { NextRequest, NextResponse } from "next/server";
 import {
   createLearningObjective,
@@ -11,10 +9,10 @@ import { z } from "zod";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
   try {
-    const courseId = params.courseId;
+    const courseId = (await params).courseId;
 
     if (!courseId) {
       return NextResponse.json(
@@ -37,7 +35,7 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
   try {
     const session = await auth();
@@ -46,7 +44,7 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const courseId = params.courseId;
+    const courseId = (await params).courseId;
 
     if (!courseId) {
       return NextResponse.json(

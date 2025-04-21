@@ -13,10 +13,10 @@ const createReviewSchema = z.object({
 // GET /api/courses/:courseId/reviews
 export async function GET(
   req: NextRequest,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
   try {
-    const courseId = params.courseId;
+    const courseId = (await params).courseId;
 
     // Get query parameters for pagination
     const url = new URL(req.url);

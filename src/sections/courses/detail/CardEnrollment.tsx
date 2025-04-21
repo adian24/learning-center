@@ -25,7 +25,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useCourse } from "@/hooks/use-course";
 import { formatPrice } from "@/utils/formatPrice";
 import { formatVideoDuration } from "@/utils/formatVideoDuration";
-import { Clock, FileText, User } from "lucide-react";
+import { CheckCircle, Clock, FileText, Play, User } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -39,6 +39,10 @@ const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
   const { data, isLoading } = useCourse(courseId);
   const course = data?.course;
 
+  // Check if user is enrolled (studentId will be present and possibly a certificate)
+  const isEnrolled = !!data?.studentId;
+  const hasCertificate = !!data?.certificate;
+
   if (isLoading) {
     return <CardEnrollmentSkeleton />;
   }
@@ -48,6 +52,15 @@ const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
       router.push(`/courses/${courseId}/checkout`);
     } else {
       router.push("/sign-up");
+    }
+  };
+
+  const handleStartLearning = () => {
+    const firstChapter = course?.chapters?.[0];
+    if (firstChapter) {
+      router.push(`/courses/${courseId}/chapters/${firstChapter.id}`);
+    } else {
+      router.push(`/dashboard/courses`);
     }
   };
 
@@ -86,29 +99,58 @@ const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
             </div>
           </div>
 
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                Enroll Course Sekarang
+          {isEnrolled ? (
+            // Show UI for enrolled users
+            <div className="space-y-4">
+              <div className="bg-green-50 p-3 rounded-md text-green-700 flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-green-600" />
+                <span>Anda sudah terdaftar dalam kursus ini</span>
+              </div>
+              <Button
+                onClick={handleStartLearning}
+                className="w-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center gap-2"
+              >
+                <Play className="h-4 w-4" />
+                Lanjutkan Belajar
               </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Enroll Course?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  {session?.user
-                    ? "Course ini dapat Anda akses selamanya"
-                    : "Anda harus masuk terlebih dahulu"}
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Batal</AlertDialogCancel>
-                <AlertDialogAction onClick={handleEnrollCourse}>
-                  {session?.user ? "Enroll" : "Masuk"}
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+              {hasCertificate && (
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() =>
+                    window.open(data?.certificate?.pdfUrl || "", "_blank")
+                  }
+                >
+                  Lihat Sertifikat
+                </Button>
+              )}
+            </div>
+          ) : (
+            // Show UI for non-enrolled users
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                  Enroll Course Sekarang
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Enroll Course?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {session?.user
+                      ? "Course ini dapat Anda akses selamanya"
+                      : "Anda harus masuk terlebih dahulu"}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Batal</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleEnrollCourse}>
+                    {session?.user ? "Enroll" : "Masuk"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
         </CardContent>
         <CardFooter className="flex flex-col items-start space-y-2">
           <p className="text-sm text-gray-500">30-Hari Jaminan Uang Kembali</p>
