@@ -38,6 +38,8 @@ export async function GET() {
             title: true,
             description: true,
             imageUrl: true,
+            createdAt: true,
+            updatedAt: true,
             chapters: {
               where: {
                 isPublished: true,
@@ -97,6 +99,8 @@ export async function GET() {
           imageUrl: course.imageUrl,
           teacher: course.teacher.user.name,
           category: course.category?.name,
+          createdAt: course.createdAt,
+          updatedAt: course.updatedAt,
           chaptersCount: totalChapters,
           completedChapters,
           progress: progressPercentage,

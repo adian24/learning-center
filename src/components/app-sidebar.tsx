@@ -47,8 +47,8 @@ const data = {
       isActive: true,
     },
     {
-      title: "Courses",
-      url: "/courses",
+      title: "My Courses",
+      url: "/my-courses",
       icon: Compass,
     },
     {
@@ -58,7 +58,7 @@ const data = {
     },
     {
       title: "Shop",
-      url: "/shop",
+      url: "/courses",
       icon: ShoppingCart,
     },
   ],

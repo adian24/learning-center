@@ -26,6 +26,8 @@ type CourseWithProgress = {
   chaptersCount: number;
   completedChapters: number;
   progress: number;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 type Achievement = {
