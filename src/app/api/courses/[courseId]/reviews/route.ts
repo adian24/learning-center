@@ -74,7 +74,7 @@ export async function GET(
 // POST /api/courses/:courseId/reviews
 export async function POST(
   req: NextRequest,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
   try {
     const session = await auth();
@@ -83,7 +83,7 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const courseId = params.courseId;
+    const courseId = (await params).courseId;
     const body = await req.json();
 
     // Validate request body
