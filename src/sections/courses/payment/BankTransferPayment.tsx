@@ -14,6 +14,7 @@ import {
   Clock,
   RefreshCw,
   AlertCircle,
+  InfoIcon,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -358,7 +359,7 @@ export default function BankTransferPayment({
   const { data: paymentStatus, refetch } = usePaymentStatus(
     enrollmentId,
     !!enrollmentId,
-    30000
+    5000
   );
 
   // Show success dialog when payment completes
@@ -487,105 +488,146 @@ export default function BankTransferPayment({
 
             <Separator className="mb-6" />
 
-            {/* Virtual Account Number */}
-            <div className="bg-primary/5 rounded-lg p-6 text-center mb-6">
-              <h3 className="text-lg font-medium mb-4">
-                Nomor Virtual Account
-              </h3>
-              <div className="flex items-center justify-center space-x-2 mb-3">
-                <div className="text-2xl font-mono font-semibold tracking-wider">
-                  {vaNumber || "-"}
-                </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={copyToClipboard}
-                  className="h-8 w-8"
-                >
-                  <Copy className="h-4 w-4" />
-                </Button>
-              </div>
-              <div className="text-sm text-muted-foreground">
-                Bank {bankConfig.name.split(" ")[0]}
-              </div>
-            </div>
-
-            {/* Payment Details */}
-            <div className="space-y-3 mb-6">
-              <div className="flex items-center justify-between">
-                <div className="text-sm text-muted-foreground">
-                  Total Pembayaran
-                </div>
-                <div className="font-semibold">
-                  {formatPrice(paymentDetails?.amount || course.price || 0)}
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="text-sm text-muted-foreground">
-                  Batas Waktu Pembayaran
-                </div>
-                {paymentDetails?.expiryTime ? (
-                  <CountdownTimer
-                    expiryTime={paymentDetails.expiryTime}
-                    onExpire={() => setCountdown(0)}
-                    showIcon={false}
-                  />
-                ) : (
-                  <div
-                    className={`font-medium ${
-                      countdown < 3600 ? "text-red-600" : "text-amber-600"
-                    }`}
-                  >
-                    {formatTime(countdown)}
+            {paymentStatus?.status === "COMPLETED" ? (
+              // Payment Complete UI
+              <div className="space-y-6">
+                <div className="bg-green-50 rounded-lg p-6 text-center mb-6">
+                  <div className="flex justify-center mb-4">
+                    <div className="bg-green-100 rounded-full p-4">
+                      <CheckCircle className="h-12 w-12 text-green-600" />
+                    </div>
                   </div>
-                )}
-              </div>
-            </div>
-
-            {/* Payment Instructions */}
-            <div className="space-y-4">
-              <h3 className="font-medium">Cara Pembayaran</h3>
-
-              <Accordion
-                type="single"
-                collapsible
-                className="w-full"
-                defaultValue="instructions-0"
-              >
-                {bankConfig.instructions.map((instruction, idx) => (
-                  <AccordionItem
-                    key={idx}
-                    value={`instructions-${idx}`}
-                    className="border rounded-md px-4 mb-2"
+                  <h3 className="text-xl font-medium mb-2 text-green-700">
+                    Pembayaran Berhasil!
+                  </h3>
+                  <p className="text-gray-600 mb-4">
+                    Terima kasih. Pembayaran Anda telah berhasil diverifikasi.
+                    Anda sekarang memiliki akses penuh ke kursus ini.
+                  </p>
+                  <Button
+                    onClick={() => router.push(`/courses/${courseId}`)}
+                    className="w-full md:w-auto"
                   >
-                    <AccordionTrigger className="py-3">
-                      {instruction.title}
-                    </AccordionTrigger>
-                    <AccordionContent>
-                      <ol className="space-y-2 list-decimal list-inside">
-                        {instruction.steps.map((step, stepIdx) => (
-                          <li key={stepIdx} className="text-sm">
-                            {step.replace("{va_number}", vaNumber || "")}
-                          </li>
-                        ))}
-                      </ol>
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
-            </div>
+                    Mulai Belajar Sekarang
+                  </Button>
+                </div>
 
-            {/* Payment Notice */}
-            <div className="mt-8 bg-amber-50 border border-amber-200 rounded-md p-4 flex items-start space-x-3">
-              <AlertCircle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm text-amber-800">
-                  Pembayaran akan diproses secara otomatis oleh sistem. Mohon
-                  tidak menutup halaman ini sampai proses pembayaran selesai.
-                </p>
+                <div className="bg-blue-50 border border-blue-100 rounded-md p-4 flex items-start space-x-3">
+                  <InfoIcon className="h-5 w-5 text-blue-500 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm text-blue-800">
+                      Detail transaksi telah dikirim ke email Anda. Anda dapat
+                      mulai belajar sekarang atau kembali nanti melalui halaman
+                      dashboard.
+                    </p>
+                  </div>
+                </div>
               </div>
-            </div>
+            ) : (
+              // Payment Pending UI - Current implementation
+              <>
+                {/* Virtual Account Number */}
+                <div className="bg-primary/5 rounded-lg p-6 text-center mb-6">
+                  <h3 className="text-lg font-medium mb-4">
+                    Nomor Virtual Account
+                  </h3>
+                  <div className="flex items-center justify-center space-x-2 mb-3">
+                    <div className="text-2xl font-mono font-semibold tracking-wider">
+                      {vaNumber || "-"}
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={copyToClipboard}
+                      className="h-8 w-8"
+                    >
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Bank {bankConfig.name.split(" ")[0]}
+                  </div>
+                </div>
+
+                {/* Payment Details */}
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm text-muted-foreground">
+                      Total Pembayaran
+                    </div>
+                    <div className="font-semibold">
+                      {formatPrice(paymentDetails?.amount || course.price || 0)}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm text-muted-foreground">
+                      Batas Waktu Pembayaran
+                    </div>
+                    {paymentDetails?.expiryTime ? (
+                      <CountdownTimer
+                        expiryTime={paymentDetails.expiryTime}
+                        onExpire={() => setCountdown(0)}
+                        showIcon={false}
+                      />
+                    ) : (
+                      <div
+                        className={`font-medium ${
+                          countdown < 3600 ? "text-red-600" : "text-amber-600"
+                        }`}
+                      >
+                        {formatTime(countdown)}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Payment Instructions */}
+                <div className="space-y-4">
+                  <h3 className="font-medium">Cara Pembayaran</h3>
+
+                  <Accordion
+                    type="single"
+                    collapsible
+                    className="w-full"
+                    defaultValue="instructions-0"
+                  >
+                    {bankConfig.instructions.map((instruction, idx) => (
+                      <AccordionItem
+                        key={idx}
+                        value={`instructions-${idx}`}
+                        className="border rounded-md px-4 mb-2"
+                      >
+                        <AccordionTrigger className="py-3">
+                          {instruction.title}
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <ol className="space-y-2 list-decimal list-inside">
+                            {instruction.steps.map((step, stepIdx) => (
+                              <li key={stepIdx} className="text-sm">
+                                {step.replace("{va_number}", vaNumber || "")}
+                              </li>
+                            ))}
+                          </ol>
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                </div>
+
+                {/* Payment Notice */}
+                <div className="mt-8 bg-amber-50 border border-amber-200 rounded-md p-4 flex items-start space-x-3">
+                  <AlertCircle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm text-amber-800">
+                      Pembayaran akan diproses secara otomatis oleh sistem.
+                      Mohon tidak menutup halaman ini sampai proses pembayaran
+                      selesai.
+                    </p>
+                  </div>
+                </div>
+              </>
+            )}
           </Card>
         </div>
 
@@ -624,31 +666,56 @@ export default function BankTransferPayment({
             </div>
 
             <div className="mt-6 pt-4 border-t">
-              <div className="text-sm text-muted-foreground">
-                <div className="flex items-center gap-2 mb-2">
-                  <Clock className="h-4 w-4" />
-                  <span>Menunggu pembayaran Anda</span>
-                </div>
-                <p>
-                  Selesaikan pembayaran dalam:{" "}
-                  {paymentDetails?.expiryTime ? (
-                    <CountdownTimer
-                      expiryTime={paymentDetails.expiryTime}
-                      onExpire={() => setCountdown(0)}
-                      showIcon={false}
-                      className="inline"
-                    />
-                  ) : (
-                    <span
-                      className={`font-medium ${
-                        countdown < 3600 ? "text-red-600" : "text-amber-600"
-                      }`}
-                    >
-                      {formatTime(countdown)}
+              {paymentStatus?.status === "COMPLETED" ? (
+                // Completed payment state
+                <div className="text-sm">
+                  <div className="flex items-center gap-2 mb-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <span className="font-medium text-green-700">
+                      Pembayaran Berhasil
                     </span>
-                  )}
-                </p>
-              </div>
+                  </div>
+                  <p className="text-muted-foreground">
+                    Anda telah berhasil membayar kursus ini. Terima kasih atas
+                    pembelian Anda.
+                  </p>
+                  <Button
+                    variant="link"
+                    size="sm"
+                    className="mt-2 p-0 h-auto text-primary"
+                    onClick={() => router.push(`/courses/${courseId}`)}
+                  >
+                    Mulai Belajar
+                  </Button>
+                </div>
+              ) : (
+                // Pending payment state - original content
+                <div className="text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Clock className="h-4 w-4" />
+                    <span>Menunggu pembayaran Anda</span>
+                  </div>
+                  <div>
+                    Selesaikan pembayaran dalam:{" "}
+                    {paymentDetails?.expiryTime ? (
+                      <CountdownTimer
+                        expiryTime={paymentDetails.expiryTime}
+                        onExpire={() => setCountdown(0)}
+                        showIcon={false}
+                        className="inline"
+                      />
+                    ) : (
+                      <span
+                        className={`font-medium ${
+                          countdown < 3600 ? "text-red-600" : "text-amber-600"
+                        }`}
+                      >
+                        {formatTime(countdown)}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </Card>
 
