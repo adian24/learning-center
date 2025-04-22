@@ -82,9 +82,9 @@ const Dashboard = () => {
   return (
     <Layout>
       {/* Hero Section */}
-      <div className="">
-        <div className="rounded-lg bg-gradient-to-r from-teal-100 to-fuchsia-100 px-4 container mx-auto max-w-7xl lg:px-8 py-8 md:py-12">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+      <div className="rounded-lg bg-gradient-to-r from-teal-100 to-fuchsia-100 max-w-6xl mx-auto">
+        <div className="px-4 container mx-auto max-w-6xl sm:px-6 lg:px-0 py-8 md:py-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center md:px-8">
             {/* Profile Information */}
             <div className="col-span-2">
               <div className="flex items-center gap-4 mb-4">
@@ -224,7 +224,7 @@ const Dashboard = () => {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+      <div className="container mx-auto max-w-6xl px-4 sm:px-0 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content Column */}
           <div className="lg:col-span-2 space-y-8">
