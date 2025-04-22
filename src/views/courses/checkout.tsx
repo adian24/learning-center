@@ -43,6 +43,7 @@ import {
   ChevronRight,
   Loader2,
 } from "lucide-react";
+import { EWalletMethodSelector } from "@/sections/courses/detail/checkout/EWalletMethodSelector";
 
 // Payment method types
 const paymentMethods = [
@@ -136,6 +137,11 @@ export default function CustomCheckout({
     try {
       setIsSubmitting(true);
 
+      // Save the phone number for OVO if provided
+      if (values.phone) {
+        localStorage.setItem("userPhoneNumber", values.phone);
+      }
+
       // Handle credit card payment differently
       if (selectedMethod === "credit_card") {
         // Redirect to credit card payment page
@@ -143,9 +149,12 @@ export default function CustomCheckout({
         return;
       }
 
-      // Handle bank transfer - redirect already happens in BankMethodSelector
+      // For e-wallets - handled in EWalletMethodSelector
+      if (selectedCategory === "ewallet") {
+        // The EWalletMethodSelector will handle the navigation
+        return;
+      }
 
-      // Handle other payment methods (e-wallet)
       const paymentData = {
         courseId: course.id,
         amount: course.price || 0,
@@ -298,6 +307,17 @@ export default function CustomCheckout({
                   );
                 }
 
+                // Use our custom EWalletMethodSelector for e-wallets
+                if (selectedCategory === "ewallet") {
+                  return (
+                    <EWalletMethodSelector
+                      courseId={course.id}
+                      courseName={course.title}
+                      coursePrice={course.price}
+                    />
+                  );
+                }
+
                 // Handle credit card selection with notice
                 if (selectedCategory === "credit_card") {
                   return (
@@ -378,13 +398,14 @@ export default function CustomCheckout({
                   disabled={
                     isSubmitting ||
                     !selectedMethod ||
-                    selectedCategory === "bank_transfer"
+                    selectedCategory === "bank_transfer" ||
+                    selectedCategory === "ewallet"
                   }
                 >
                   {isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Processing...
+                      Memproses...
                     </>
                   ) : (
                     "Lanjutkan Pembayaran"

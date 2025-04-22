@@ -28,6 +28,11 @@ const nextConfig: NextConfig = {
         hostname: "ui-avatars.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "api.sandbox.midtrans.com",
+        pathname: "/**",
+      },
     ],
   },
 };
