@@ -40,7 +40,7 @@ const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
   const course = data?.course;
 
   // Check if user is enrolled (studentId will be present and possibly a certificate)
-  const isEnrolled = !!data?.studentId;
+  const isEnrolled = course?.isEnrolled;
   const hasCertificate = !!data?.certificate;
 
   if (isLoading) {

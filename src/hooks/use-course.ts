@@ -7,6 +7,7 @@ export interface Course {
   imageUrl: string | null;
   price: number | null;
   isPublished: boolean;
+  isEnrolled?: boolean;
   teacherId: string;
   teacher: {
     id: string;
