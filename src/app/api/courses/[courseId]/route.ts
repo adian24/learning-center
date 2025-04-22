@@ -9,6 +9,9 @@ export async function GET(
   try {
     const courseId = (await params).courseId;
     const session = await auth();
+    const userId = session?.user?.id;
+
+    let enrollments: { courseId: string }[] = [];
 
     // Handle authenticated users with student profile
     if (session?.user?.id) {
@@ -20,6 +23,14 @@ export async function GET(
 
       // If user has a student profile, include progress information
       if (studentProfile) {
+        enrollments = await db.enrolledCourse.findMany({
+          where: {
+            studentId: studentProfile.id,
+            status: "COMPLETED",
+          },
+          select: { courseId: true },
+        });
+
         const course = await db.course.findUnique({
           where: {
             id: courseId,
@@ -59,6 +70,8 @@ export async function GET(
           return new NextResponse("Course not found", { status: 404 });
         }
 
+        const enrolledCourseIds = new Set(enrollments.map((e) => e.courseId));
+
         // Calculate total duration from chapters
         const totalDuration = course.chapters.reduce((total, chapter) => {
           return total + (chapter.duration || 0);
@@ -68,6 +81,7 @@ export async function GET(
         const courseWithDuration = {
           ...course,
           duration: totalDuration,
+          isEnrolled: enrolledCourseIds.has(course.id),
         };
 
         // Check for certificate

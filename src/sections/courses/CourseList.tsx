@@ -9,15 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import {
-  BookOpen,
-  Calendar,
-  Clock,
-  Grid,
-  List,
-  Star,
-  Users,
-} from "lucide-react";
+import { Calendar, Clock, Grid, List, ShieldCheck, Star } from "lucide-react";
 import { formatPrice } from "@/utils/formatPrice";
 import { formatVideoDuration } from "@/utils/formatVideoDuration";
 import Link from "next/link";
@@ -41,6 +33,7 @@ type StudentCourse = {
   enrolledCount: number;
   chapterCount: number;
   updatedAt: Date;
+  isEnrolled?: boolean;
 };
 
 type CourseListProps = {
@@ -106,7 +99,6 @@ const CourseList: React.FC<CourseListProps> = ({
                 <TableHead>Level</TableHead>
                 <TableHead className="text-center">Duration</TableHead>
                 <TableHead className="text-center">Rating</TableHead>
-                <TableHead className="text-center">Students</TableHead>
                 <TableHead>Price</TableHead>
                 <TableHead>Last Updated</TableHead>
               </TableRow>
@@ -115,16 +107,22 @@ const CourseList: React.FC<CourseListProps> = ({
               {courses.map((course) => (
                 <TableRow key={course.id}>
                   <TableCell>
-                    <div>
-                      <Link
-                        href={`/courses/${course.id}`}
-                        className="font-medium hover:text-blue-600 hover:underline transition-colors"
-                      >
-                        <div className="font-medium">{course.title}</div>
-                      </Link>
-                      <div className="text-sm text-gray-500 truncate max-w-[280px]">
-                        {course.description}
-                      </div>
+                    <div className="flex items-center mb-0.5">
+                      {course?.isEnrolled && (
+                        <div className="text-green-800 flex items-center gap-1">
+                          <ShieldCheck className="h-3.5 w-3.5" />
+                          <span className="text-xs">Enrolled</span>
+                        </div>
+                      )}
+                    </div>
+                    <Link
+                      href={`/teacher/courses/${course.id}`}
+                      className="font-medium hover:text-blue-600 hover:underline transition-colors flex items-center gap-2"
+                    >
+                      <div className="font-medium">{course.title}</div>
+                    </Link>
+                    <div className="text-sm text-gray-500 truncate max-w-[280px]">
+                      {course.description}
                     </div>
                   </TableCell>
                   <TableCell>
@@ -141,12 +139,6 @@ const CourseList: React.FC<CourseListProps> = ({
                       <Star className="h-4 w-4 mr-1 fill-yellow-400 text-yellow-400" />
                       {course.rating ? course.rating.toFixed(1) : "New"}
                       {course.reviewCount > 0 && ` (${course.reviewCount})`}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <div className="flex items-center justify-center">
-                      <Users className="h-4 w-4 mr-1" />
-                      {course.enrolledCount}
                     </div>
                   </TableCell>
                   <TableCell>

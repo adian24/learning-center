@@ -16,7 +16,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { CourseListProps } from "@/lib/types";
-import { BookOpen, Calendar, Users } from "lucide-react";
+import { BookOpen, Calendar, Users, ShieldCheck } from "lucide-react";
 import CourseActions from "./CourseActions";
 import { formatPrice } from "@/utils/formatPrice";
 
@@ -40,16 +40,22 @@ const CourseList: React.FC<CourseListProps> = ({ courses }) => {
           {courses?.map((course) => (
             <TableRow key={course.id}>
               <TableCell>
-                <div>
-                  <Link
-                    href={`/teacher/courses/${course.id}`}
-                    className="font-medium hover:text-blue-600 hover:underline transition-colors"
-                  >
-                    <div className="font-medium">{course.title}</div>
-                  </Link>
-                  <div className="text-sm text-gray-500 truncate max-w-[280px]">
-                    {course.description}
-                  </div>
+                <div className="flex items-center mb-0.5">
+                  {course?.isEnrolled && (
+                    <div className="text-green-800 flex items-center gap-1">
+                      <ShieldCheck className="h-3.5 w-3.5" />
+                      <span className="text-xs">Enrolled</span>
+                    </div>
+                  )}
+                </div>
+                <Link
+                  href={`/teacher/courses/${course.id}`}
+                  className="font-medium hover:text-blue-600 hover:underline transition-colors flex items-center gap-2"
+                >
+                  <div className="font-medium">{course.title}</div>
+                </Link>
+                <div className="text-sm text-gray-500 truncate max-w-[280px]">
+                  {course.description}
                 </div>
               </TableCell>
               <TableCell>

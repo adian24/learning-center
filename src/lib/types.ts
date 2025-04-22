@@ -51,6 +51,7 @@ export interface Course {
   rating: number;
   reviewCount: number;
   chapters: Chapter[];
+  isEnrolled?: boolean;
 }
 
 export interface Category {

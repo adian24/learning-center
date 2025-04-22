@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Image from "next/image";
-import { BookOpen, Clock, Star, Users } from "lucide-react";
+import { BookOpen, CheckCircle, Clock, Star, Users } from "lucide-react";
 import { formatPrice } from "@/utils/formatPrice";
 import { formatVideoDuration } from "@/utils/formatVideoDuration";
 
@@ -29,6 +29,7 @@ type StudentCourseProps = {
   teacherName?: string | null;
   enrolledCount: number;
   chapterCount: number;
+  isEnrolled?: boolean;
 };
 
 const CourseCard = ({ course }: { course: StudentCourseProps }) => {
@@ -43,6 +44,14 @@ const CourseCard = ({ course }: { course: StudentCourseProps }) => {
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           priority={false}
         />
+        {course.isEnrolled && (
+          <div className="absolute top-2 right-2">
+            <Badge className="bg-green-100 text-green-800 border border-green-300 flex items-center gap-1">
+              <CheckCircle className="h-3 w-3" />
+              <span>Enrolled</span>
+            </Badge>
+          </div>
+        )}
       </div>
       <CardHeader>
         <div className="flex justify-between items-start">

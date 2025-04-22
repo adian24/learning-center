@@ -1,9 +1,12 @@
+import { auth } from "@/lib/auth";
 import db from "@/lib/db/db";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams;
+    const session = await auth();
+    const userId = session?.user?.id;
 
     // Extract filter parameters
     const search = searchParams.get("search") || "";
@@ -13,6 +16,8 @@ export async function GET(req: NextRequest) {
     const minPrice = Number(searchParams.get("minPrice") || 0);
     const maxPrice = Number(searchParams.get("maxPrice") || 1000);
     const minRating = Number(searchParams.get("minRating") || 0);
+
+    let enrollments: { courseId: string }[] = [];
 
     // Build filters object for Prisma query
     const where: any = {
@@ -117,6 +122,25 @@ export async function GET(req: NextRequest) {
       },
     });
 
+    if (userId) {
+      const studentProfile = await db.studentProfile.findUnique({
+        where: { userId },
+        select: { id: true },
+      });
+
+      if (studentProfile) {
+        enrollments = await db.enrolledCourse.findMany({
+          where: {
+            studentId: studentProfile.id,
+            status: "COMPLETED",
+          },
+          select: { courseId: true },
+        });
+      }
+    }
+
+    const enrolledCourseIds = new Set(enrollments.map((e) => e.courseId));
+
     // Transform data to add computed properties
     const transformedCourses = courses.map((course) => {
       // Calculate total duration from chapters
@@ -146,6 +170,7 @@ export async function GET(req: NextRequest) {
         teacherImage: course.teacher?.user?.image,
         chapterCount: course.chapters.length,
         enrolledCount: course.enrolledStudents.length,
+        isEnrolled: enrolledCourseIds.has(course.id),
       };
     });
 
