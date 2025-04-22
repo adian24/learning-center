@@ -10,6 +10,8 @@ interface CountdownTimerProps {
   expiredMessage?: string;
   showIcon?: boolean;
   labelText?: string;
+  // Add a prop to control rendering as span instead of div
+  asInline?: boolean;
 }
 
 export function CountdownTimer({
@@ -19,6 +21,8 @@ export function CountdownTimer({
   expiredMessage = "Expired",
   showIcon = true,
   labelText,
+  // Default to false for backward compatibility
+  asInline = false,
 }: CountdownTimerProps) {
   const [timeLeft, setTimeLeft] = useState({
     hours: 0,
@@ -85,8 +89,9 @@ export function CountdownTimer({
 
   const colorClass = getColorClass();
 
-  return (
-    <div className={`flex items-center ${className}`}>
+  // Common content to display in either wrapper element
+  const content = (
+    <>
       {labelText && (
         <span className="text-muted-foreground mr-2">{labelText}</span>
       )}
@@ -98,6 +103,16 @@ export function CountdownTimer({
       <span className={`font-medium ${colorClass}`}>
         {timeLeft.totalSeconds > 0 ? formattedTime : expiredMessage}
       </span>
-    </div>
+    </>
   );
+
+  // Render as span when asInline is true (for use inside paragraphs)
+  if (asInline) {
+    return (
+      <span className={`inline-flex items-center ${className}`}>{content}</span>
+    );
+  }
+
+  // Default rendering with div
+  return <div className={`flex items-center ${className}`}>{content}</div>;
 }
