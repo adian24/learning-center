@@ -17,7 +17,7 @@ export async function GET(
     if (session?.user?.id) {
       const studentProfile = await db.studentProfile.findUnique({
         where: {
-          userId: session.user.id,
+          userId,
         },
       });
 

@@ -89,6 +89,7 @@ const ContentVideo = ({
         });
       }
     } catch (error) {
+      console.error("Upload error:", error);
       setError("Failed to upload video. Please try again.");
       setIsUploading(false);
     } finally {

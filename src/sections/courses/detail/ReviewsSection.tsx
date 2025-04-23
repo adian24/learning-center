@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useReviews } from "@/hooks/use-course-reviews";
 import { Star } from "lucide-react";
-import React, { useState } from "react";
 
 interface ReviewsSectionProps {
   courseId: string;

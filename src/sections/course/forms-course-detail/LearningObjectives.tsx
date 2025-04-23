@@ -20,7 +20,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import { FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
   Sortable,
@@ -28,7 +28,6 @@ import {
   SortableItem,
 } from "@/components/ui/sortable";
 import { Plus } from "lucide-react";
-import { toast } from "sonner";
 
 // Extend the schema to include the id field for tracking existing objectives
 const schema = z.object({

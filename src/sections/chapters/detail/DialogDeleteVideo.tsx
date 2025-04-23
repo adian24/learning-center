@@ -51,6 +51,7 @@ const DialogDeleteVideo = () => {
         onClose();
       }
     } catch (error) {
+      console.error("Delete error:", error);
       toast.error("An error occurred. Please try again.");
     } finally {
       setIsDeleting(false);

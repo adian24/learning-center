@@ -20,7 +20,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
 interface EWalletMethodSelectorProps {
@@ -40,7 +39,6 @@ const SUPPORTED_EWALLETS = [
 export function EWalletMethodSelector({
   courseId,
   courseName = "Course",
-  coursePrice = 0,
   onSelect,
 }: EWalletMethodSelectorProps) {
   const [selectedEWallet, setSelectedEWallet] = useState<string | null>(null);

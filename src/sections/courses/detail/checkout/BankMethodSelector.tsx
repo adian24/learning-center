@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { BankIcon } from "@/components/ui/bank-icons";
 import { BankConfirmationDialog } from "@/components/payments/BankConfirmationDialog";
@@ -27,7 +26,6 @@ export function BankMethodSelector({
 }: BankMethodSelectorProps) {
   const [selectedBank, setSelectedBank] = useState<string | null>(null);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
-  const router = useRouter();
 
   const handleBankSelect = (bankId: string) => {
     setSelectedBank(bankId);

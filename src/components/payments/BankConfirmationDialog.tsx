@@ -91,9 +91,9 @@ export function BankConfirmationDialog({
 
         <div className="bg-muted/50 p-3 rounded-md text-sm">
           <p>
-            Setelah mengklik "Lanjutkan", Anda akan diarahkan ke halaman
-            pembayaran dengan instruksi detail untuk menyelesaikan transaksi
-            melalui {getBankName()}.
+            Setelah mengklik &quot;Lanjutkan&quot;, Anda akan diarahkan ke
+            halaman pembayaran dengan instruksi detail untuk menyelesaikan
+            transaksi melalui {getBankName()}.
           </p>
         </div>
 

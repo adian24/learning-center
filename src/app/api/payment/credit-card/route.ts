@@ -1,11 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import {
-  coreApi,
-  truncateText,
-  formatCardExpiry,
-  formatCardNumber,
-} from "@/lib/midtrans";
+import { coreApi, truncateText } from "@/lib/midtrans";
 import { v4 as uuidv4 } from "uuid";
 import { auth } from "@/lib/auth";
 import db from "@/lib/db/db";
@@ -45,16 +40,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const {
-      courseId,
-      amount,
-      cardNumber,
-      cardExpiry,
-      cardCvv,
-      cardholderName,
-      phone,
-      tokenId,
-    } = result.data;
+    const { courseId, amount, cardholderName, phone, tokenId } = result.data;
 
     // Get student profile
     const studentProfile = await db.studentProfile.findUnique({
@@ -130,8 +116,6 @@ export async function POST(req: NextRequest) {
     }
 
     // Format card data for Midtrans
-    const formattedCardNumber = formatCardNumber(cardNumber);
-    const { month, year } = formatCardExpiry(cardExpiry);
     const truncatedTitle = truncateText(course.title, 50);
 
     // Build payload for Midtrans Core API

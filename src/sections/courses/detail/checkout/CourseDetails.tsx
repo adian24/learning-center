@@ -1,6 +1,6 @@
 // src/app/courses/[courseId]/checkout/_components/course-details.tsx
 import Image from "next/image";
-import { BookOpen, Clock, Award, Users, Star } from "lucide-react";
+import { BookOpen, Clock, Award, Star } from "lucide-react";
 
 export function CourseDetails({ course }: { course: any }) {
   return (

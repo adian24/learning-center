@@ -51,7 +51,7 @@ export function CheckoutForm({ course, user }: CheckoutFormProps) {
   });
 
   // Form submission handler
-  const onSubmit = async (data: CheckoutFormValues) => {
+  const onSubmit = async () => {
     setIsSubmitting(true);
 
     try {

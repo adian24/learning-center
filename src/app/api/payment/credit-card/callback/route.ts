@@ -27,12 +27,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { order_id, transaction_status, status_code, signature_key } =
-      result.data;
-
-    // Verify callback signature (if needed)
-    // This would require implementing specific signature verification logic
-    // based on Midtrans documentation
+    const { order_id, transaction_status } = result.data;
 
     // Find the enrollment by paymentId (order_id)
     const enrollment = await db.enrolledCourse.findFirst({
@@ -45,9 +40,6 @@ export async function POST(req: NextRequest) {
         { status: 404 }
       );
     }
-
-    // Verify transaction status with Midtrans Core API (optional extra verification)
-    // const transactionStatus = await midtrans.transaction.status(order_id);
 
     // Update enrollment status based on transaction status
     let newStatus: "PENDING" | "COMPLETED" | "FAILED";

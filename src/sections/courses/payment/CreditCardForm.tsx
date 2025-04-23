@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -34,7 +33,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { formatPrice } from "@/utils/formatPrice";
-import { formatCardNumber, formatCardExpiry } from "@/lib/midtrans";
 
 const isExpiryDateValid = (value: string) => {
   // Check format (MM/YY)
@@ -121,7 +119,6 @@ export default function CreditCardForm({
   const [cardType, setCardType] = useState<string | null>(null);
   const [redirectUrl, setRedirectUrl] = useState<string | null>(null);
   const [threeDSFrame, setThreeDSFrame] = useState<boolean>(false);
-  const router = useRouter();
 
   // Create form
   const form = useForm<CreditCardFormValues>({
@@ -325,9 +322,6 @@ export default function CreditCardForm({
 
       // Generate a unique order ID
       const orderId = `ORDER-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-
-      // Parse card expiry
-      const expiryParts = values.cardExpiry.split("/");
 
       // Call the charge API
       const response = await fetch("/api/payment/credit-card/charge", {

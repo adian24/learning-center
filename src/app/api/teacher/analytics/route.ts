@@ -41,10 +41,6 @@ export async function GET() {
       },
     });
 
-    // Calculate enrollments per month for the last 6 months
-    const now = new Date();
-    const sixMonthsAgo = new Date(now.setMonth(now.getMonth() - 6));
-
     // Prepare monthly data
     const monthlyData = [];
     for (let i = 0; i < 6; i++) {

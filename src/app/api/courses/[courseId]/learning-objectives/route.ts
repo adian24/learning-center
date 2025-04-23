@@ -55,7 +55,7 @@ export async function POST(
 
     // Get the current count to determine position
     const currentObjectives = await getLearningObjectivesByCourse(courseId);
-    let nextPosition = currentObjectives.length;
+    const nextPosition = currentObjectives.length;
 
     const body = await request.json();
 

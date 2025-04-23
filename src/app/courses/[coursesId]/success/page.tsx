@@ -133,12 +133,13 @@ export default async function SuccessPage({
         {enrollment.status === "COMPLETED" ||
         enrollment.status === "PENDING" ? (
           <p className="text-gray-600 mb-6">
-            Terima kasih telah mendaftar di "{enrollment.course.title}"
+            Terima kasih telah mendaftar di &quot;{enrollment.course.title}
+            &quot;
           </p>
         ) : (
           <p className="text-gray-600 mb-6">
-            Terjadi masalah dengan pendaftaran Anda di "
-            {enrollment.course.title}"
+            Terjadi masalah dengan pendaftaran Anda di &quot;
+            {enrollment.course.title}&quot;
           </p>
         )}
 
