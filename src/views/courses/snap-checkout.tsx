@@ -70,7 +70,7 @@ export default function SnapCheckoutPage({
             </div>
 
             <div className="mt-6 pt-4 border-t">
-              <h4 className="font-medium mb-2">What You'll Get</h4>
+              <h4 className="font-medium mb-2">What You&apos;ll Get</h4>
               <ul className="space-y-2">
                 <li className="flex gap-2 items-center">
                   <CheckCircle className="h-4 w-4 text-green-500" />
