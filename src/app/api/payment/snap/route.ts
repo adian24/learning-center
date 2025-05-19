@@ -16,15 +16,6 @@ const snapPaymentSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-  const serverKey = process.env.MIDTRANS_SERVER_KEY;
-  const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY;
-
-  // Debug environment variables (IMPORTANT: This will be in logs, remove in production)
-  console.log("Server Key available:", !!serverKey);
-  console.log("Server Key prefix:", serverKey?.substring(0, 10));
-  console.log("Client Key available:", !!clientKey);
-  console.log("Client Key prefix:", clientKey?.substring(0, 10));
-
   try {
     // Get current user session
     const session = await auth();
