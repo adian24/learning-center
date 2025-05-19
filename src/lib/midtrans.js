@@ -7,7 +7,15 @@ export const PRODUCTION_BASE_URL = "https://api.midtrans.com/v2";
 
 export const baseUrl = isProduction ? PRODUCTION_BASE_URL : SANDBOX_BASE_URL;
 
+// Core API Transaction
 export const coreApi = new midtransClient.CoreApi({
+  isProduction,
+  serverKey: process.env.MIDTRANS_SERVER_KEY,
+  clientKey: process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY,
+});
+
+// SNAP Transaction
+export const snap = new midtransClient.Snap({
   isProduction,
   serverKey: process.env.MIDTRANS_SERVER_KEY,
   clientKey: process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY,

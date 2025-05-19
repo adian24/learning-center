@@ -1,7 +1,13 @@
 // app/api/courses/upload/route.ts
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import cloudinary from "@/lib/cloudinary";
+import { DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { v4 as uuidv4 } from "uuid";
+import { s3Client } from "@/lib/s3";
+import { uploadFile } from "@/lib/services/s3/upload-file";
+
+const BUCKET_NAME = process.env.IDCLOUD_BUCKET_NAME;
+const FOLDER_NAME = "course-thumbnails";
 
 export async function POST(req: Request) {
   try {
@@ -19,42 +25,35 @@ export async function POST(req: Request) {
       return new NextResponse("No file provided", { status: 400 });
     }
 
-    // Convert File to buffer
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    // Check file type
+    const fileType = file.type;
+    const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
-    // Upload to Cloudinary
-    const response = await new Promise((resolve, reject) => {
-      cloudinary.uploader
-        .upload_stream(
-          {
-            resource_type: "image",
-            folder: "course-thumbnails",
-            allowed_formats: ["jpg", "jpeg", "png", "webp"],
-            max_bytes: 4000000, // 4MB
-          },
-          (error, result) => {
-            if (error) {
-              reject(error);
-              return;
-            }
-            resolve(result);
-          }
-        )
-        .end(buffer);
-    });
-
-    if (
-      !response ||
-      typeof response !== "object" ||
-      !("secure_url" in response)
-    ) {
-      throw new Error("Invalid response from Cloudinary");
+    if (!validTypes.includes(fileType)) {
+      return new NextResponse(
+        "Invalid file format. Supported formats: JPG, JPEG, PNG, WEBP",
+        {
+          status: 400,
+        }
+      );
     }
+
+    // Check file size (4MB limit)
+    if (file.size > 4000000) {
+      return new NextResponse("File too large. Maximum size is 4MB", {
+        status: 400,
+      });
+    }
+
+    // Generate a unique filename
+    const fileExtension = fileType.split("/")[1];
+    const fileName = `${FOLDER_NAME}/${uuidv4()}.${fileExtension}`;
+
+    const fileUrl = uploadFile(file, fileName);
 
     return NextResponse.json({
       success: true,
-      url: response.secure_url,
+      url: fileUrl,
     });
   } catch (error) {
     console.error("[COURSE_IMAGE_UPLOAD]", error);
@@ -62,7 +61,6 @@ export async function POST(req: Request) {
   }
 }
 
-// Untuk menangani penghapusan gambar (opsional)
 export async function DELETE(req: Request) {
   try {
     const session = await auth();
@@ -73,17 +71,25 @@ export async function DELETE(req: Request) {
     }
 
     const { searchParams } = new URL(req.url);
-    const publicId = searchParams.get("publicId");
+    const key = searchParams.get("key");
 
-    if (!publicId) {
-      return new NextResponse("Public ID is required", { status: 400 });
+    if (!key) {
+      return new NextResponse("File key is required", { status: 400 });
     }
 
-    const response = await cloudinary.uploader.destroy(
-      `course-thumbnails/${publicId}`
-    );
+    // Delete the file from S3
+    const deleteParams = {
+      Bucket: BUCKET_NAME,
+      Key: key,
+    };
 
-    return NextResponse.json(response);
+    const command = new DeleteObjectCommand(deleteParams);
+    await s3Client.send(command);
+
+    return NextResponse.json({
+      success: true,
+      message: "File deleted successfully",
+    });
   } catch (error) {
     console.error("[COURSE_IMAGE_DELETE]", error);
     return new NextResponse("Internal Error", { status: 500 });

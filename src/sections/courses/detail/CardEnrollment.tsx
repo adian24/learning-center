@@ -49,7 +49,7 @@ const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
 
   const handleEnrollCourse = () => {
     if (session?.user) {
-      router.push(`/courses/${courseId}/checkout`);
+      router.push(`/courses/${courseId}/snap-checkout`);
     } else {
       router.push("/sign-up");
     }

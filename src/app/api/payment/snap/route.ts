@@ -1,0 +1,175 @@
+// src/app/api/payment/snap/route.ts
+import { NextRequest, NextResponse } from "next/server";
+import { v4 as uuidv4 } from "uuid";
+import { auth } from "@/lib/auth";
+import db from "@/lib/db/db";
+import { z } from "zod";
+import { snap } from "@/lib/midtrans";
+
+// Input validation schema
+const snapPaymentSchema = z.object({
+  courseId: z.string(),
+  amount: z.number().positive(),
+  customerName: z.string().optional(),
+  customerEmail: z.string().email().optional(),
+  customerPhone: z.string().optional(),
+});
+
+export async function POST(req: NextRequest) {
+  try {
+    // Get current user session
+    const session = await auth();
+
+    if (!session?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Parse request body
+    const body = await req.json();
+    const result = snapPaymentSchema.safeParse(body);
+
+    if (!result.success) {
+      return NextResponse.json(
+        { error: "Invalid payment data", details: result.error.format() },
+        { status: 400 }
+      );
+    }
+
+    const { courseId, amount, customerName, customerEmail, customerPhone } =
+      result.data;
+
+    // Get student profile
+    const studentProfile = await db.studentProfile.findUnique({
+      where: { userId: session.user.id },
+      include: { user: true },
+    });
+
+    if (!studentProfile) {
+      return NextResponse.json(
+        { error: "Student profile not found" },
+        { status: 404 }
+      );
+    }
+
+    // Get course details
+    const course = await db.course.findUnique({
+      where: { id: courseId },
+      include: {
+        teacher: {
+          include: { user: true },
+        },
+      },
+    });
+
+    if (!course) {
+      return NextResponse.json({ error: "Course not found" }, { status: 404 });
+    }
+
+    // Check if student already enrolled with COMPLETED status
+    const existingEnrollment = await db.enrolledCourse.findUnique({
+      where: {
+        studentId_courseId: {
+          studentId: studentProfile.id,
+          courseId,
+        },
+      },
+    });
+
+    if (existingEnrollment && existingEnrollment.status === "COMPLETED") {
+      return NextResponse.json(
+        { error: "Already enrolled in this course" },
+        { status: 400 }
+      );
+    }
+
+    // Generate unique transaction ID
+    const transactionId = `ORDER-${uuidv4().substring(0, 8)}`;
+
+    // Create or update enrollment record with PENDING status
+    let enrollment;
+
+    if (existingEnrollment) {
+      // Update existing enrollment to PENDING
+      enrollment = await db.enrolledCourse.update({
+        where: { id: existingEnrollment.id },
+        data: {
+          status: "PENDING",
+          amount,
+          currency: "IDR",
+          paymentId: transactionId,
+          isActive: false,
+        },
+      });
+    } else {
+      // Create new enrollment with PENDING status
+      enrollment = await db.enrolledCourse.create({
+        data: {
+          studentId: studentProfile.id,
+          courseId: course.id,
+          amount,
+          currency: "IDR",
+          status: "PENDING",
+          paymentId: transactionId,
+          isActive: false,
+        },
+      });
+    }
+
+    // Prepare transaction details for Snap
+    const parameter = {
+      transaction_details: {
+        order_id: transactionId,
+        gross_amount: amount,
+      },
+      item_details: [
+        {
+          id: course.id,
+          price: amount,
+          quantity: 1,
+          name:
+            course.title.length > 50
+              ? course.title.substring(0, 47) + "..."
+              : course.title,
+        },
+      ],
+      customer_details: {
+        first_name: customerName || studentProfile.user.name || "Student",
+        email: customerEmail || studentProfile.user.email,
+        phone: customerPhone || "",
+      },
+      callbacks: {
+        finish: `${process.env.NEXT_PUBLIC_APP_URL}/courses/${courseId}/success?enrollment=${enrollment.id}`,
+        error: `${process.env.NEXT_PUBLIC_APP_URL}/courses/${courseId}/checkout?error=payment_failed`,
+        pending: `${process.env.NEXT_PUBLIC_APP_URL}/courses/${courseId}/payment?method=pending&enrollment=${enrollment.id}`,
+      },
+      credit_card: {
+        secure: true,
+      },
+      expiry: {
+        unit: "hour",
+        duration: 24,
+      },
+    };
+
+    // Create Snap transaction token
+    const transaction = await snap.createTransaction(parameter);
+
+    // Return the Snap token and redirect URL
+    return NextResponse.json({
+      success: true,
+      enrollmentId: enrollment.id,
+      transactionId,
+      snapToken: transaction.token,
+      redirectUrl: transaction.redirect_url,
+    });
+  } catch (error) {
+    console.error("Snap payment token generation error:", error);
+    return NextResponse.json(
+      {
+        error: "Failed to generate payment token",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 }
+    );
+  }
+}
