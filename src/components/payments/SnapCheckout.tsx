@@ -167,7 +167,8 @@ export function SnapCheckout({
           <div className="text-center text-xs text-muted-foreground mt-4">
             <p>Secure payment processed by Midtrans</p>
             <p className="mt-1">
-              By clicking "Pay Now", you agree to our Terms and Conditions.
+              By clicking &quot;Pay Now&quot;, you agree to our Terms and
+              Conditions.
             </p>
           </div>
         </div>
