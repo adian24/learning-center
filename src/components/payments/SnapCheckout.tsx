@@ -48,7 +48,6 @@ export function SnapCheckout({
     document.body.appendChild(snapScript);
 
     return () => {
-      // Cleanup script when component unmounts
       document.body.removeChild(snapScript);
     };
   }, []);
@@ -90,25 +89,21 @@ export function SnapCheckout({
       // @ts-ignore - window.snap is injected by the Midtrans script
       window.snap.pay(data.snapToken, {
         onSuccess: function () {
-          // Success - redirect to success page
           router.push(
             `/courses/${courseId}/success?enrollment=${data.enrollmentId}`
           );
         },
         onPending: function () {
-          // Pending - redirect to pending payment page
           router.push(
             `/courses/${courseId}/payment?method=pending&enrollment=${data.enrollmentId}`
           );
         },
         onError: function (error: any) {
-          // Error - show error message
           console.error("Payment error:", error);
           toast.error("Payment failed. Please try again.");
           setIsLoading(false);
         },
         onClose: function () {
-          // Customer closed the popup without finishing payment
           toast.info("Payment canceled. You can try again anytime.");
           setIsLoading(false);
         },
