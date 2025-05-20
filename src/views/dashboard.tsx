@@ -38,6 +38,7 @@ import {
   GraduationCap,
   Calendar as CalendarIcon,
 } from "lucide-react";
+import { PendingPaymentsWidget } from "@/components/dashboard/PendingPaymentsWidget";
 
 const Dashboard = () => {
   const router = useRouter();
@@ -566,6 +567,8 @@ const Dashboard = () => {
 
           {/* Right Sidebar */}
           <div className="space-y-6">
+            <PendingPaymentsWidget />
+
             <Card>
               <CardHeader>
                 <CardTitle>Quick Links</CardTitle>
