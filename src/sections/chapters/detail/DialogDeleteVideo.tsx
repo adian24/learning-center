@@ -14,6 +14,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { useDeleteVideoStore } from "@/store/use-store delete-video";
+import { extractVideoPath } from "@/utils/formatVideoDuration";
 
 const DialogDeleteVideo = () => {
   const queryClient = useQueryClient();
@@ -27,29 +28,63 @@ const DialogDeleteVideo = () => {
     setIsDeleting(true);
 
     try {
-      // Call the delete API
-      const response = await fetch(
-        `/api/teacher/courses/${videoToDelete.courseId}/chapters/${videoToDelete.id}/upload`,
+      // 1. First get the chapter details to get the videoKey
+      const getChapterResponse = await fetch(
+        `/api/teacher/courses/${videoToDelete.courseId}/chapters/${videoToDelete.id}`
+      );
+
+      if (!getChapterResponse.ok) {
+        throw new Error("Failed to get chapter information");
+      }
+
+      const chapterData = await getChapterResponse.json();
+      const videoKey = extractVideoPath(chapterData.videoUrl);
+
+      if (!videoKey) {
+        throw new Error("No video key found");
+      }
+
+      // 2. Delete the file from S3
+      const deleteResponse = await fetch(
+        `/api/upload/video?key=${encodeURIComponent(videoKey)}`,
         {
           method: "DELETE",
         }
       );
 
-      const result = await response.json();
-
-      if (!response.ok) {
-        toast.error(result?.message);
-      } else {
-        // await deleteVideo(videoToDelete.id);
-        queryClient.invalidateQueries({
-          queryKey: ["chapter", videoToDelete.courseId, videoToDelete.id],
-        });
-        queryClient.invalidateQueries({
-          queryKey: ["chapters", videoToDelete.courseId],
-        });
-        toast.success("Video deleted successfully");
-        onClose();
+      if (!deleteResponse.ok) {
+        throw new Error("Failed to delete video from storage");
       }
+
+      // 3. Update the chapter to remove video reference
+      const updateResponse = await fetch(
+        `/api/teacher/courses/${videoToDelete.courseId}/chapters/${videoToDelete.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            videoUrl: null,
+            duration: null,
+          }),
+        }
+      );
+
+      if (!updateResponse.ok) {
+        throw new Error("Failed to update chapter data");
+      }
+
+      // Invalidate queries to refresh data
+      queryClient.invalidateQueries({
+        queryKey: ["chapter", videoToDelete.courseId, videoToDelete.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["chapters", videoToDelete.courseId],
+      });
+
+      toast.success("Video deleted successfully");
+      onClose();
     } catch (error) {
       console.error("Delete error:", error);
       toast.error("An error occurred. Please try again.");

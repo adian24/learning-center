@@ -51,7 +51,15 @@ export async function PATCH(request: NextRequest, context: RouteParams) {
     const courseId = (await context.params).courseId;
 
     const body = await request.json();
-    const { title, description, isFree, isPublished, position } = body;
+    const {
+      title,
+      description,
+      isFree,
+      isPublished,
+      position,
+      videoUrl,
+      duration,
+    } = body;
 
     const chapter = await db.chapter.update({
       where: {
@@ -64,6 +72,8 @@ export async function PATCH(request: NextRequest, context: RouteParams) {
         isFree,
         isPublished,
         position,
+        videoUrl,
+        duration,
       },
     });
 

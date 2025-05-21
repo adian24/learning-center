@@ -36,6 +36,25 @@ const ContentVideo = ({
 
   const onOpenDeleteDialog = useDeleteVideoStore((state) => state.onOpen);
 
+  // Helper function to get video duration
+  const getVideoDuration = async (file: File): Promise<number> => {
+    return new Promise((resolve, reject) => {
+      const video = document.createElement("video");
+      video.preload = "metadata";
+
+      video.onloadedmetadata = () => {
+        window.URL.revokeObjectURL(video.src);
+        resolve(video.duration);
+      };
+
+      video.onerror = (e) => {
+        reject(e);
+      };
+
+      video.src = URL.createObjectURL(file);
+    });
+  };
+
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -56,45 +75,86 @@ const ContentVideo = ({
       setIsUploading(true);
       setError("");
 
-      // Simulate upload progress
-      const interval = setInterval(() => {
-        setUploadProgress((prev) => {
-          if (prev >= 95) {
-            clearInterval(interval);
-            return 95;
-          }
-          return prev + 5;
-        });
-      }, 500);
+      // Start progress indicator
+      setUploadProgress(10);
 
-      // TODO: Replace with your actual upload logic
-      const formData = new FormData();
-      formData.append("file", file);
-      const response = await fetch(
-        `/api/teacher/courses/${courseId}/chapters/${chapterId}/upload`,
-        { method: "POST", body: formData }
-      );
-      const data = await response.json();
+      // 1. Get the presigned URL from our API
+      const presignedUrlResponse = await fetch("/api/upload/video", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fileName: file.name,
+          fileType: file.type,
+        }),
+      });
 
-      if (response.ok) {
-        clearInterval(interval);
-        setUploadProgress(100);
-        setVideoUrl(data?.url);
-        toast.success("Video uploaded successfully");
-        queryClient.invalidateQueries({
-          queryKey: ["chapter", chapter?.courseId, chapter?.id],
-        });
-        queryClient.invalidateQueries({
-          queryKey: ["chapters", chapter?.courseId],
-        });
+      if (!presignedUrlResponse.ok) {
+        throw new Error("Failed to get upload URL");
       }
+
+      const { presignedUrl, url } = await presignedUrlResponse.json();
+
+      setUploadProgress(20);
+
+      // 2. Upload the file directly to S3 using the presigned URL
+      const uploadResponse = await fetch(presignedUrl, {
+        method: "PUT",
+        body: file,
+        headers: {
+          "Content-Type": file.type,
+        },
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error("Failed to upload to storage");
+      }
+
+      setUploadProgress(70);
+
+      // 3. Get video duration
+      const duration = await getVideoDuration(file);
+
+      setUploadProgress(80);
+
+      // 4. Update chapter in database with the new video URL and duration
+      const updateResponse = await fetch(
+        `/api/teacher/courses/${courseId}/chapters/${chapterId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            videoUrl: url,
+            duration: Math.round(duration),
+          }),
+        }
+      );
+
+      if (!updateResponse.ok) {
+        throw new Error("Failed to update chapter data");
+      }
+
+      setUploadProgress(100);
+      setVideoUrl(url);
+      toast.success("Video uploaded successfully");
+
+      // Invalidate queries to refresh data
+      queryClient.invalidateQueries({
+        queryKey: ["chapter", courseId, chapterId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["chapters", courseId],
+      });
     } catch (error) {
       console.error("Upload error:", error);
       setError("Failed to upload video. Please try again.");
-      setIsUploading(false);
     } finally {
       setIsUploading(false);
-      setUploadProgress(0);
+      // Reset progress after a short delay
+      setTimeout(() => setUploadProgress(0), 1000);
     }
   };
 
@@ -125,7 +185,7 @@ const ContentVideo = ({
                     document.getElementById("video-upload")?.click();
                   }}
                 >
-                  <Upload className="w-4 h-4" />
+                  <Upload className="w-4 h-4 mr-2" />
                   Upload Video
                 </Button>
                 <input
@@ -154,7 +214,12 @@ const ContentVideo = ({
             </div>
             <Progress value={uploadProgress} className="w-full" />
             <p className="text-center text-sm text-gray-500">
-              Mengunggah video... {uploadProgress}%
+              {uploadProgress < 70
+                ? "Mengunggah video..."
+                : uploadProgress < 90
+                ? "Memproses video..."
+                : "Menyelesaikan..."}{" "}
+              {uploadProgress}%
             </p>
           </div>
         </CardContent>
@@ -172,7 +237,7 @@ const ContentVideo = ({
         )}
         <div className="flex items-center justify-end">
           <Button size="sm" variant="destructive" onClick={handleDelete}>
-            <Trash2 className="w-4 h-4" />
+            <Trash2 className="w-4 h-4 mr-2" />
             Hapus Video
           </Button>
         </div>
@@ -181,7 +246,6 @@ const ContentVideo = ({
             src={chapter?.videoUrl || videoUrl}
             controls
             className="w-full h-full"
-            // poster="/api/placeholder/640/360"
           />
         </div>
       </CardContent>

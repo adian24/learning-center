@@ -1,5 +1,3 @@
-import { uploadLargeFile } from "@/lib/services/s3/upload-file";
-
 export function formatVideoDuration(durationInSeconds: number): string {
   // Round to nearest second
   const totalSeconds = Math.round(durationInSeconds);
@@ -43,21 +41,15 @@ export async function getVideoDuration(file: File) {
   });
 }
 
-export async function uploadVideoWithDuration(file: File, fileName: string) {
+export function extractVideoPath(url: string): string | null {
   try {
-    // Get duration first
-    const duration = await getVideoDuration(file);
+    const parsedUrl = new URL(url);
+    const pathname = parsedUrl.pathname;
 
-    // Upload file
-    const fileUrl = await uploadLargeFile(file, fileName);
-
-    // Return both URL and duration
-    return {
-      url: fileUrl,
-      duration: duration,
-    };
+    const match = pathname.match(/videos\/.+$/);
+    return match ? match[0] : null;
   } catch (error) {
-    console.error("Error uploading video:", error);
-    throw error;
+    console.error("Invalid URL:", error);
+    return null;
   }
 }
