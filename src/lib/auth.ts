@@ -15,7 +15,9 @@ const adapter = PrismaAdapter(db);
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter,
   providers: [
-    Google,
+    Google({
+      allowDangerousEmailAccountLinking: false, // Prevent automatic linking
+    }),
     Credentials({
       credentials: {
         email: {},
@@ -36,10 +38,26 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           where: {
             email: email,
           },
+          include: {
+            accounts: {
+              select: {
+                provider: true,
+              },
+            },
+          },
         });
 
         if (!user) {
           throw new Error("Invalid credentials.");
+        }
+
+        // Check if user has Google account but no password
+        const hasGoogleAccount = user.accounts.some(
+          (account) => account.provider === "google"
+        );
+
+        if (hasGoogleAccount && !user.password) {
+          throw new Error("EmailExistsWithGoogle");
         }
 
         // Verify the password
@@ -58,6 +76,41 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
+    async signIn({ user, account, profile }) {
+      // Handle Google sign-in
+      if (account?.provider === "google") {
+        const email = user.email;
+
+        if (email) {
+          // Check if user exists with credentials
+          const existingUser = await db.user.findUnique({
+            where: { email },
+            include: {
+              accounts: {
+                select: {
+                  provider: true,
+                },
+              },
+            },
+          });
+
+          if (existingUser) {
+            // Check if user has password but no Google account
+            const hasPassword = !!existingUser.password;
+            const hasGoogleAccount = existingUser.accounts.some(
+              (acc) => acc.provider === "google"
+            );
+
+            if (hasPassword && !hasGoogleAccount) {
+              // User exists with credentials, prevent Google sign-in
+              return false;
+            }
+          }
+        }
+      }
+
+      return true;
+    },
     async jwt({ token, account }) {
       if (account?.provider === "credentials") {
         token.credentials = true;
@@ -67,6 +120,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     authorized: async ({ auth }) => {
       // Logged in users are authenticated, otherwise redirect to login page
       return !!auth;
+    },
+  },
+  events: {
+    async signIn({ user, account, isNewUser }) {
+      // Log successful sign-ins
+      console.log(`User ${user.email} signed in with ${account?.provider}`);
     },
   },
   jwt: {
