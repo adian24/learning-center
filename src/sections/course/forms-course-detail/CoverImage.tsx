@@ -13,6 +13,7 @@ interface CoverImageProps {
   isSubmitting: boolean;
   isUploading: boolean;
   onImageUpload: (file: File) => Promise<void>;
+  courseId?: string;
 }
 
 const CoverImage = ({
@@ -20,8 +21,10 @@ const CoverImage = ({
   isSubmitting,
   onImageUpload,
   isUploading,
+  courseId,
 }: CoverImageProps) => {
   const { deleteImage, isDeleting } = useDeleteImage({
+    courseId,
     onSuccess: () => form.setValue("imageUrl", ""),
   });
   return (

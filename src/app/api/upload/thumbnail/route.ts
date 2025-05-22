@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { v4 as uuidv4 } from "uuid";
 import { BUCKET_NAME, S3_ENDPOINT, S3_THUMBNAIL, s3Client } from "@/lib/s3";
+import db from "@/lib/db/db";
 
 /**
  * POST: Generate a presigned URL for thumbnail upload
@@ -17,7 +18,15 @@ export async function POST(req: Request) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const { fileType } = await req.json();
+    const { fileType, courseId } = await req.json();
+
+    // Validate required parameters
+    if (!fileType || !courseId) {
+      return new NextResponse(
+        "Missing required parameters: fileType, courseId",
+        { status: 400 }
+      );
+    }
 
     // Validate file type
     const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -25,9 +34,32 @@ export async function POST(req: Request) {
       return new NextResponse("Invalid file format", { status: 400 });
     }
 
+    // Verify user owns the course
+    const teacherProfile = await db.teacherProfile.findUnique({
+      where: { userId: session.user.id },
+    });
+
+    if (!teacherProfile) {
+      return new NextResponse("Teacher profile not found", { status: 404 });
+    }
+
+    const course = await db.course.findFirst({
+      where: {
+        id: courseId,
+        teacherId: teacherProfile.id,
+      },
+    });
+
+    if (!course) {
+      return new NextResponse("Course not found or access denied", {
+        status: 404,
+      });
+    }
+
     // Generate a unique file key
     const fileExtension = fileType.split("/")[1];
     const key = `${S3_THUMBNAIL}/${uuidv4()}.${fileExtension}`;
+    const finalUrl = `${S3_ENDPOINT}/${BUCKET_NAME}/${key}`;
 
     // Create command for putting object
     const putCommand = new PutObjectCommand({
@@ -43,10 +75,16 @@ export async function POST(req: Request) {
       expiresIn: 300, // URL expires in 5 minutes
     });
 
+    // Update course with new image URL
+    await db.course.update({
+      where: { id: courseId },
+      data: { imageUrl: finalUrl },
+    });
+
     return NextResponse.json({
       key,
       presignedUrl,
-      url: `${S3_ENDPOINT}/${BUCKET_NAME}/${key}`,
+      url: finalUrl,
     });
   } catch (error) {
     console.error("[THUMBNAIL_PRESIGNED_UPLOAD]", error);
@@ -55,8 +93,8 @@ export async function POST(req: Request) {
 }
 
 /**
- * DELETE: Remove a thumbnail from S3 storage
- * Required query param: key
+ * DELETE: Remove a thumbnail from S3 storage and update course
+ * Required query params: key, courseId
  */
 export async function DELETE(req: NextRequest) {
   try {
@@ -66,12 +104,13 @@ export async function DELETE(req: NextRequest) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    // Get file key from URL params
+    // Get parameters from URL
     const { searchParams } = new URL(req.url);
     const key = searchParams.get("key");
+    const courseId = searchParams.get("courseId");
 
-    if (!key) {
-      return new NextResponse("Missing required parameter: key", {
+    if (!key || !courseId) {
+      return new NextResponse("Missing required parameters: key, courseId", {
         status: 400,
       });
     }
@@ -86,13 +125,48 @@ export async function DELETE(req: NextRequest) {
       );
     }
 
-    // Delete the object from S3
-    const deleteCommand = new DeleteObjectCommand({
-      Bucket: BUCKET_NAME,
-      Key: key,
+    // Verify user owns the course
+    const teacherProfile = await db.teacherProfile.findUnique({
+      where: { userId: session.user.id },
     });
 
-    await s3Client.send(deleteCommand);
+    if (!teacherProfile) {
+      return new NextResponse("Teacher profile not found", { status: 404 });
+    }
+
+    const course = await db.course.findFirst({
+      where: {
+        id: courseId,
+        teacherId: teacherProfile.id,
+      },
+    });
+
+    if (!course) {
+      return new NextResponse("Course not found or access denied", {
+        status: 404,
+      });
+    }
+
+    // Delete the old thumbnail from S3 if it exists
+    if (course.imageUrl) {
+      try {
+        const deleteCommand = new DeleteObjectCommand({
+          Bucket: BUCKET_NAME,
+          Key: key,
+        });
+
+        await s3Client.send(deleteCommand);
+      } catch (s3Error) {
+        // Log the error but don't fail the request if file doesn't exist
+        console.warn("[THUMBNAIL_DELETE_S3_WARNING]", s3Error);
+      }
+    }
+
+    // Update course to remove image URL
+    await db.course.update({
+      where: { id: courseId },
+      data: { imageUrl: null },
+    });
 
     return NextResponse.json({
       success: true,

@@ -23,8 +23,11 @@ interface BasicInfoFieldsProps {
 export const BasicInfoFieldsDetail = ({
   form,
   isSubmitting,
+  course,
 }: BasicInfoFieldsProps) => {
-  const { uploadImage, isUploading } = useImageUpload();
+  const { uploadImage, isUploading } = useImageUpload({
+    courseId: course?.id,
+  });
 
   const handleImageUpload = async (file: File) => {
     const imageUrl = await uploadImage(file);
@@ -40,6 +43,7 @@ export const BasicInfoFieldsDetail = ({
         isUploading={isUploading}
         isSubmitting={isSubmitting}
         onImageUpload={handleImageUpload}
+        courseId={course?.id}
       />
       <FormField
         control={form.control}
