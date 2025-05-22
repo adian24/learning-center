@@ -77,9 +77,16 @@ const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
           />
         </div>
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">
-            {formatPrice(course?.price as number)}
-          </CardTitle>
+          {isEnrolled ? (
+            <div className="bg-green-50 p-3 rounded-md text-green-700 flex items-center gap-2">
+              <CheckCircle className="h-5 w-5 text-green-600" />
+              <span>Anda sudah terdaftar dalam kursus ini</span>
+            </div>
+          ) : (
+            <CardTitle className="text-2xl font-bold">
+              formatPrice(course?.price as number)
+            </CardTitle>
+          )}
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="border rounded-md p-4 space-y-3 text-sm">
@@ -102,10 +109,6 @@ const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
           {isEnrolled ? (
             // Show UI for enrolled users
             <div className="space-y-4">
-              <div className="bg-green-50 p-3 rounded-md text-green-700 flex items-center gap-2">
-                <CheckCircle className="h-5 w-5 text-green-600" />
-                <span>Anda sudah terdaftar dalam kursus ini</span>
-              </div>
               <Button
                 onClick={handleStartLearning}
                 className="w-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center gap-2"
