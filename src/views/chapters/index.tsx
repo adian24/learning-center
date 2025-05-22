@@ -30,7 +30,6 @@ interface ChaptersProps {
 }
 
 const PAGE_SIZE_OPTIONS = [
-  { value: "5", label: "5 per page" },
   { value: "10", label: "10 per page" },
   { value: "25", label: "25 per page" },
   { value: "50", label: "50 per page" },
@@ -40,7 +39,7 @@ const Chapters = ({ courseId }: ChaptersProps) => {
   const router = useRouter();
 
   const [page, setPage] = useState<number>(1);
-  const [limit, setLimit] = useState<number>(5);
+  const [limit, setLimit] = useState<number>(10);
 
   const onOpenCreateDialog = useCreateChapterStore((state) => state.onOpen);
 
