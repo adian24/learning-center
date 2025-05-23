@@ -100,8 +100,6 @@ const MyCourses = () => {
   const { stats: enrollmentStats, isLoading: statsLoading } =
     useEnrollmentStats();
 
-  console.log("enrollmentStats", enrollmentStats);
-
   useEffect(() => {
     // If URL has query params for tab, use them
     const params = new URLSearchParams(window.location.search);
@@ -652,7 +650,7 @@ const CourseCard = ({
               enrollment.progress === 100
                 ? "Review Course"
                 : "Continue Learning",
-            onClick: () => router.push(`/courses/${enrollment.courseId}`),
+            onClick: () => router.push(`/my-courses/${enrollment.courseId}`),
             icon: <ArrowRight className="ml-2 h-4 w-4" />,
             variant: "default" as const,
           },
