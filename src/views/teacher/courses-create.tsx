@@ -259,12 +259,24 @@ const CreateCourse = () => {
                         <FormLabel>Harga (IDR)</FormLabel>
                         <FormControl>
                           <Input
-                            {...field}
-                            type="number"
-                            min="0"
-                            step="0.01"
+                            value={
+                              field.value
+                                ? field.value
+                                    .toString()
+                                    .replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+                                : ""
+                            }
+                            onChange={(e) => {
+                              const rawValue = e.target.value.replace(
+                                /\./g,
+                                ""
+                              );
+                              const numericValue = parseInt(rawValue) || 0;
+                              field.onChange(numericValue);
+                            }}
                             placeholder="e.g. 100.000"
                             disabled={isPending}
+                            inputMode="numeric"
                             className="transition-all duration-200 focus:ring-2 focus:ring-blue-500"
                           />
                         </FormControl>
@@ -285,11 +297,11 @@ const CreateCourse = () => {
                                   <Sparkles className="h-3 w-3 text-emerald-500 animate-pulse" />
                                 </div>
                                 <span className="text-sm font-semibold text-emerald-700">
-                                  GRATIS
+                                  GRATIS!
                                 </span>
                               </div>
                               <p className="text-xs text-emerald-600 mt-1">
-                                Course ini akan tersedia gratis untuk semua
+                                Course harga Rp 0 akan gratis untuk semua
                                 students
                               </p>
                             </div>
