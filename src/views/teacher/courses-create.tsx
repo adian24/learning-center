@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import Layout from "@/layout";
 import { CourseFormValues } from "@/lib/validations/courses";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, Gift, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -70,6 +70,10 @@ const CreateCourse = () => {
       isPublished: false,
     },
   });
+
+  // Watch the price field for the interaction
+  const watchedPrice = form.watch("price");
+  const isFree = !watchedPrice || watchedPrice == 0;
 
   const handleImageUpload = async (file: File) => {
     const imageUrl = await uploadImage(file);
@@ -259,10 +263,39 @@ const CreateCourse = () => {
                             type="number"
                             min="0"
                             step="0.01"
-                            placeholder="e.g. 49.99"
+                            placeholder="e.g. 100.000"
                             disabled={isPending}
+                            className="transition-all duration-200 focus:ring-2 focus:ring-blue-500"
                           />
                         </FormControl>
+
+                        {/* Beautiful Free Course Info with Animation */}
+                        <div className="relative overflow-hidden">
+                          <div
+                            className={`transition-all duration-500 ease-in-out transform ${
+                              isFree
+                                ? "opacity-100 translate-y-0 max-h-20"
+                                : "opacity-0 -translate-y-2 max-h-0"
+                            }`}
+                          >
+                            <div className="mt-3 p-3 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-lg">
+                              <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-1">
+                                  <Gift className="h-4 w-4 text-emerald-600" />
+                                  <Sparkles className="h-3 w-3 text-emerald-500 animate-pulse" />
+                                </div>
+                                <span className="text-sm font-semibold text-emerald-700">
+                                  GRATIS
+                                </span>
+                              </div>
+                              <p className="text-xs text-emerald-600 mt-1">
+                                Course ini akan tersedia gratis untuk semua
+                                students
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
                         <FormMessage />
                       </FormItem>
                     )}
