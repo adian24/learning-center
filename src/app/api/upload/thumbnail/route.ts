@@ -9,6 +9,7 @@ import db from "@/lib/db/db";
 /**
  * POST: Generate a presigned URL for thumbnail upload
  * Required body params: fileType
+ * Optional body params: courseId (for editing existing course)
  * Response includes: key, presignedUrl, url (final location)
  */
 export async function POST(req: Request) {
@@ -21,11 +22,10 @@ export async function POST(req: Request) {
     const { fileType, courseId } = await req.json();
 
     // Validate required parameters
-    if (!fileType || !courseId) {
-      return new NextResponse(
-        "Missing required parameters: fileType, courseId",
-        { status: 400 }
-      );
+    if (!fileType) {
+      return new NextResponse("Missing required parameter: fileType", {
+        status: 400,
+      });
     }
 
     // Validate file type
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
       return new NextResponse("Invalid file format", { status: 400 });
     }
 
-    // Verify user owns the course
+    // Verify user is a teacher
     const teacherProfile = await db.teacherProfile.findUnique({
       where: { userId: session.user.id },
     });
@@ -43,17 +43,20 @@ export async function POST(req: Request) {
       return new NextResponse("Teacher profile not found", { status: 404 });
     }
 
-    const course = await db.course.findFirst({
-      where: {
-        id: courseId,
-        teacherId: teacherProfile.id,
-      },
-    });
-
-    if (!course) {
-      return new NextResponse("Course not found or access denied", {
-        status: 404,
+    // If courseId is provided, verify user owns the course
+    if (courseId) {
+      const course = await db.course.findFirst({
+        where: {
+          id: courseId,
+          teacherId: teacherProfile.id,
+        },
       });
+
+      if (!course) {
+        return new NextResponse("Course not found or access denied", {
+          status: 404,
+        });
+      }
     }
 
     // Generate a unique file key
@@ -75,11 +78,13 @@ export async function POST(req: Request) {
       expiresIn: 300, // URL expires in 5 minutes
     });
 
-    // Update course with new image URL
-    await db.course.update({
-      where: { id: courseId },
-      data: { imageUrl: finalUrl },
-    });
+    // If courseId is provided, update the course immediately
+    if (courseId) {
+      await db.course.update({
+        where: { id: courseId },
+        data: { imageUrl: finalUrl },
+      });
+    }
 
     return NextResponse.json({
       key,
@@ -93,8 +98,9 @@ export async function POST(req: Request) {
 }
 
 /**
- * DELETE: Remove a thumbnail from S3 storage and update course
- * Required query params: key, courseId
+ * DELETE: Remove a thumbnail from S3 storage and optionally update course
+ * Required query params: key
+ * Optional query params: courseId (if provided, will update course to remove imageUrl)
  */
 export async function DELETE(req: NextRequest) {
   try {
@@ -109,8 +115,8 @@ export async function DELETE(req: NextRequest) {
     const key = searchParams.get("key");
     const courseId = searchParams.get("courseId");
 
-    if (!key || !courseId) {
-      return new NextResponse("Missing required parameters: key, courseId", {
+    if (!key) {
+      return new NextResponse("Missing required parameter: key", {
         status: 400,
       });
     }
@@ -125,7 +131,7 @@ export async function DELETE(req: NextRequest) {
       );
     }
 
-    // Verify user owns the course
+    // Verify user is a teacher
     const teacherProfile = await db.teacherProfile.findUnique({
       where: { userId: session.user.id },
     });
@@ -134,39 +140,42 @@ export async function DELETE(req: NextRequest) {
       return new NextResponse("Teacher profile not found", { status: 404 });
     }
 
-    const course = await db.course.findFirst({
-      where: {
-        id: courseId,
-        teacherId: teacherProfile.id,
-      },
-    });
-
-    if (!course) {
-      return new NextResponse("Course not found or access denied", {
-        status: 404,
+    // If courseId is provided, verify user owns the course
+    if (courseId) {
+      const course = await db.course.findFirst({
+        where: {
+          id: courseId,
+          teacherId: teacherProfile.id,
+        },
       });
-    }
 
-    // Delete the old thumbnail from S3 if it exists
-    if (course.imageUrl) {
-      try {
-        const deleteCommand = new DeleteObjectCommand({
-          Bucket: BUCKET_NAME,
-          Key: key,
+      if (!course) {
+        return new NextResponse("Course not found or access denied", {
+          status: 404,
         });
-
-        await s3Client.send(deleteCommand);
-      } catch (s3Error) {
-        // Log the error but don't fail the request if file doesn't exist
-        console.warn("[THUMBNAIL_DELETE_S3_WARNING]", s3Error);
       }
     }
 
-    // Update course to remove image URL
-    await db.course.update({
-      where: { id: courseId },
-      data: { imageUrl: null },
-    });
+    // Delete the thumbnail from S3
+    try {
+      const deleteCommand = new DeleteObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: key,
+      });
+
+      await s3Client.send(deleteCommand);
+    } catch (s3Error) {
+      // Log the error but don't fail the request if file doesn't exist
+      console.warn("[THUMBNAIL_DELETE_S3_WARNING]", s3Error);
+    }
+
+    // If courseId is provided, update course to remove image URL
+    if (courseId) {
+      await db.course.update({
+        where: { id: courseId },
+        data: { imageUrl: null },
+      });
+    }
 
     return NextResponse.json({
       success: true,

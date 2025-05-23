@@ -1,56 +1,31 @@
 import { useState } from "react";
 import { toast } from "sonner";
 
-interface UseImageUploadProps {
-  courseId?: string;
-}
-
-interface UseImageUploadReturn {
-  uploadImage: (file: File) => Promise<string | null>;
-  isUploading: boolean;
-  error: string | null;
-}
-
-export function useImageUpload(
-  props: UseImageUploadProps = {}
-): UseImageUploadReturn {
+export const useImageUpload = () => {
   const [isUploading, setIsUploading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const uploadImage = async (
     file: File,
-    courseIdParam?: string
+    courseId?: string
   ): Promise<string | null> => {
-    const courseId = courseIdParam || props.courseId;
+    if (!file) return null;
 
-    if (!courseId) {
-      const errorMsg = "Course ID is required for image upload";
-      setError(errorMsg);
-      toast.error(errorMsg);
+    // Validate file type
+    if (!file.type.includes("image")) {
+      toast.error("Please upload an image file");
       return null;
     }
 
-    // Validation
-    if (!file.type.startsWith("image/")) {
-      const errorMsg = "Please upload an image file";
-      setError(errorMsg);
-      toast.error(errorMsg);
-      return null;
-    }
-
-    // Check file size (5MB limit)
+    // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      const errorMsg = "Image must be less than 5MB";
-      setError(errorMsg);
-      toast.error(errorMsg);
+      toast.error("Image must be less than 5MB");
       return null;
     }
+
+    setIsUploading(true);
 
     try {
-      setIsUploading(true);
-      setError(null);
-
-      // 1. Get presigned URL from our API
+      // Step 1: Get presigned URL
       const presignedResponse = await fetch("/api/upload/thumbnail", {
         method: "POST",
         headers: {
@@ -58,18 +33,17 @@ export function useImageUpload(
         },
         body: JSON.stringify({
           fileType: file.type,
-          courseId: courseId,
+          courseId: courseId, // Optional - only for editing existing courses
         }),
       });
 
       if (!presignedResponse.ok) {
-        const errorData = await presignedResponse.text();
-        throw new Error(errorData || "Failed to get upload URL");
+        throw new Error("Failed to get upload URL");
       }
 
       const { presignedUrl, url } = await presignedResponse.json();
 
-      // 2. Upload file directly to S3 using presigned URL
+      // Step 2: Upload to S3
       const uploadResponse = await fetch(presignedUrl, {
         method: "PUT",
         body: file,
@@ -85,19 +59,48 @@ export function useImageUpload(
       toast.success("Image uploaded successfully");
       return url;
     } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : "Upload failed";
-      setError(errorMsg);
-      toast.error(errorMsg);
-      console.error("[IMAGE_UPLOAD_ERROR]", error);
+      console.error("Upload error:", error);
+      toast.error("Failed to upload image");
       return null;
     } finally {
       setIsUploading(false);
     }
   };
 
+  const deleteImage = async (
+    imageUrl: string,
+    courseId?: string
+  ): Promise<boolean> => {
+    try {
+      // Extract key from URL
+      const urlParts = imageUrl.split("/");
+      const key = `thumbnails/${urlParts[urlParts.length - 1]}`;
+
+      const deleteResponse = await fetch(
+        `/api/upload/thumbnail?key=${encodeURIComponent(key)}${
+          courseId ? `&courseId=${courseId}` : ""
+        }`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!deleteResponse.ok) {
+        throw new Error("Failed to delete image");
+      }
+
+      toast.success("Image deleted successfully");
+      return true;
+    } catch (error) {
+      console.error("Delete error:", error);
+      toast.error("Failed to delete image");
+      return false;
+    }
+  };
+
   return {
     uploadImage,
+    deleteImage,
     isUploading,
-    error,
   };
-}
+};
