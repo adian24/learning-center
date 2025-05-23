@@ -84,7 +84,7 @@ const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
             </div>
           ) : (
             <CardTitle className="text-2xl font-bold">
-              formatPrice(course?.price as number)
+              {formatPrice(course?.price as number)}
             </CardTitle>
           )}
         </CardHeader>
