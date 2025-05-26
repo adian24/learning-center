@@ -62,7 +62,6 @@ export async function POST(req: Request) {
     // Generate a unique file key
     const fileExtension = fileType.split("/")[1];
     const key = `${S3_THUMBNAIL}/${uuidv4()}.${fileExtension}`;
-    const finalUrl = `${S3_ENDPOINT}/${BUCKET_NAME}/${key}`;
 
     // Create command for putting object
     const putCommand = new PutObjectCommand({
@@ -82,14 +81,13 @@ export async function POST(req: Request) {
     if (courseId) {
       await db.course.update({
         where: { id: courseId },
-        data: { imageUrl: finalUrl },
+        data: { imageUrl: key },
       });
     }
 
     return NextResponse.json({
       key,
       presignedUrl,
-      url: finalUrl,
     });
   } catch (error) {
     console.error("[THUMBNAIL_PRESIGNED_UPLOAD]", error);

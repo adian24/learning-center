@@ -15,7 +15,6 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { useImageUpload } from "@/hooks/use-image-upload";
 import { useCategories } from "@/hooks/use-categories";
 import { CourseMediaUpload } from "@/sections/course/forms-course-create/CourseMediaUpload";
 import { useMutation } from "@tanstack/react-query";
@@ -56,14 +55,13 @@ const createCourse = async (data: CourseFormValues) => {
 
 const CreateCourse = () => {
   const router = useRouter();
-  const { uploadImage, isUploading } = useImageUpload();
   const { data: categories } = useCategories();
 
   const form = useForm<CourseFormValues>({
     defaultValues: {
       title: "",
       description: "",
-      imageUrl: "",
+      imageUrl: "", // This will store the S3 key
       price: 0,
       categoryId: "",
       level: "BEGINNER",
@@ -74,13 +72,6 @@ const CreateCourse = () => {
   // Watch the price field for the interaction
   const watchedPrice = form.watch("price");
   const isFree = !watchedPrice || watchedPrice == 0;
-
-  const handleImageUpload = async (file: File) => {
-    const imageUrl = await uploadImage(file);
-    if (imageUrl) {
-      form.setValue("imageUrl", imageUrl);
-    }
-  };
 
   const { mutate, isPending } = useMutation({
     mutationFn: createCourse,
@@ -95,6 +86,12 @@ const CreateCourse = () => {
   });
 
   const onSubmit = (data: CourseFormValues) => {
+    // Validate that image is uploaded
+    if (!data.imageUrl) {
+      toast.error("Please upload a course thumbnail");
+      return;
+    }
+
     mutate(data);
   };
 
@@ -128,17 +125,8 @@ const CreateCourse = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <CourseMediaUpload
-                    form={form}
-                    isUploading={isUploading}
-                    isSubmitting={isPending}
-                    onImageUpload={handleImageUpload}
-                  />
-                  {form.formState.errors.imageUrl && (
-                    <p className="text-sm text-red-500 mt-2">
-                      {form.formState.errors.imageUrl.message}
-                    </p>
-                  )}
+                  {/* Updated CourseMediaUpload - no longer needs external handlers */}
+                  <CourseMediaUpload form={form} isSubmitting={isPending} />
 
                   <FormField
                     control={form.control}

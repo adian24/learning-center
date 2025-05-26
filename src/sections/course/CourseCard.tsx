@@ -11,7 +11,7 @@ import { Course } from "@/lib/types";
 import { BookOpen, Users, CheckCircle } from "lucide-react";
 import CourseActions from "./CourseActions";
 import { formatPrice } from "@/utils/formatPrice";
-import Image from "next/image";
+import { CourseImageCard } from "@/components/media/SecureImage";
 
 interface CourseCardProps {
   course: Course & { isEnrolled?: boolean };
@@ -20,15 +20,14 @@ interface CourseCardProps {
 const CourseCard = ({ course }: CourseCardProps) => {
   return (
     <Card key={course.id} className="flex flex-col">
-      <div className="aspect-video relative overflow-hidden rounded-t-lg">
-        <Image
-          src={course.imageUrl}
-          alt={course.title}
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          priority={false}
+      <div className="relative">
+        <CourseImageCard
+          imageKey={course.imageUrl} // Now expects S3 key instead of full URL
+          courseId={course.id}
+          courseTitle={course.title}
+          className="aspect-video w-full"
         />
+
         {/* Add enrollment status badge */}
         {course.isEnrolled && (
           <div className="absolute top-2 right-2">

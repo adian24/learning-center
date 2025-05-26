@@ -103,6 +103,8 @@ export async function POST(req: Request) {
 
     const { title, description, imageUrl, price, categoryId, level } = body;
 
+    console.log("[COURSES_POST] Body : ", body);
+
     const parsedPrice = price ? parseFloat(price) : 0;
 
     const teacherProfile = await db.teacherProfile.findUnique({
@@ -126,6 +128,8 @@ export async function POST(req: Request) {
         teacherId: teacherProfile.id,
       },
     });
+
+    console.log("[COURSES_POST] Course Res : ", course);
 
     return NextResponse.json(course);
   } catch (error) {

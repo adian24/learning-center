@@ -32,7 +32,7 @@ export const courseFormSchema = z.object({
     .url({
       message: "URL gambar tidak valid",
     }),
-  price: z.coerce
+  price: z
     .number({
       required_error: "Harga course harus diisi",
       invalid_type_error: "Harga harus berupa angka",
@@ -55,7 +55,7 @@ export const courseFormSchema = z.object({
   isPublished: z.boolean({
     required_error: "Publikasi harus dipilih",
     invalid_type_error: "Publikasi tidak valid",
-  })
+  }),
 });
 
 export type CourseFormValues = z.infer<typeof courseFormSchema>;

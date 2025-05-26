@@ -10,11 +10,12 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Loader2, Trash2, Upload, Video } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import SecureVideo from "@/components/media/SecureVideo";
 
 interface ContentVideoProps {
   chapter: Chapter | undefined;
-  initialVideo?: string | undefined;
-  onUploadComplete?: (url: string) => void;
+  initialVideoKey?: string | undefined;
+  onUploadComplete?: (key: string) => void;
   onDelete?: () => void;
   isTeacher?: boolean;
   chapterId: string;
@@ -23,7 +24,7 @@ interface ContentVideoProps {
 
 const ContentVideo = ({
   chapter,
-  initialVideo,
+  initialVideoKey,
   courseId,
   chapterId,
 }: ContentVideoProps) => {
@@ -31,7 +32,7 @@ const ContentVideo = ({
 
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
-  const [videoUrl, setVideoUrl] = useState<string | undefined>(initialVideo);
+  const [videoKey, setVideoKey] = useState<string | undefined>(initialVideoKey);
   const [error, setError] = useState<string>("");
 
   const onOpenDeleteDialog = useDeleteVideoStore((state) => state.onOpen);
@@ -94,7 +95,7 @@ const ContentVideo = ({
         throw new Error("Failed to get upload URL");
       }
 
-      const { presignedUrl, url } = await presignedUrlResponse.json();
+      const { presignedUrl, key } = await presignedUrlResponse.json();
 
       setUploadProgress(20);
 
@@ -118,7 +119,7 @@ const ContentVideo = ({
 
       setUploadProgress(80);
 
-      // 4. Update chapter in database with the new video URL and duration
+      // 4. Update chapter in database with the new video key and duration
       const updateResponse = await fetch(
         `/api/teacher/courses/${courseId}/chapters/${chapterId}`,
         {
@@ -127,7 +128,7 @@ const ContentVideo = ({
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            videoUrl: url,
+            videoUrl: key, // Store only the key, not full URL
             duration: Math.round(duration),
           }),
         }
@@ -138,7 +139,7 @@ const ContentVideo = ({
       }
 
       setUploadProgress(100);
-      setVideoUrl(url);
+      setVideoKey(key);
       toast.success("Video uploaded successfully");
 
       // Invalidate queries to refresh data
@@ -163,7 +164,7 @@ const ContentVideo = ({
   };
 
   // Empty State - No Video
-  if (!chapter?.videoUrl && !isUploading) {
+  if (!chapter?.videoUrl && !videoKey && !isUploading) {
     return (
       <Card className="border-2 border-dashed">
         <CardContent className="p-6">
@@ -227,6 +228,9 @@ const ContentVideo = ({
     );
   }
 
+  // Video is available
+  const currentVideoKey = chapter?.videoUrl || videoKey;
+
   return (
     <Card>
       <CardContent className="p-6 space-y-4">
@@ -235,17 +239,24 @@ const ContentVideo = ({
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
+
         <div className="flex items-center justify-end">
           <Button size="sm" variant="destructive" onClick={handleDelete}>
             <Trash2 className="w-4 h-4 mr-2" />
             Hapus Video
           </Button>
         </div>
+
         <div className="relative aspect-video rounded-lg overflow-hidden bg-black">
-          <video
-            src={chapter?.videoUrl || videoUrl}
-            controls
+          <SecureVideo
+            videoKey={currentVideoKey}
+            chapterId={chapterId}
             className="w-full h-full"
+            controls={true}
+            onError={(error) => {
+              console.error("Video playback error:", error);
+              setError("Failed to load video");
+            }}
           />
         </div>
       </CardContent>
