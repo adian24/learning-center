@@ -3,13 +3,23 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import db from "@/lib/db/db";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
     const session = await auth();
 
     if (!session || !session.user) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
+
+    const { searchParams } = new URL(req.url);
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
+    const search = searchParams.get("search") || "";
+    const sortBy = searchParams.get("sortBy") || "enrollmentDate";
+    const sortOrder = searchParams.get("sortOrder") || "desc";
+
+    // Calculate skip for pagination
+    const skip = (page - 1) * limit;
 
     // Find the teacher profile for the current user
     const teacherProfile = await db.teacherProfile.findUnique({
@@ -29,97 +39,221 @@ export async function GET() {
       },
       select: {
         id: true,
+        title: true,
       },
     });
 
     const courseIds = courses.map((course) => course.id);
 
-    // Find all students enrolled in this teacher's courses
-    const enrollments = await db.enrolledCourse.findMany({
-      where: {
-        courseId: {
-          in: courseIds,
+    if (courseIds.length === 0) {
+      return NextResponse.json({
+        students: [],
+        pagination: {
+          currentPage: page,
+          totalPages: 0,
+          totalStudents: 0,
+          hasNextPage: false,
+          hasPreviousPage: false,
         },
-        status: "COMPLETED",
-      },
-      select: {
-        id: true,
-        createdAt: true,
-        course: {
-          select: {
-            title: true,
-          },
+        stats: {
+          totalStudents: 0,
+          averageProgress: 0,
+          recentStudents: 0,
         },
-        student: {
-          select: {
-            id: true,
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-                image: true,
-              },
-            },
-            progress: {
-              where: {
-                chapter: {
-                  courseId: {
-                    in: courseIds,
-                  },
+      });
+    }
+
+    // Build search conditions
+    const searchConditions = search
+      ? {
+          OR: [
+            {
+              user: {
+                name: {
+                  contains: search,
+                  mode: "insensitive" as const,
                 },
               },
-              select: {
-                isCompleted: true,
+            },
+            {
+              user: {
+                email: {
+                  contains: search,
+                  mode: "insensitive" as const,
+                },
               },
             },
+          ],
+        }
+      : {};
+
+    // Get total count for pagination
+    const totalStudents = await db.studentProfile.count({
+      where: {
+        ...searchConditions,
+        enrolledCourses: {
+          some: {
+            courseId: {
+              in: courseIds,
+            },
+            status: "COMPLETED",
           },
         },
       },
     });
 
-    // Format and deduplicate students
-    const studentsMap = new Map();
+    // Define sort mapping
+    const sortMapping: Record<string, any> = {
+      name: { user: { name: sortOrder } },
+      enrollmentDate: { createdAt: sortOrder },
+      progress: { createdAt: sortOrder }, // We'll sort by progress in memory since it's calculated
+    };
 
-    enrollments.forEach((enrollment) => {
-      const student = enrollment.student;
-      const studentId = student.user.id;
-
-      if (!studentsMap.has(studentId)) {
-        const completedLessons = student.progress.filter(
-          (p) => p.isCompleted
-        ).length;
-        const totalLessons = student.progress.length;
-        const progressPercentage =
-          totalLessons > 0
-            ? Math.round((completedLessons / totalLessons) * 100)
-            : 0;
-
-        studentsMap.set(studentId, {
-          id: studentId,
-          studentId: student.id,
-          name: student.user.name,
-          email: student.user.email,
-          image: student.user.image,
-          enrolledCourses: [enrollment.course.title],
-          enrollmentDate: enrollment.createdAt,
-          progressPercentage,
-        });
-      } else {
-        // Update existing student data with additional course
-        const existingStudent = studentsMap.get(studentId);
-        if (
-          !existingStudent.enrolledCourses.includes(enrollment.course.title)
-        ) {
-          existingStudent.enrolledCourses.push(enrollment.course.title);
-        }
-      }
+    // Find all students enrolled in this teacher's courses with detailed info
+    const studentsData = await db.studentProfile.findMany({
+      where: {
+        ...searchConditions,
+        enrolledCourses: {
+          some: {
+            courseId: {
+              in: courseIds,
+            },
+            status: "COMPLETED",
+          },
+        },
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+          },
+        },
+        enrolledCourses: {
+          where: {
+            courseId: {
+              in: courseIds,
+            },
+            status: "COMPLETED",
+          },
+          include: {
+            course: {
+              select: {
+                id: true,
+                title: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+        progress: {
+          where: {
+            chapter: {
+              courseId: {
+                in: courseIds,
+              },
+            },
+          },
+          select: {
+            isCompleted: true,
+            chapterId: true,
+          },
+        },
+      },
+      orderBy:
+        sortBy !== "progress" ? sortMapping[sortBy] : { createdAt: "desc" },
+      skip: sortBy !== "progress" ? skip : undefined,
+      take: sortBy !== "progress" ? limit : undefined,
     });
 
-    // Convert Map to Array for response
-    const students = Array.from(studentsMap.values());
+    // Format and process student data
+    const formattedStudents = studentsData.map((studentProfile) => {
+      // Get unique course titles
+      const enrolledCourses = Array.from(
+        new Set(
+          studentProfile.enrolledCourses.map(
+            (enrollment) => enrollment.course.title
+          )
+        )
+      );
 
-    return NextResponse.json(students);
+      // Calculate progress percentage
+      const totalLessons = studentProfile.progress.length;
+      const completedLessons = studentProfile.progress.filter(
+        (p) => p.isCompleted
+      ).length;
+      const progressPercentage =
+        totalLessons > 0
+          ? Math.round((completedLessons / totalLessons) * 100)
+          : 0;
+
+      // Get earliest enrollment date for this teacher's courses
+      const enrollmentDate =
+        studentProfile.enrolledCourses.length > 0
+          ? studentProfile.enrolledCourses[0].createdAt
+          : new Date();
+
+      return {
+        id: studentProfile.user.id,
+        studentId: studentProfile.id,
+        name: studentProfile.user.name || "Unknown",
+        email: studentProfile.user.email || "",
+        image: studentProfile.user.image,
+        enrolledCourses,
+        enrollmentDate: enrollmentDate.toISOString(),
+        progressPercentage,
+      };
+    });
+
+    // Sort by progress if needed (in memory)
+    let finalStudents = formattedStudents;
+    if (sortBy === "progress") {
+      finalStudents.sort((a, b) => {
+        const comparison = a.progressPercentage - b.progressPercentage;
+        return sortOrder === "asc" ? comparison : -comparison;
+      });
+      // Apply pagination for progress sorting
+      finalStudents = finalStudents.slice(skip, skip + limit);
+    }
+
+    // Calculate stats
+    const totalPages = Math.ceil(totalStudents / limit);
+    const averageProgress =
+      formattedStudents.length > 0
+        ? Math.round(
+            formattedStudents.reduce(
+              (sum, student) => sum + student.progressPercentage,
+              0
+            ) / formattedStudents.length
+          )
+        : 0;
+
+    // Count recent students (last 7 days)
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    const recentStudents = formattedStudents.filter(
+      (student) => new Date(student.enrollmentDate) >= weekAgo
+    ).length;
+
+    return NextResponse.json({
+      students: finalStudents,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalStudents,
+        hasNextPage: page < totalPages,
+        hasPreviousPage: page > 1,
+      },
+      stats: {
+        totalStudents: formattedStudents.length,
+        averageProgress,
+        recentStudents,
+      },
+    });
   } catch (error) {
     console.error("[TEACHER_STUDENTS]", error);
     return new NextResponse("Internal Error", { status: 500 });
