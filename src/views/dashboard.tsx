@@ -158,10 +158,6 @@ const Dashboard = () => {
                   <GraduationCap className="h-4 w-4 mr-2" />
                   Certificates
                 </Button>
-                <Button variant="outline" className="hidden sm:flex">
-                  <BarChart3 className="h-4 w-4 mr-2" />
-                  Analytics
-                </Button>
               </div>
             </div>
 

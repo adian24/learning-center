@@ -78,11 +78,6 @@ const data = {
       url: "/teacher/students",
       icon: UsersRound,
     },
-    {
-      name: "Analytics",
-      url: "/teacher/analytics",
-      icon: ChartArea,
-    },
   ],
 };
 

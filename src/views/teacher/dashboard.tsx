@@ -188,11 +188,6 @@ function TeacherDashboardContent() {
                   url="/teacher/courses/create"
                 />
                 <ButtonNavigation
-                  text="Lihat Analytics"
-                  className="w-full text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100"
-                  url="/teacher/analytics"
-                />
-                <ButtonNavigation
                   text="Kelola Students"
                   className="w-full text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100"
                   url="/teacher/students"

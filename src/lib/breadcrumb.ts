@@ -1,7 +1,6 @@
 const BREADCRUMB_MAPPINGS: Record<string, string> = {
   dashboard: "Dashboard",
   courses: "My Courses",
-  analytics: "Analytics",
   teacher: "Teacher",
   register: "Registration",
   builder: "Builder",
