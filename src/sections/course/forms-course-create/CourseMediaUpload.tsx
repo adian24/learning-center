@@ -10,12 +10,19 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Loader2, Upload, X, Image as ImageIcon } from "lucide-react";
+import {
+  Loader2,
+  Upload,
+  X,
+  Image as ImageIcon,
+  AlertCircle,
+} from "lucide-react";
 import { useRef, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { CourseFormValues } from "@/lib/validations/courses";
 import { toast } from "sonner";
 import SecureImage from "@/components/media/SecureImage";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface CourseMediaUploadProps {
   form: UseFormReturn<CourseFormValues>;
@@ -29,21 +36,33 @@ export const CourseMediaUpload = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string>("");
 
   const imageKey = form.watch("imageUrl"); // This will be the S3 key
+  const formError = form.formState.errors.imageUrl;
 
   const handleImageUpload = async (file: File) => {
     if (!file) return;
 
+    // Clear previous errors
+    setUploadError("");
+    form.clearErrors("imageUrl");
+
     // Validate file type
     if (!file.type.startsWith("image/")) {
-      toast.error("Please upload an image file");
+      const errorMsg = "Please upload an image file";
+      setUploadError(errorMsg);
+      form.setError("imageUrl", { message: errorMsg });
+      toast.error(errorMsg);
       return;
     }
 
     // Validate file size (5MB limit)
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image must be less than 5MB");
+      const errorMsg = "Image must be less than 5MB";
+      setUploadError(errorMsg);
+      form.setError("imageUrl", { message: errorMsg });
+      toast.error(errorMsg);
       return;
     }
 
@@ -67,7 +86,8 @@ export const CourseMediaUpload = ({
       });
 
       if (!presignedResponse.ok) {
-        throw new Error("Failed to get upload URL");
+        const errorData = await presignedResponse.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to get upload URL");
       }
 
       const { presignedUrl, key } = await presignedResponse.json();
@@ -82,11 +102,14 @@ export const CourseMediaUpload = ({
       });
 
       if (!uploadResponse.ok) {
-        throw new Error("Failed to upload image");
+        throw new Error("Failed to upload image to storage");
       }
 
       // 3. Update form with the S3 key
-      form.setValue("imageUrl", key);
+      form.setValue("imageUrl", key, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
 
       // Clean up the local preview URL since we now have the S3 key
       URL.revokeObjectURL(localPreviewUrl);
@@ -95,7 +118,11 @@ export const CourseMediaUpload = ({
       toast.success("Image uploaded successfully");
     } catch (error) {
       console.error("Image upload error:", error);
-      toast.error("Failed to upload image");
+      const errorMsg =
+        error instanceof Error ? error.message : "Failed to upload image";
+      setUploadError(errorMsg);
+      form.setError("imageUrl", { message: errorMsg });
+      toast.error(errorMsg);
 
       // Clean up preview URL on error
       if (previewUrl) {
@@ -125,7 +152,11 @@ export const CourseMediaUpload = ({
       setPreviewUrl(null);
     }
 
-    form.setValue("imageUrl", "");
+    form.setValue("imageUrl", "", {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
+    setUploadError("");
   };
 
   const handleUploadClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -139,6 +170,7 @@ export const CourseMediaUpload = ({
   // 2. If we have an S3 key, show SecureImage
   // 3. Otherwise, show upload area
   const hasImage = imageKey || previewUrl;
+  const hasError = formError || uploadError;
 
   return (
     <FormField
@@ -146,7 +178,7 @@ export const CourseMediaUpload = ({
       name="imageUrl"
       render={({ field }) => (
         <FormItem>
-          <FormLabel>Course Thumbnail</FormLabel>
+          <FormLabel>Course Thumbnail *</FormLabel>
           <FormControl>
             <div className="space-y-4">
               {/* Hidden file input */}
@@ -159,9 +191,21 @@ export const CourseMediaUpload = ({
                 disabled={isUploading || isSubmitting}
               />
 
+              {/* Error Alert */}
+              {hasError && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    {formError?.message || uploadError}
+                  </AlertDescription>
+                </Alert>
+              )}
+
               {/* Image preview or upload area */}
               {hasImage ? (
-                <Card className="relative">
+                <Card
+                  className={`relative ${hasError ? "border-red-500" : ""}`}
+                >
                   <CardContent className="p-4">
                     <div className="relative aspect-video w-full max-w-sm mx-auto">
                       {previewUrl ? (
@@ -230,11 +274,23 @@ export const CourseMediaUpload = ({
                 </Card>
               ) : (
                 /* Upload area when no image */
-                <Card className="border-2 border-dashed border-gray-300 hover:border-gray-400 transition-colors">
+                <Card
+                  className={`border-2 border-dashed hover:border-gray-400 transition-colors ${
+                    hasError ? "border-red-500 border-solid" : "border-gray-300"
+                  }`}
+                >
                   <CardContent className="p-8">
                     <div className="text-center space-y-4">
-                      <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
-                        <ImageIcon className="h-8 w-8 text-gray-400" />
+                      <div
+                        className={`mx-auto w-16 h-16 rounded-full flex items-center justify-center ${
+                          hasError ? "bg-red-100" : "bg-gray-100"
+                        }`}
+                      >
+                        <ImageIcon
+                          className={`h-8 w-8 ${
+                            hasError ? "text-red-400" : "text-gray-400"
+                          }`}
+                        />
                       </div>
 
                       <div>
@@ -243,6 +299,9 @@ export const CourseMediaUpload = ({
                         </h3>
                         <p className="text-sm text-gray-500 mt-1">
                           PNG, JPG, JPEG, or WEBP (max 5MB)
+                        </p>
+                        <p className="text-xs text-red-500 mt-1">
+                          * Required field
                         </p>
                       </div>
 

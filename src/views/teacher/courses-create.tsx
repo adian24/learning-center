@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Layout from "@/layout";
-import { CourseFormValues } from "@/lib/validations/courses";
+import { CourseFormValues, courseFormSchema } from "@/lib/validations/courses";
 import { ArrowLeft, Loader2, Gift, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
@@ -36,6 +36,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const createCourse = async (data: CourseFormValues) => {
   const response = await fetch("/api/teacher/courses", {
@@ -58,10 +60,12 @@ const CreateCourse = () => {
   const { data: categories } = useCategories();
 
   const form = useForm<CourseFormValues>({
+    resolver: zodResolver(courseFormSchema),
+    mode: "onChange", // Enable real-time validation
     defaultValues: {
       title: "",
       description: "",
-      imageUrl: "", // This will store the S3 key
+      imageUrl: "",
       price: 0,
       categoryId: "",
       level: "BEGINNER",
@@ -73,6 +77,10 @@ const CreateCourse = () => {
   const watchedPrice = form.watch("price");
   const isFree = !watchedPrice || watchedPrice == 0;
 
+  // Get form errors
+  const errors = form.formState.errors;
+  const hasErrors = Object.keys(errors).length > 0;
+
   const { mutate, isPending } = useMutation({
     mutationFn: createCourse,
     onSuccess: () => {
@@ -80,19 +88,55 @@ const CreateCourse = () => {
       router.push("/teacher/courses");
       router.refresh();
     },
-    onError: () => {
+    onError: (error: any) => {
+      console.error("Course creation error:", error);
       toast.error("An error occurred while creating the course");
     },
   });
 
   const onSubmit = (data: CourseFormValues) => {
-    // Validate that image is uploaded
-    if (!data.imageUrl) {
+    // Additional validation check
+    if (!data.imageUrl || data.imageUrl.trim() === "") {
+      form.setError("imageUrl", {
+        type: "required",
+        message: "Please upload a course thumbnail",
+      });
       toast.error("Please upload a course thumbnail");
       return;
     }
 
+    // Validate required fields
+    if (!data.title.trim()) {
+      form.setError("title", {
+        type: "required",
+        message: "Course title is required",
+      });
+      return;
+    }
+
+    if (!data.description.trim()) {
+      form.setError("description", {
+        type: "required",
+        message: "Course description is required",
+      });
+      return;
+    }
+
+    if (!data.categoryId) {
+      form.setError("categoryId", {
+        type: "required",
+        message: "Please select a category",
+      });
+      return;
+    }
+
+    console.log("Submitting course data:", data);
     mutate(data);
+  };
+
+  const onInvalid = (errors: any) => {
+    console.log("Form validation errors:", errors);
+    toast.error("Please fix the form errors before submitting");
   };
 
   return (
@@ -112,7 +156,7 @@ const CreateCourse = () => {
 
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={form.handleSubmit(onSubmit, onInvalid)}
             className="grid grid-cols-12 gap-6"
           >
             {/* Main Content - Left Column */}
@@ -125,44 +169,61 @@ const CreateCourse = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  {/* Updated CourseMediaUpload - no longer needs external handlers */}
+                  {/* Course Media Upload */}
                   <CourseMediaUpload form={form} isSubmitting={isPending} />
 
+                  {/* Course Title */}
                   <FormField
                     control={form.control}
                     name="title"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Judul Course</FormLabel>
+                        <FormLabel>Judul Course *</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
                             placeholder="e.g. Web Development Fundamentals"
                             disabled={isPending}
+                            className={
+                              errors.title
+                                ? "border-red-500 focus:border-red-500"
+                                : ""
+                            }
                           />
                         </FormControl>
                         <FormDescription>
-                          Buatlah judul yang menarik dan deskriptif
+                          Buatlah judul yang menarik dan deskriptif (minimal 3
+                          karakter)
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
 
+                  {/* Course Description */}
                   <FormField
                     control={form.control}
                     name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Deskripsi</FormLabel>
+                        <FormLabel>Deskripsi *</FormLabel>
                         <FormControl>
                           <Textarea
                             {...field}
                             placeholder="Jelaskan apa yang akan dipelajari Student dalam Course ini..."
                             rows={5}
                             disabled={isPending}
+                            className={
+                              errors.description
+                                ? "border-red-500 focus:border-red-500"
+                                : ""
+                            }
                           />
                         </FormControl>
+                        <FormDescription>
+                          Jelaskan secara detail apa yang akan dipelajari
+                          (minimal 10 karakter)
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -181,6 +242,7 @@ const CreateCourse = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
+                  {/* Course Level */}
                   <FormField
                     control={form.control}
                     name="level"
@@ -193,7 +255,13 @@ const CreateCourse = () => {
                           disabled={isPending}
                         >
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger
+                              className={
+                                errors.level
+                                  ? "border-red-500 focus:border-red-500"
+                                  : ""
+                              }
+                            >
                               <SelectValue placeholder="Select level" />
                             </SelectTrigger>
                           </FormControl>
@@ -210,19 +278,26 @@ const CreateCourse = () => {
                     )}
                   />
 
+                  {/* Course Category */}
                   <FormField
                     control={form.control}
                     name="categoryId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Kategori</FormLabel>
+                        <FormLabel>Kategori *</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
                           disabled={isPending}
                         >
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger
+                              className={
+                                errors.categoryId
+                                  ? "border-red-500 focus:border-red-500"
+                                  : ""
+                              }
+                            >
                               <SelectValue placeholder="Select category" />
                             </SelectTrigger>
                           </FormControl>
@@ -239,6 +314,7 @@ const CreateCourse = () => {
                     )}
                   />
 
+                  {/* Course Price */}
                   <FormField
                     control={form.control}
                     name="price"
@@ -265,7 +341,11 @@ const CreateCourse = () => {
                             placeholder="e.g. 100.000"
                             disabled={isPending}
                             inputMode="numeric"
-                            className="transition-all duration-200 focus:ring-2 focus:ring-blue-500"
+                            className={`transition-all duration-200 focus:ring-2 focus:ring-blue-500 ${
+                              errors.price
+                                ? "border-red-500 focus:border-red-500"
+                                : ""
+                            }`}
                           />
                         </FormControl>
 
@@ -303,8 +383,36 @@ const CreateCourse = () => {
                 </CardContent>
               </Card>
 
+              {/* Submit Button Card */}
               <Card>
                 <CardContent className="pt-6">
+                  {/* Show validation errors summary */}
+                  {hasErrors && (
+                    <Alert variant="destructive" className="mb-4">
+                      <AlertDescription>
+                        <div className="space-y-1">
+                          <p className="font-medium">
+                            Please fix the following errors:
+                          </p>
+                          <ul className="list-disc list-inside text-sm space-y-1">
+                            {errors.imageUrl && (
+                              <li>Upload a course thumbnail</li>
+                            )}
+                            {errors.title && <li>{errors.title.message}</li>}
+                            {errors.description && (
+                              <li>{errors.description.message}</li>
+                            )}
+                            {errors.categoryId && (
+                              <li>{errors.categoryId.message}</li>
+                            )}
+                            {errors.price && <li>{errors.price.message}</li>}
+                            {errors.level && <li>{errors.level.message}</li>}
+                          </ul>
+                        </div>
+                      </AlertDescription>
+                    </Alert>
+                  )}
+
                   <Button type="submit" className="w-full" disabled={isPending}>
                     {isPending ? (
                       <>
