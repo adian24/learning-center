@@ -21,9 +21,13 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { useQuizBuilder } from "@/hooks/use-quiz-management";
 import CreateQuizDialog from "./CreateQuizDialog";
+import EditQuizDialog from "./EditQuizDialog";
+import DeleteQuizDialog from "./DeleteQuizDialog";
+import { useQuizDialogStore } from "@/stores/use-store-quiz-dialog";
 
 interface TeacherQuizManagerProps {
   chapterId: string;
@@ -34,6 +38,23 @@ const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
 }) => {
   const { quizzes, isLoading, error, quizCount, maxQuizzesReached } =
     useQuizBuilder(chapterId);
+
+  const {
+    openCreateDialog,
+    openEditDialog,
+    openDeleteDialog,
+    editingQuizId,
+    deletingQuizId,
+  } = useQuizDialogStore();
+
+  // Find quiz objects for dialogs
+  const editingQuiz = editingQuizId
+    ? quizzes.find((quiz) => quiz.id === editingQuizId) || null
+    : null;
+
+  const deletingQuiz = deletingQuizId
+    ? quizzes.find((quiz) => quiz.id === deletingQuizId) || null
+    : null;
 
   if (isLoading) {
     return (
@@ -79,10 +100,14 @@ const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
             </div>
             <div className="flex items-center gap-3">
               <Badge variant="outline">{quizCount}/30 Quiz</Badge>
-              <CreateQuizDialog
-                chapterId={chapterId}
-                maxQuizzesReached={maxQuizzesReached}
-              />
+              <Button
+                disabled={maxQuizzesReached}
+                className="gap-2"
+                onClick={openCreateDialog}
+              >
+                <Plus className="h-4 w-4" />
+                Buat Quiz Baru
+              </Button>
             </div>
           </div>
         </CardHeader>
@@ -112,10 +137,14 @@ const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
                 <p className="text-sm text-muted-foreground mb-4">
                   Mulai dengan membuat quiz pertama untuk chapter ini.
                 </p>
-                <CreateQuizDialog
-                  chapterId={chapterId}
-                  maxQuizzesReached={maxQuizzesReached}
-                />
+                <Button
+                  disabled={maxQuizzesReached}
+                  className="gap-2"
+                  onClick={openCreateDialog}
+                >
+                  <Plus className="h-4 w-4" />
+                  Buat Quiz Baru
+                </Button>
               </div>
             </div>
           </CardContent>
@@ -184,7 +213,7 @@ const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => openEditDialog(quiz.id)}>
                         <Edit className="h-4 w-4 mr-2" />
                         Edit Quiz
                       </DropdownMenuItem>
@@ -192,7 +221,11 @@ const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
                         <Plus className="h-4 w-4 mr-2" />
                         Tambah Soal
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="text-red-600">
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        className="text-red-600 focus:text-red-600"
+                        onClick={() => openDeleteDialog(quiz.id)}
+                      >
                         <Trash2 className="h-4 w-4 mr-2" />
                         Hapus Quiz
                       </DropdownMenuItem>
@@ -220,10 +253,19 @@ const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
               <li>
                 • Gunakan batas waktu yang sesuai dengan tingkat kesulitan
               </li>
+              <li>
+                • Edit quiz hanya jika diperlukan, karena akan mempengaruhi
+                siswa
+              </li>
             </ul>
           </div>
         </CardContent>
       </Card>
+
+      {/* Dialog Components */}
+      <CreateQuizDialog chapterId={chapterId} />
+      <EditQuizDialog quiz={editingQuiz} />
+      <DeleteQuizDialog quiz={deletingQuiz} />
     </div>
   );
 };

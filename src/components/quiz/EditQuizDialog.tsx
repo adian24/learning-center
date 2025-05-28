@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useCallback } from "react";
 import {
   Dialog,
   DialogContent,
@@ -20,8 +20,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { useCreateQuiz } from "@/hooks/use-quiz-management";
-import { Plus, Loader2, Clock, Trophy } from "lucide-react";
+import { useUpdateQuiz } from "@/hooks/use-quiz-management";
+import { Edit, Loader2, Clock, Trophy } from "lucide-react";
+import { Quiz } from "@/lib/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -35,8 +36,8 @@ import {
 } from "@/components/ui/form";
 import { useQuizDialogStore } from "@/stores/use-store-quiz-dialog";
 
-interface CreateQuizDialogProps {
-  chapterId: string;
+interface EditQuizDialogProps {
+  quiz: Quiz | null;
 }
 
 const formSchema = z.object({
@@ -48,9 +49,9 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-const CreateQuizDialog: React.FC<CreateQuizDialogProps> = ({ chapterId }) => {
-  const { isCreateOpen, closeCreateDialog } = useQuizDialogStore();
-  const createQuizMutation = useCreateQuiz();
+const EditQuizDialog: React.FC<EditQuizDialogProps> = ({ quiz }) => {
+  const { isEditOpen, closeEditDialog } = useQuizDialogStore();
+  const updateQuizMutation = useUpdateQuiz();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -62,56 +63,98 @@ const CreateQuizDialog: React.FC<CreateQuizDialogProps> = ({ chapterId }) => {
     },
   });
 
+  // Reset form when dialog opens and we have quiz data
+  useEffect(() => {
+    if (isEditOpen && quiz) {
+      form.reset({
+        title: quiz.title || "",
+        description: quiz.description || "",
+        timeLimit: quiz.timeLimit || null,
+        passingScore: quiz.passingScore || 60,
+      });
+    }
+  }, [isEditOpen, quiz, form]);
+
   const onSubmit = async (data: FormData) => {
+    if (!quiz) return;
+
     try {
-      const quizData = {
+      const updateData = {
         title: data.title.trim(),
         description: data.description?.trim() || undefined,
         timeLimit: data.timeLimit || undefined,
         passingScore: data.passingScore,
-        chapterId,
       };
 
-      await createQuizMutation.mutateAsync(quizData);
-
-      toast.success("Quiz Berhasil Dibuat", {
-        description: `Quiz "${data.title}" telah berhasil dibuat.`,
+      await updateQuizMutation.mutateAsync({
+        quizId: quiz.id,
+        data: updateData,
       });
 
-      form.reset();
-      closeCreateDialog();
+      toast.success("Quiz Berhasil Diperbarui", {
+        description: `Quiz "${data.title}" telah berhasil diperbarui.`,
+      });
+
+      closeEditDialog();
     } catch (error: any) {
-      toast.error("Gagal Membuat Quiz", {
-        description: error.message || "Terjadi kesalahan saat membuat quiz.",
+      toast.error("Gagal Memperbarui Quiz", {
+        description:
+          error.message || "Terjadi kesalahan saat memperbarui quiz.",
       });
     }
   };
 
-  const handleCancel = () => {
-    form.reset();
-    closeCreateDialog();
-  };
-
-  const handleOpenChange = (open: boolean) => {
-    if (!open) {
-      form.reset();
-      closeCreateDialog();
+  const handleCancel = useCallback(() => {
+    if (quiz) {
+      form.reset({
+        title: quiz.title || "",
+        description: quiz.description || "",
+        timeLimit: quiz.timeLimit || null,
+        passingScore: quiz.passingScore || 60,
+      });
     }
-  };
+    closeEditDialog();
+  }, [form, quiz, closeEditDialog]);
 
-  const isLoading = createQuizMutation.isPending;
+  const handleOpenChange = useCallback(
+    (newOpen: boolean) => {
+      if (!newOpen) {
+        // Only reset if form is dirty (has changes)
+        if (form.formState.isDirty && quiz) {
+          form.reset({
+            title: quiz.title || "",
+            description: quiz.description || "",
+            timeLimit: quiz.timeLimit || null,
+            passingScore: quiz.passingScore || 60,
+          });
+        }
+        closeEditDialog();
+      }
+    },
+    [form, quiz, closeEditDialog]
+  );
+
+  const isLoading = updateQuizMutation.isPending;
+
+  if (!quiz) return null;
 
   return (
-    <Dialog open={isCreateOpen} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+    <Dialog open={isEditOpen} onOpenChange={handleOpenChange}>
+      <DialogContent
+        className="sm:max-w-[500px]"
+        onInteractOutside={(e) => {
+          // Prevent dialog from closing when interacting with Select dropdown
+          e.preventDefault();
+        }}
+      >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Plus className="h-5 w-5" />
-            Buat Quiz Baru
+            <Edit className="h-5 w-5" />
+            Edit Quiz
           </DialogTitle>
           <DialogDescription>
-            Buat quiz baru untuk chapter ini. Anda dapat menambahkan pertanyaan
-            setelah quiz dibuat.
+            Edit quiz ini. Perubahan akan mempengaruhi semua siswa yang
+            mengerjakan quiz.
           </DialogDescription>
         </DialogHeader>
 
@@ -184,7 +227,10 @@ const CreateQuizDialog: React.FC<CreateQuizDialogProps> = ({ chapterId }) => {
                           <SelectValue placeholder="Pilih batas waktu" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
+                      <SelectContent
+                        // Prevent Select from closing the dialog
+                        onCloseAutoFocus={(e) => e.preventDefault()}
+                      >
                         <SelectItem value="unlimited">Tanpa Batas</SelectItem>
                         <SelectItem value="5">5 menit</SelectItem>
                         <SelectItem value="10">10 menit</SelectItem>
@@ -231,15 +277,18 @@ const CreateQuizDialog: React.FC<CreateQuizDialogProps> = ({ chapterId }) => {
             </div>
 
             {/* Form Info */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-              <div className="text-sm text-blue-800">
-                <p className="font-medium mb-1">Informasi:</p>
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+              <div className="text-sm text-amber-800">
+                <p className="font-medium mb-1">⚠️ Perhatian:</p>
                 <ul className="space-y-1 text-xs">
-                  <li>• Quiz akan dibuat dalam status draft</li>
+                  <li>• Perubahan pada quiz akan mempengaruhi semua siswa</li>
                   <li>
-                    • Anda dapat menambahkan pertanyaan setelah quiz dibuat
+                    • Jika siswa sedang mengerjakan, mereka akan menggunakan
+                    setting lama
                   </li>
-                  <li>• Maksimal 30 quiz per chapter</li>
+                  <li>
+                    • Passing score baru akan berlaku untuk attempt selanjutnya
+                  </li>
                 </ul>
               </div>
             </div>
@@ -257,12 +306,12 @@ const CreateQuizDialog: React.FC<CreateQuizDialogProps> = ({ chapterId }) => {
                 {isLoading ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    Membuat...
+                    Memperbarui...
                   </>
                 ) : (
                   <>
-                    <Plus className="h-4 w-4" />
-                    Buat Quiz
+                    <Edit className="h-4 w-4" />
+                    Perbarui Quiz
                   </>
                 )}
               </Button>
@@ -274,4 +323,4 @@ const CreateQuizDialog: React.FC<CreateQuizDialogProps> = ({ chapterId }) => {
   );
 };
 
-export default CreateQuizDialog;
+export default EditQuizDialog;
