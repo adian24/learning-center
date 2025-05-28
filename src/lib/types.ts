@@ -86,6 +86,7 @@ export interface UserProgress {
   chapterId: string;
   chapter: Chapter;
   isCompleted: boolean;
+  chapterScore?: number | null;
   watchedSeconds: number;
   lastWatchedAt?: Date | null;
   completedAt?: Date | null;

@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import db from "@/lib/db/db";
 import { z } from "zod";
+import {
+  updateUserProgressScore,
+  calculateChapterScore,
+} from "@/lib/services/quiz-score-service";
 
 const updateProgressSchema = z.object({
   chapterId: z.string(),
@@ -78,6 +82,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Calculate current chapter score based on quizzes
+    const calculation = await calculateChapterScore(
+      studentProfile.id,
+      chapterId
+    );
+
     // Prepare update data
     const updateData: any = {
       lastWatchedAt: new Date(),
@@ -87,15 +97,43 @@ export async function POST(req: NextRequest) {
       updateData.watchedSeconds = watchedSeconds;
     }
 
-    if (isCompleted !== undefined) {
-      updateData.isCompleted = isCompleted;
-      if (isCompleted) {
-        updateData.completedAt = new Date();
-      }
-    }
-
     if (notes !== undefined) {
       updateData.notes = notes;
+    }
+
+    // Set chapter score and completion status based on quiz performance
+    updateData.chapterScore = calculation.chapterScore;
+
+    // Only mark as completed if:
+    // 1. User explicitly sets isCompleted to true, AND
+    // 2. Chapter score is >= 65 (or no quizzes exist)
+    if (isCompleted !== undefined) {
+      if (isCompleted && calculation.isCompleted) {
+        updateData.isCompleted = true;
+        updateData.completedAt = new Date();
+      } else if (isCompleted && !calculation.isCompleted) {
+        // User wants to complete but doesn't meet quiz requirements
+        return NextResponse.json(
+          {
+            error: "Cannot complete chapter",
+            message: `Chapter score is ${calculation.chapterScore}%. Minimum required: 65%`,
+            chapterScore: calculation.chapterScore,
+            requiredScore: 65,
+            totalQuizzes: calculation.totalQuizzes,
+            passedQuizzes: calculation.passedQuizzes,
+          },
+          { status: 400 }
+        );
+      } else {
+        updateData.isCompleted = false;
+        updateData.completedAt = null;
+      }
+    } else {
+      // If isCompleted is not provided, use the calculated value
+      updateData.isCompleted = calculation.isCompleted;
+      if (calculation.isCompleted) {
+        updateData.completedAt = new Date();
+      }
     }
 
     // Update or create progress record
@@ -112,13 +150,20 @@ export async function POST(req: NextRequest) {
         chapterId: chapterId,
         ...updateData,
         watchedSeconds: watchedSeconds || 0,
-        isCompleted: isCompleted || false,
+        isCompleted: updateData.isCompleted || false,
+        chapterScore: calculation.chapterScore,
       },
     });
 
     return NextResponse.json({
       message: "Progress updated successfully",
       progress,
+      chapterScore: calculation.chapterScore,
+      quizSummary: {
+        totalQuizzes: calculation.totalQuizzes,
+        passedQuizzes: calculation.passedQuizzes,
+        isCompleted: calculation.isCompleted,
+      },
     });
   } catch (error) {
     console.error("[PROGRESS_UPDATE]", error);
@@ -176,7 +221,21 @@ export async function GET(req: NextRequest) {
         },
       });
 
-      return NextResponse.json({ progress });
+      // Calculate current chapter score even if no progress record exists
+      const calculation = await calculateChapterScore(
+        studentProfile.id,
+        chapterId
+      );
+
+      return NextResponse.json({
+        progress,
+        chapterScore: calculation.chapterScore,
+        quizSummary: {
+          totalQuizzes: calculation.totalQuizzes,
+          passedQuizzes: calculation.passedQuizzes,
+          isCompleted: calculation.isCompleted,
+        },
+      });
     }
 
     if (courseId) {
@@ -205,7 +264,26 @@ export async function GET(req: NextRequest) {
         },
       });
 
-      return NextResponse.json({ progress });
+      // Calculate scores for all chapters
+      const progressWithScores = await Promise.all(
+        progress.map(async (p) => {
+          const calculation = await calculateChapterScore(
+            studentProfile.id,
+            p.chapterId
+          );
+          return {
+            ...p,
+            calculatedScore: calculation.chapterScore,
+            quizSummary: {
+              totalQuizzes: calculation.totalQuizzes,
+              passedQuizzes: calculation.passedQuizzes,
+              isCompleted: calculation.isCompleted,
+            },
+          };
+        })
+      );
+
+      return NextResponse.json({ progress: progressWithScores });
     }
 
     // Get all progress for the student

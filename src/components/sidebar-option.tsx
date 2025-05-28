@@ -7,15 +7,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { SidebarMenu, useSidebar } from "./ui/sidebar";
-import { useCurrentUser } from "@/hooks/use-current-user";
 import Link from "next/link";
+import { useUserRole } from "@/hooks/use-user-role";
 
 export function SidebarOption() {
   const { open } = useSidebar();
-  const { data: user, isLoading } = useCurrentUser();
+  const { data: user, isLoading } = useUserRole();
 
   // Don't show while loading or if user has teacher profile
-  if (isLoading || !user || user.teacherProfile) {
+  if (isLoading || !user || user?.role === "TEACHER") {
     return null;
   }
 

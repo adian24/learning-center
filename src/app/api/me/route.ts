@@ -21,6 +21,8 @@ export async function GET() {
         teacherProfile: {
           select: {
             id: true,
+            bio: true,
+            expertise: true,
           },
         },
         studentProfile: {
@@ -31,7 +33,29 @@ export async function GET() {
       },
     });
 
-    return NextResponse.json(user);
+    if (!user) {
+      return new NextResponse("User not found", { status: 404 });
+    }
+
+    // Determine role based on profiles
+    let role: "TEACHER" | "STUDENT" | null = null;
+    let profile = null;
+
+    if (user.teacherProfile) {
+      role = "TEACHER";
+      profile = user.teacherProfile;
+    } else if (user.studentProfile) {
+      role = "STUDENT";
+      profile = user.studentProfile;
+    }
+
+    return NextResponse.json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role,
+      profile,
+    });
   } catch (error) {
     console.error("[USER_GET]", error);
     return new NextResponse("Internal Error", { status: 500 });

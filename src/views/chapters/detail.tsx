@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import {
   CheckCircle,
@@ -17,6 +16,8 @@ import { useRouter } from "next/navigation";
 import { useChapterQuery } from "@/hooks/use-chapter-query";
 import { Badge } from "@/components/ui/badge";
 import ContentVideo from "@/sections/chapters/detail/ContentVideo";
+import QuizTabContent from "@/components/quiz/QuizTabContent";
+import ChapterProgress from "@/components/quiz/ChapterProgress";
 
 const DetailChapter = ({
   chapterId,
@@ -27,38 +28,16 @@ const DetailChapter = ({
 }) => {
   const router = useRouter();
 
-  const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
-  const [userAnswers, setUserAnswers] = useState<any>({});
-
   const { data: chapter } = useChapterQuery({ courseId, chapterId });
 
-  // Mock data - in real app would come from API/props
-  const mockChapter = {
-    id: "1",
-    title: "Chapter 1: Introduction",
-    description: "Learn the basics of the course",
-    videoUrl: "https://example.com/video.mp4",
-    duration: 45,
-    resources: [
-      { id: "1", title: "Reading Material", type: "PDF" },
-      { id: "2", title: "Additional Links", type: "LINK" },
-    ],
-    quiz: {
-      id: "1",
-      title: "Chapter Quiz",
-      questions: [
-        {
-          id: "1",
-          text: "What is the main concept covered in this chapter?",
-          type: "MULTIPLE_CHOICE",
-          options: [
-            { id: "1", text: "Option A" },
-            { id: "2", text: "Option B" },
-            { id: "3", text: "Option C" },
-          ],
-        },
-      ],
-    },
+  const handleProgressUpdate = () => {
+    // This will trigger re-fetching of data when progress is updated
+    // The queries will automatically update due to React Query invalidation
+  };
+
+  const handleQuizComplete = () => {
+    // This will trigger re-fetching when quiz is completed
+    // The progress tab data will automatically update
   };
 
   return (
@@ -127,98 +106,14 @@ const DetailChapter = ({
 
           {/* Quiz Tab */}
           <TabsContent value="quiz">
-            {/* <Card>
-            <CardContent className="p-6">
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-semibold">
-                    {mockChapter.quiz.title}
-                  </h3>
-                  <Progress value={33} className="w-1/3" />
-                </div>
-
-                {mockChapter.quiz.questions.map((question, index) => (
-                  <div
-                    key={question.id}
-                    className={`p-4 border rounded-lg ${
-                      index === activeQuestionIndex ? "border-blue-500" : ""
-                    }`}
-                  >
-                    <p className="font-medium mb-4">{question.text}</p>
-                    <div className="space-y-2">
-                      {question.options.map((option) => (
-                        <Button
-                          key={option.id}
-                          variant={
-                            userAnswers[question.id] === option.id
-                              ? "default"
-                              : "outline"
-                          }
-                          className="w-full justify-start"
-                          onClick={() =>
-                            setUserAnswers({
-                              ...userAnswers,
-                              [question.id]: option.id,
-                            })
-                          }
-                        >
-                          {option.text}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-
-                <div className="flex justify-between mt-6">
-                  <Button
-                    variant="outline"
-                    disabled={activeQuestionIndex === 0}
-                    onClick={() => setActiveQuestionIndex((prev) => prev - 1)}
-                  >
-                    Previous
-                  </Button>
-                  <Button
-                    disabled={
-                      activeQuestionIndex ===
-                      mockChapter.quiz.questions.length - 1
-                    }
-                    onClick={() => setActiveQuestionIndex((prev) => prev + 1)}
-                  >
-                    Next
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card> */}
-            <Card>
-              <CardContent className="p-6 flex items-center justify-center">
-                <h3 className="text-xl font-semibold">Quiz Coming Soon</h3>
-              </CardContent>
-            </Card>
+            <QuizTabContent
+              chapterId={chapterId}
+              onQuizComplete={handleQuizComplete}
+            />
           </TabsContent>
 
           {/* Resources Tab */}
           <TabsContent value="resources">
-            {/* <Card>
-              <CardContent className="p-6">
-                <div className="space-y-4">
-                  {mockChapter.resources.map((resource) => (
-                    <div
-                      key={resource.id}
-                      className="flex items-center justify-between p-4 border rounded-lg"
-                    >
-                      <div className="flex items-center gap-3">
-                        <FileText className="w-5 h-5 text-blue-500" />
-                        <span>{resource.title}</span>
-                      </div>
-                      <Button variant="outline" size="sm">
-                        Download
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card> */}
             <Card>
               <CardContent className="p-6 flex items-center justify-center">
                 <h3 className="text-xl font-semibold">Resource Coming Soon</h3>
@@ -228,30 +123,10 @@ const DetailChapter = ({
 
           {/* Progress Tab */}
           <TabsContent value="progress">
-            {/* <Card>
-              <CardContent className="p-6">
-                <div className="space-y-6">
-                  <div>
-                    <h4 className="font-medium mb-2">Overall Progress</h4>
-                    <Progress value={66} className="w-full" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium mb-2">Quiz Scores</h4>
-                    <div className="grid gap-4">
-                      <div className="flex items-center justify-between p-4 border rounded-lg">
-                        <span>Quiz 1</span>
-                        <span className="font-medium">80%</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card> */}
-            <Card>
-              <CardContent className="p-6 flex items-center justify-center">
-                <h3 className="text-xl font-semibold">Progress Coming Soon</h3>
-              </CardContent>
-            </Card>
+            <ChapterProgress
+              chapterId={chapterId}
+              onProgressUpdate={handleProgressUpdate}
+            />
           </TabsContent>
         </Tabs>
       </div>

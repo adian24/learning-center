@@ -266,6 +266,7 @@ exports.Prisma.UserProgressScalarFieldEnum = {
   studentId: 'studentId',
   chapterId: 'chapterId',
   isCompleted: 'isCompleted',
+  chapterScore: 'chapterScore',
   watchedSeconds: 'watchedSeconds',
   lastWatchedAt: 'lastWatchedAt',
   completedAt: 'completedAt',

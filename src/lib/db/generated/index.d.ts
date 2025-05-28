@@ -18286,10 +18286,12 @@ export namespace Prisma {
   }
 
   export type UserProgressAvgAggregateOutputType = {
+    chapterScore: number | null
     watchedSeconds: number | null
   }
 
   export type UserProgressSumAggregateOutputType = {
+    chapterScore: number | null
     watchedSeconds: number | null
   }
 
@@ -18298,6 +18300,7 @@ export namespace Prisma {
     studentId: string | null
     chapterId: string | null
     isCompleted: boolean | null
+    chapterScore: number | null
     watchedSeconds: number | null
     lastWatchedAt: Date | null
     completedAt: Date | null
@@ -18311,6 +18314,7 @@ export namespace Prisma {
     studentId: string | null
     chapterId: string | null
     isCompleted: boolean | null
+    chapterScore: number | null
     watchedSeconds: number | null
     lastWatchedAt: Date | null
     completedAt: Date | null
@@ -18324,6 +18328,7 @@ export namespace Prisma {
     studentId: number
     chapterId: number
     isCompleted: number
+    chapterScore: number
     watchedSeconds: number
     lastWatchedAt: number
     completedAt: number
@@ -18335,10 +18340,12 @@ export namespace Prisma {
 
 
   export type UserProgressAvgAggregateInputType = {
+    chapterScore?: true
     watchedSeconds?: true
   }
 
   export type UserProgressSumAggregateInputType = {
+    chapterScore?: true
     watchedSeconds?: true
   }
 
@@ -18347,6 +18354,7 @@ export namespace Prisma {
     studentId?: true
     chapterId?: true
     isCompleted?: true
+    chapterScore?: true
     watchedSeconds?: true
     lastWatchedAt?: true
     completedAt?: true
@@ -18360,6 +18368,7 @@ export namespace Prisma {
     studentId?: true
     chapterId?: true
     isCompleted?: true
+    chapterScore?: true
     watchedSeconds?: true
     lastWatchedAt?: true
     completedAt?: true
@@ -18373,6 +18382,7 @@ export namespace Prisma {
     studentId?: true
     chapterId?: true
     isCompleted?: true
+    chapterScore?: true
     watchedSeconds?: true
     lastWatchedAt?: true
     completedAt?: true
@@ -18473,6 +18483,7 @@ export namespace Prisma {
     studentId: string
     chapterId: string
     isCompleted: boolean
+    chapterScore: number | null
     watchedSeconds: number
     lastWatchedAt: Date | null
     completedAt: Date | null
@@ -18505,6 +18516,7 @@ export namespace Prisma {
     studentId?: boolean
     chapterId?: boolean
     isCompleted?: boolean
+    chapterScore?: boolean
     watchedSeconds?: boolean
     lastWatchedAt?: boolean
     completedAt?: boolean
@@ -18523,6 +18535,7 @@ export namespace Prisma {
     studentId?: boolean
     chapterId?: boolean
     isCompleted?: boolean
+    chapterScore?: boolean
     watchedSeconds?: boolean
     lastWatchedAt?: boolean
     completedAt?: boolean
@@ -18538,6 +18551,7 @@ export namespace Prisma {
     studentId?: boolean
     chapterId?: boolean
     isCompleted?: boolean
+    chapterScore?: boolean
     watchedSeconds?: boolean
     lastWatchedAt?: boolean
     completedAt?: boolean
@@ -18553,6 +18567,7 @@ export namespace Prisma {
     studentId?: boolean
     chapterId?: boolean
     isCompleted?: boolean
+    chapterScore?: boolean
     watchedSeconds?: boolean
     lastWatchedAt?: boolean
     completedAt?: boolean
@@ -18561,7 +18576,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type UserProgressOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "studentId" | "chapterId" | "isCompleted" | "watchedSeconds" | "lastWatchedAt" | "completedAt" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["userProgress"]>
+  export type UserProgressOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "studentId" | "chapterId" | "isCompleted" | "chapterScore" | "watchedSeconds" | "lastWatchedAt" | "completedAt" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["userProgress"]>
   export type UserProgressInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     student?: boolean | StudentProfileDefaultArgs<ExtArgs>
     chapter?: boolean | ChapterDefaultArgs<ExtArgs>
@@ -18591,6 +18606,7 @@ export namespace Prisma {
       studentId: string
       chapterId: string
       isCompleted: boolean
+      chapterScore: number | null
       watchedSeconds: number
       lastWatchedAt: Date | null
       completedAt: Date | null
@@ -19028,6 +19044,7 @@ export namespace Prisma {
     readonly studentId: FieldRef<"UserProgress", 'String'>
     readonly chapterId: FieldRef<"UserProgress", 'String'>
     readonly isCompleted: FieldRef<"UserProgress", 'Boolean'>
+    readonly chapterScore: FieldRef<"UserProgress", 'Float'>
     readonly watchedSeconds: FieldRef<"UserProgress", 'Int'>
     readonly lastWatchedAt: FieldRef<"UserProgress", 'DateTime'>
     readonly completedAt: FieldRef<"UserProgress", 'DateTime'>
@@ -27757,6 +27774,7 @@ export namespace Prisma {
     studentId: 'studentId',
     chapterId: 'chapterId',
     isCompleted: 'isCompleted',
+    chapterScore: 'chapterScore',
     watchedSeconds: 'watchedSeconds',
     lastWatchedAt: 'lastWatchedAt',
     completedAt: 'completedAt',
@@ -28417,20 +28435,20 @@ export namespace Prisma {
 
   export type CertificateWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    courseId?: string
     certificateNumber?: string
     studentId_courseId?: CertificateStudentIdCourseIdCompoundUniqueInput
     AND?: CertificateWhereInput | CertificateWhereInput[]
     OR?: CertificateWhereInput[]
     NOT?: CertificateWhereInput | CertificateWhereInput[]
     studentId?: StringFilter<"Certificate"> | string
+    courseId?: StringFilter<"Certificate"> | string
     issueDate?: DateTimeFilter<"Certificate"> | Date | string
     pdfUrl?: StringNullableFilter<"Certificate"> | string | null
     createdAt?: DateTimeFilter<"Certificate"> | Date | string
     updatedAt?: DateTimeFilter<"Certificate"> | Date | string
     student?: XOR<StudentProfileScalarRelationFilter, StudentProfileWhereInput>
     course?: XOR<CourseScalarRelationFilter, CourseWhereInput>
-  }, "id" | "courseId" | "certificateNumber" | "studentId_courseId">
+  }, "id" | "certificateNumber" | "studentId_courseId">
 
   export type CertificateOrderByWithAggregationInput = {
     id?: SortOrder
@@ -28743,16 +28761,16 @@ export namespace Prisma {
 
   export type LearningObjectiveWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    courseId?: string
     AND?: LearningObjectiveWhereInput | LearningObjectiveWhereInput[]
     OR?: LearningObjectiveWhereInput[]
     NOT?: LearningObjectiveWhereInput | LearningObjectiveWhereInput[]
     text?: StringFilter<"LearningObjective"> | string
     position?: IntFilter<"LearningObjective"> | number
+    courseId?: StringFilter<"LearningObjective"> | string
     createdAt?: DateTimeFilter<"LearningObjective"> | Date | string
     updatedAt?: DateTimeFilter<"LearningObjective"> | Date | string
     course?: XOR<CourseScalarRelationFilter, CourseWhereInput>
-  }, "id" | "courseId">
+  }, "id">
 
   export type LearningObjectiveOrderByWithAggregationInput = {
     id?: SortOrder
@@ -28819,7 +28837,6 @@ export namespace Prisma {
 
   export type CourseReviewWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    courseId?: string
     studentId_courseId?: CourseReviewStudentIdCourseIdCompoundUniqueInput
     AND?: CourseReviewWhereInput | CourseReviewWhereInput[]
     OR?: CourseReviewWhereInput[]
@@ -28827,6 +28844,7 @@ export namespace Prisma {
     rating?: FloatFilter<"CourseReview"> | number
     comment?: StringNullableFilter<"CourseReview"> | string | null
     studentId?: StringFilter<"CourseReview"> | string
+    courseId?: StringFilter<"CourseReview"> | string
     isVerifiedPurchase?: BoolFilter<"CourseReview"> | boolean
     status?: EnumReviewStatusFilter<"CourseReview"> | $Enums.ReviewStatus
     helpfulCount?: IntFilter<"CourseReview"> | number
@@ -28836,7 +28854,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"CourseReview"> | Date | string
     student?: XOR<StudentProfileScalarRelationFilter, StudentProfileWhereInput>
     course?: XOR<CourseScalarRelationFilter, CourseWhereInput>
-  }, "id" | "courseId" | "studentId_courseId">
+  }, "id" | "studentId_courseId">
 
   export type CourseReviewOrderByWithAggregationInput = {
     id?: SortOrder
@@ -28962,7 +28980,6 @@ export namespace Prisma {
 
   export type ChapterWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    courseId?: string
     AND?: ChapterWhereInput | ChapterWhereInput[]
     OR?: ChapterWhereInput[]
     NOT?: ChapterWhereInput | ChapterWhereInput[]
@@ -28973,13 +28990,14 @@ export namespace Prisma {
     isPublished?: BoolFilter<"Chapter"> | boolean
     isFree?: BoolFilter<"Chapter"> | boolean
     duration?: IntNullableFilter<"Chapter"> | number | null
+    courseId?: StringFilter<"Chapter"> | string
     createdAt?: DateTimeFilter<"Chapter"> | Date | string
     updatedAt?: DateTimeFilter<"Chapter"> | Date | string
     course?: XOR<CourseScalarRelationFilter, CourseWhereInput>
     userProgress?: UserProgressListRelationFilter
     resources?: ResourceListRelationFilter
     quizzes?: QuizListRelationFilter
-  }, "id" | "courseId">
+  }, "id">
 
   export type ChapterOrderByWithAggregationInput = {
     id?: SortOrder
@@ -29025,6 +29043,7 @@ export namespace Prisma {
     studentId?: StringFilter<"UserProgress"> | string
     chapterId?: StringFilter<"UserProgress"> | string
     isCompleted?: BoolFilter<"UserProgress"> | boolean
+    chapterScore?: FloatNullableFilter<"UserProgress"> | number | null
     watchedSeconds?: IntFilter<"UserProgress"> | number
     lastWatchedAt?: DateTimeNullableFilter<"UserProgress"> | Date | string | null
     completedAt?: DateTimeNullableFilter<"UserProgress"> | Date | string | null
@@ -29042,6 +29061,7 @@ export namespace Prisma {
     studentId?: SortOrder
     chapterId?: SortOrder
     isCompleted?: SortOrder
+    chapterScore?: SortOrderInput | SortOrder
     watchedSeconds?: SortOrder
     lastWatchedAt?: SortOrderInput | SortOrder
     completedAt?: SortOrderInput | SortOrder
@@ -29063,6 +29083,7 @@ export namespace Prisma {
     studentId?: StringFilter<"UserProgress"> | string
     chapterId?: StringFilter<"UserProgress"> | string
     isCompleted?: BoolFilter<"UserProgress"> | boolean
+    chapterScore?: FloatNullableFilter<"UserProgress"> | number | null
     watchedSeconds?: IntFilter<"UserProgress"> | number
     lastWatchedAt?: DateTimeNullableFilter<"UserProgress"> | Date | string | null
     completedAt?: DateTimeNullableFilter<"UserProgress"> | Date | string | null
@@ -29080,6 +29101,7 @@ export namespace Prisma {
     studentId?: SortOrder
     chapterId?: SortOrder
     isCompleted?: SortOrder
+    chapterScore?: SortOrderInput | SortOrder
     watchedSeconds?: SortOrder
     lastWatchedAt?: SortOrderInput | SortOrder
     completedAt?: SortOrderInput | SortOrder
@@ -29101,6 +29123,7 @@ export namespace Prisma {
     studentId?: StringWithAggregatesFilter<"UserProgress"> | string
     chapterId?: StringWithAggregatesFilter<"UserProgress"> | string
     isCompleted?: BoolWithAggregatesFilter<"UserProgress"> | boolean
+    chapterScore?: FloatNullableWithAggregatesFilter<"UserProgress"> | number | null
     watchedSeconds?: IntWithAggregatesFilter<"UserProgress"> | number
     lastWatchedAt?: DateTimeNullableWithAggregatesFilter<"UserProgress"> | Date | string | null
     completedAt?: DateTimeNullableWithAggregatesFilter<"UserProgress"> | Date | string | null
@@ -29562,12 +29585,12 @@ export namespace Prisma {
 
   export type EnrolledCourseWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    courseId?: string
     studentId_courseId?: EnrolledCourseStudentIdCourseIdCompoundUniqueInput
     AND?: EnrolledCourseWhereInput | EnrolledCourseWhereInput[]
     OR?: EnrolledCourseWhereInput[]
     NOT?: EnrolledCourseWhereInput | EnrolledCourseWhereInput[]
     studentId?: StringFilter<"EnrolledCourse"> | string
+    courseId?: StringFilter<"EnrolledCourse"> | string
     amount?: FloatFilter<"EnrolledCourse"> | number
     currency?: StringFilter<"EnrolledCourse"> | string
     paymentId?: StringNullableFilter<"EnrolledCourse"> | string | null
@@ -29578,7 +29601,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"EnrolledCourse"> | Date | string
     student?: XOR<StudentProfileScalarRelationFilter, StudentProfileWhereInput>
     course?: XOR<CourseScalarRelationFilter, CourseWhereInput>
-  }, "id" | "courseId" | "studentId_courseId">
+  }, "id" | "studentId_courseId">
 
   export type EnrolledCourseOrderByWithAggregationInput = {
     id?: SortOrder
@@ -30694,6 +30717,7 @@ export namespace Prisma {
   export type UserProgressCreateInput = {
     id?: string
     isCompleted?: boolean
+    chapterScore?: number | null
     watchedSeconds?: number
     lastWatchedAt?: Date | string | null
     completedAt?: Date | string | null
@@ -30711,6 +30735,7 @@ export namespace Prisma {
     studentId: string
     chapterId: string
     isCompleted?: boolean
+    chapterScore?: number | null
     watchedSeconds?: number
     lastWatchedAt?: Date | string | null
     completedAt?: Date | string | null
@@ -30724,6 +30749,7 @@ export namespace Prisma {
   export type UserProgressUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     isCompleted?: BoolFieldUpdateOperationsInput | boolean
+    chapterScore?: NullableFloatFieldUpdateOperationsInput | number | null
     watchedSeconds?: IntFieldUpdateOperationsInput | number
     lastWatchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -30741,6 +30767,7 @@ export namespace Prisma {
     studentId?: StringFieldUpdateOperationsInput | string
     chapterId?: StringFieldUpdateOperationsInput | string
     isCompleted?: BoolFieldUpdateOperationsInput | boolean
+    chapterScore?: NullableFloatFieldUpdateOperationsInput | number | null
     watchedSeconds?: IntFieldUpdateOperationsInput | number
     lastWatchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -30756,6 +30783,7 @@ export namespace Prisma {
     studentId: string
     chapterId: string
     isCompleted?: boolean
+    chapterScore?: number | null
     watchedSeconds?: number
     lastWatchedAt?: Date | string | null
     completedAt?: Date | string | null
@@ -30767,6 +30795,7 @@ export namespace Prisma {
   export type UserProgressUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     isCompleted?: BoolFieldUpdateOperationsInput | boolean
+    chapterScore?: NullableFloatFieldUpdateOperationsInput | number | null
     watchedSeconds?: IntFieldUpdateOperationsInput | number
     lastWatchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -30780,6 +30809,7 @@ export namespace Prisma {
     studentId?: StringFieldUpdateOperationsInput | string
     chapterId?: StringFieldUpdateOperationsInput | string
     isCompleted?: BoolFieldUpdateOperationsInput | boolean
+    chapterScore?: NullableFloatFieldUpdateOperationsInput | number | null
     watchedSeconds?: IntFieldUpdateOperationsInput | number
     lastWatchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -32280,6 +32310,7 @@ export namespace Prisma {
     studentId?: SortOrder
     chapterId?: SortOrder
     isCompleted?: SortOrder
+    chapterScore?: SortOrder
     watchedSeconds?: SortOrder
     lastWatchedAt?: SortOrder
     completedAt?: SortOrder
@@ -32289,6 +32320,7 @@ export namespace Prisma {
   }
 
   export type UserProgressAvgOrderByAggregateInput = {
+    chapterScore?: SortOrder
     watchedSeconds?: SortOrder
   }
 
@@ -32297,6 +32329,7 @@ export namespace Prisma {
     studentId?: SortOrder
     chapterId?: SortOrder
     isCompleted?: SortOrder
+    chapterScore?: SortOrder
     watchedSeconds?: SortOrder
     lastWatchedAt?: SortOrder
     completedAt?: SortOrder
@@ -32310,6 +32343,7 @@ export namespace Prisma {
     studentId?: SortOrder
     chapterId?: SortOrder
     isCompleted?: SortOrder
+    chapterScore?: SortOrder
     watchedSeconds?: SortOrder
     lastWatchedAt?: SortOrder
     completedAt?: SortOrder
@@ -32319,6 +32353,7 @@ export namespace Prisma {
   }
 
   export type UserProgressSumOrderByAggregateInput = {
+    chapterScore?: SortOrder
     watchedSeconds?: SortOrder
   }
 
@@ -35465,6 +35500,7 @@ export namespace Prisma {
   export type UserProgressCreateWithoutStudentInput = {
     id?: string
     isCompleted?: boolean
+    chapterScore?: number | null
     watchedSeconds?: number
     lastWatchedAt?: Date | string | null
     completedAt?: Date | string | null
@@ -35480,6 +35516,7 @@ export namespace Prisma {
     id?: string
     chapterId: string
     isCompleted?: boolean
+    chapterScore?: number | null
     watchedSeconds?: number
     lastWatchedAt?: Date | string | null
     completedAt?: Date | string | null
@@ -35696,6 +35733,7 @@ export namespace Prisma {
     studentId?: StringFilter<"UserProgress"> | string
     chapterId?: StringFilter<"UserProgress"> | string
     isCompleted?: BoolFilter<"UserProgress"> | boolean
+    chapterScore?: FloatNullableFilter<"UserProgress"> | number | null
     watchedSeconds?: IntFilter<"UserProgress"> | number
     lastWatchedAt?: DateTimeNullableFilter<"UserProgress"> | Date | string | null
     completedAt?: DateTimeNullableFilter<"UserProgress"> | Date | string | null
@@ -36712,6 +36750,7 @@ export namespace Prisma {
   export type UserProgressCreateWithoutChapterInput = {
     id?: string
     isCompleted?: boolean
+    chapterScore?: number | null
     watchedSeconds?: number
     lastWatchedAt?: Date | string | null
     completedAt?: Date | string | null
@@ -36727,6 +36766,7 @@ export namespace Prisma {
     id?: string
     studentId: string
     isCompleted?: boolean
+    chapterScore?: number | null
     watchedSeconds?: number
     lastWatchedAt?: Date | string | null
     completedAt?: Date | string | null
@@ -37200,6 +37240,7 @@ export namespace Prisma {
   export type UserProgressCreateWithoutCompletedResourcesInput = {
     id?: string
     isCompleted?: boolean
+    chapterScore?: number | null
     watchedSeconds?: number
     lastWatchedAt?: Date | string | null
     completedAt?: Date | string | null
@@ -37216,6 +37257,7 @@ export namespace Prisma {
     studentId: string
     chapterId: string
     isCompleted?: boolean
+    chapterScore?: number | null
     watchedSeconds?: number
     lastWatchedAt?: Date | string | null
     completedAt?: Date | string | null
@@ -37817,6 +37859,7 @@ export namespace Prisma {
   export type UserProgressCreateWithoutQuizAttemptsInput = {
     id?: string
     isCompleted?: boolean
+    chapterScore?: number | null
     watchedSeconds?: number
     lastWatchedAt?: Date | string | null
     completedAt?: Date | string | null
@@ -37833,6 +37876,7 @@ export namespace Prisma {
     studentId: string
     chapterId: string
     isCompleted?: boolean
+    chapterScore?: number | null
     watchedSeconds?: number
     lastWatchedAt?: Date | string | null
     completedAt?: Date | string | null
@@ -37957,6 +38001,7 @@ export namespace Prisma {
   export type UserProgressUpdateWithoutQuizAttemptsInput = {
     id?: StringFieldUpdateOperationsInput | string
     isCompleted?: BoolFieldUpdateOperationsInput | boolean
+    chapterScore?: NullableFloatFieldUpdateOperationsInput | number | null
     watchedSeconds?: IntFieldUpdateOperationsInput | number
     lastWatchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -37973,6 +38018,7 @@ export namespace Prisma {
     studentId?: StringFieldUpdateOperationsInput | string
     chapterId?: StringFieldUpdateOperationsInput | string
     isCompleted?: BoolFieldUpdateOperationsInput | boolean
+    chapterScore?: NullableFloatFieldUpdateOperationsInput | number | null
     watchedSeconds?: IntFieldUpdateOperationsInput | number
     lastWatchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -38493,6 +38539,7 @@ export namespace Prisma {
     id?: string
     chapterId: string
     isCompleted?: boolean
+    chapterScore?: number | null
     watchedSeconds?: number
     lastWatchedAt?: Date | string | null
     completedAt?: Date | string | null
@@ -38596,6 +38643,7 @@ export namespace Prisma {
   export type UserProgressUpdateWithoutStudentInput = {
     id?: StringFieldUpdateOperationsInput | string
     isCompleted?: BoolFieldUpdateOperationsInput | boolean
+    chapterScore?: NullableFloatFieldUpdateOperationsInput | number | null
     watchedSeconds?: IntFieldUpdateOperationsInput | number
     lastWatchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -38611,6 +38659,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     chapterId?: StringFieldUpdateOperationsInput | string
     isCompleted?: BoolFieldUpdateOperationsInput | boolean
+    chapterScore?: NullableFloatFieldUpdateOperationsInput | number | null
     watchedSeconds?: IntFieldUpdateOperationsInput | number
     lastWatchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -38625,6 +38674,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     chapterId?: StringFieldUpdateOperationsInput | string
     isCompleted?: BoolFieldUpdateOperationsInput | boolean
+    chapterScore?: NullableFloatFieldUpdateOperationsInput | number | null
     watchedSeconds?: IntFieldUpdateOperationsInput | number
     lastWatchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -39110,6 +39160,7 @@ export namespace Prisma {
     id?: string
     studentId: string
     isCompleted?: boolean
+    chapterScore?: number | null
     watchedSeconds?: number
     lastWatchedAt?: Date | string | null
     completedAt?: Date | string | null
@@ -39138,6 +39189,7 @@ export namespace Prisma {
   export type UserProgressUpdateWithoutChapterInput = {
     id?: StringFieldUpdateOperationsInput | string
     isCompleted?: BoolFieldUpdateOperationsInput | boolean
+    chapterScore?: NullableFloatFieldUpdateOperationsInput | number | null
     watchedSeconds?: IntFieldUpdateOperationsInput | number
     lastWatchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -39153,6 +39205,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     studentId?: StringFieldUpdateOperationsInput | string
     isCompleted?: BoolFieldUpdateOperationsInput | boolean
+    chapterScore?: NullableFloatFieldUpdateOperationsInput | number | null
     watchedSeconds?: IntFieldUpdateOperationsInput | number
     lastWatchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -39167,6 +39220,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     studentId?: StringFieldUpdateOperationsInput | string
     isCompleted?: BoolFieldUpdateOperationsInput | boolean
+    chapterScore?: NullableFloatFieldUpdateOperationsInput | number | null
     watchedSeconds?: IntFieldUpdateOperationsInput | number
     lastWatchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -39297,6 +39351,7 @@ export namespace Prisma {
   export type UserProgressUpdateWithoutCompletedResourcesInput = {
     id?: StringFieldUpdateOperationsInput | string
     isCompleted?: BoolFieldUpdateOperationsInput | boolean
+    chapterScore?: NullableFloatFieldUpdateOperationsInput | number | null
     watchedSeconds?: IntFieldUpdateOperationsInput | number
     lastWatchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -39313,6 +39368,7 @@ export namespace Prisma {
     studentId?: StringFieldUpdateOperationsInput | string
     chapterId?: StringFieldUpdateOperationsInput | string
     isCompleted?: BoolFieldUpdateOperationsInput | boolean
+    chapterScore?: NullableFloatFieldUpdateOperationsInput | number | null
     watchedSeconds?: IntFieldUpdateOperationsInput | number
     lastWatchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -39327,6 +39383,7 @@ export namespace Prisma {
     studentId?: StringFieldUpdateOperationsInput | string
     chapterId?: StringFieldUpdateOperationsInput | string
     isCompleted?: BoolFieldUpdateOperationsInput | boolean
+    chapterScore?: NullableFloatFieldUpdateOperationsInput | number | null
     watchedSeconds?: IntFieldUpdateOperationsInput | number
     lastWatchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
