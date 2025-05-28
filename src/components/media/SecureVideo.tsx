@@ -15,6 +15,7 @@ interface SecureVideoProps {
   autoPlay?: boolean;
   muted?: boolean;
   loop?: boolean;
+  resumeTime?: number; // Time in seconds to resume from
   onPlay?: () => void;
   onPause?: () => void;
   onTimeUpdate?: (currentTime: number) => void;
@@ -30,6 +31,7 @@ export default function SecureVideo({
   autoPlay = false,
   muted = false,
   loop = false,
+  resumeTime = 0,
   onPlay,
   onPause,
   onTimeUpdate,
@@ -39,6 +41,7 @@ export default function SecureVideo({
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [videoError, setVideoError] = useState<string | null>(null);
+  const [hasSetInitialTime, setHasSetInitialTime] = useState(false);
 
   const { videoUrl, chapterTitle, isLoading, error, refetch, isExpired } =
     useSecureVideo(videoKey, chapterId, !!(videoKey && chapterId));
@@ -63,6 +66,12 @@ export default function SecureVideo({
   const handleLoadedMetadata = () => {
     if (videoRef.current) {
       onLoadedMetadata?.(videoRef.current.duration);
+
+      // Set initial time if resumeTime is provided and we haven't set it yet
+      if (resumeTime > 0 && !hasSetInitialTime) {
+        videoRef.current.currentTime = resumeTime;
+        setHasSetInitialTime(true);
+      }
     }
   };
 
@@ -86,10 +95,20 @@ export default function SecureVideo({
     if (videoRef.current && videoUrl) {
       const currentTime = videoRef.current.currentTime;
       videoRef.current.src = videoUrl;
-      videoRef.current.currentTime = currentTime; // Restore playback position
+
+      // Restore playback position, but prioritize resumeTime for initial load
+      if (hasSetInitialTime) {
+        videoRef.current.currentTime = currentTime;
+      }
+
       setVideoError(null);
     }
-  }, [videoUrl]);
+  }, [videoUrl, hasSetInitialTime]);
+
+  // Reset hasSetInitialTime when chapter changes
+  useEffect(() => {
+    setHasSetInitialTime(false);
+  }, [chapterId]);
 
   // Show loading state
   if (isLoading && videoKey && chapterId) {
@@ -201,12 +220,14 @@ export function ChapterVideoPlayer({
   videoKey,
   chapterId,
   chapterTitle,
+  resumeTime = 0,
   onProgressUpdate,
   className = "w-full aspect-video",
 }: {
   videoKey: string | null | undefined;
   chapterId: string | null | undefined;
   chapterTitle?: string;
+  resumeTime?: number;
   onProgressUpdate?: (watchedSeconds: number, isCompleted: boolean) => void;
   className?: string;
 }) {
@@ -238,6 +259,7 @@ export function ChapterVideoPlayer({
       videoKey={videoKey}
       chapterId={chapterId}
       className={className}
+      resumeTime={resumeTime}
       onTimeUpdate={handleTimeUpdate}
       onLoadedMetadata={handleLoadedMetadata}
       controls={true}

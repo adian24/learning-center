@@ -4,7 +4,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { formatVideoDuration } from "@/utils/formatVideoDuration";
 import {
   ChevronLeft,
@@ -13,10 +12,10 @@ import {
   CheckCircle,
   Play,
   Lock,
-  VideoOff,
 } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
+import { ChapterVideoPlayer } from "@/components/media/SecureVideo";
 
 interface ChapterPlayerProps {
   course: any;
@@ -35,10 +34,6 @@ export default function ChapterPlayer({
   onPreviousChapter,
   onChapterSelect,
 }: ChapterPlayerProps) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
   const [watchedSeconds, setWatchedSeconds] = useState(
     chapter?.userProgress?.[0]?.watchedSeconds || 0
   );
@@ -48,69 +43,31 @@ export default function ChapterPlayer({
   const hasNext = currentIndex < chapters.length - 1;
   const hasPrevious = currentIndex > 0;
 
-  // Update progress periodically
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (videoRef.current && isPlaying) {
-        const current = videoRef.current.currentTime;
-        setCurrentTime(current);
-
-        // Update watched seconds if user has progressed
-        if (current > watchedSeconds) {
-          setWatchedSeconds(current);
-          updateProgress(current);
-        }
-      }
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [isPlaying, watchedSeconds]);
-
-  // Mark chapter as completed when 90% watched
-  useEffect(() => {
-    if (duration > 0 && currentTime >= duration * 0.9) {
-      markAsCompleted();
-    }
-  }, [currentTime, duration]);
-
-  const updateProgress = async (seconds: number) => {
+  // Update progress and mark as completed
+  const handleProgressUpdate = async (
+    watchedSeconds: number,
+    isCompleted: boolean
+  ) => {
     try {
+      setWatchedSeconds(watchedSeconds);
+
+      // Update progress
       await fetch(`/api/progress`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           chapterId: chapter.id,
-          watchedSeconds: Math.round(seconds),
+          watchedSeconds: Math.round(watchedSeconds),
+          isCompleted,
         }),
       });
+
+      // Show completion toast only once
+      if (isCompleted && !chapter.userProgress?.[0]?.isCompleted) {
+        toast.success("Chapter completed!");
+      }
     } catch (error) {
       console.error("Failed to update progress:", error);
-    }
-  };
-
-  const markAsCompleted = async () => {
-    try {
-      await fetch(`/api/progress`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chapterId: chapter.id,
-          isCompleted: true,
-        }),
-      });
-      toast.success("Chapter completed!");
-    } catch (error) {
-      console.error("Failed to mark as completed:", error);
-    }
-  };
-
-  const handleVideoLoad = () => {
-    if (videoRef.current) {
-      setDuration(videoRef.current.duration);
-      // Resume from last watched position
-      if (watchedSeconds > 0) {
-        videoRef.current.currentTime = watchedSeconds;
-      }
     }
   };
 
@@ -120,30 +77,14 @@ export default function ChapterPlayer({
       <Card>
         <CardContent className="p-0">
           <div className="relative aspect-video bg-black rounded-t-lg overflow-hidden">
-            {chapter.videoUrl ? (
-              <video
-                ref={videoRef}
-                src={chapter.videoUrl}
-                controls
-                className="w-full h-full"
-                onLoadedMetadata={handleVideoLoad}
-                onPlay={() => setIsPlaying(true)}
-                onPause={() => setIsPlaying(false)}
-                onTimeUpdate={(e) =>
-                  setCurrentTime(e.currentTarget.currentTime)
-                }
-              />
-            ) : (
-              <div className="flex items-center justify-center h-full">
-                <div className="text-center text-white">
-                  <VideoOff className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p className="text-lg">No video available</p>
-                  <p className="text-sm opacity-75">
-                    This chapter doesn't have a video yet
-                  </p>
-                </div>
-              </div>
-            )}
+            <ChapterVideoPlayer
+              videoKey={chapter.videoUrl}
+              chapterId={chapter.id}
+              chapterTitle={chapter.title}
+              resumeTime={watchedSeconds}
+              onProgressUpdate={handleProgressUpdate}
+              className="w-full h-full"
+            />
           </div>
         </CardContent>
       </Card>
