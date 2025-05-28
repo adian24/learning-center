@@ -8,10 +8,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import Image from "next/image";
 import { BookOpen, CheckCircle, Clock, Star, Users } from "lucide-react";
 import { formatPrice } from "@/utils/formatPrice";
 import { formatVideoDuration } from "@/utils/formatVideoDuration";
+import { CourseImageCard } from "@/components/media/SecureImage";
 
 // Adjust the Course type to include student-specific properties
 type StudentCourseProps = {
@@ -35,14 +35,12 @@ type StudentCourseProps = {
 const CourseCard = ({ course }: { course: StudentCourseProps }) => {
   return (
     <Card key={course.id} className="flex flex-col h-full">
-      <div className="aspect-video relative overflow-hidden rounded-t-lg">
-        <Image
-          src={course.imageUrl || "/placeholder-course.jpg"}
-          alt={course.title}
-          className="object-cover transition-transform duration-300 hover:scale-105"
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          priority={false}
+      <div className="relative">
+        <CourseImageCard
+          imageKey={course.imageUrl}
+          courseId={course.id}
+          courseTitle={course.title}
+          className="aspect-video w-full"
         />
         {course.isEnrolled && (
           <div className="absolute top-2 right-2">

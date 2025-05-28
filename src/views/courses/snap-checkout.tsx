@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import { SnapCheckout } from "@/components/payments/SnapCheckout";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatPrice } from "@/utils/formatPrice";
 import { CheckCircle } from "lucide-react";
+import { CourseImageCard } from "@/components/media/SecureImage";
 
 interface SnapCheckoutPageProps {
   course: {
@@ -45,11 +45,11 @@ export default function SnapCheckoutPage({
             <h2 className="text-xl font-bold mb-4">Order Summary</h2>
             <div className="mb-4">
               <div className="relative aspect-video overflow-hidden rounded mb-4">
-                <Image
-                  src={course.imageUrl}
-                  alt={course.title}
-                  fill
-                  className="object-cover"
+                <CourseImageCard
+                  imageKey={course.imageUrl}
+                  courseId={course.id}
+                  courseTitle={course.title}
+                  className="aspect-video w-full"
                 />
               </div>
               <h3 className="font-medium">{course.title}</h3>

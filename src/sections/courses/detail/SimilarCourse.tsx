@@ -7,6 +7,7 @@ import { Course } from "@/lib/types";
 import { formatPrice } from "@/utils/formatPrice";
 import { Star } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { CourseImageCard } from "@/components/media/SecureImage";
 
 interface SimilarCourseProps {
   courseId: string;
@@ -65,11 +66,14 @@ const SimilarCourse = ({ courseId }: SimilarCourseProps) => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {similarCourses?.map((course: Course) => (
           <Card key={course.id} className="overflow-hidden">
-            <img
-              src={course.imageUrl}
-              alt={course.title}
-              className="w-full h-40 object-cover"
-            />
+            <div className="relative h-40 w-full">
+              <CourseImageCard
+                imageKey={course.imageUrl}
+                courseId={course.id}
+                courseTitle={course.title}
+                className="h-full w-full"
+              />
+            </div>
             <CardContent className="pt-4">
               <div className="flex justify-between items-center mb-2">
                 <Badge

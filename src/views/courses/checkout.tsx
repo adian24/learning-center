@@ -44,6 +44,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { EWalletMethodSelector } from "@/sections/courses/detail/checkout/EWalletMethodSelector";
+import { CourseImageCard } from "@/components/media/SecureImage";
 
 // Payment method types
 const paymentMethods = [
@@ -445,11 +446,11 @@ export default function CustomCheckout({
 
           <div className="relative aspect-video rounded-md overflow-hidden mb-4">
             {course?.imageUrl ? (
-              <Image
-                src={course.imageUrl}
-                alt={course.title}
-                fill
-                className="object-cover"
+              <CourseImageCard
+                imageKey={course.imageUrl}
+                courseId={course.id}
+                courseTitle={course.title}
+                className="aspect-video w-full"
               />
             ) : (
               <div className="w-full h-full bg-gray-200 flex items-center justify-center">

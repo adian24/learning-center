@@ -19,7 +19,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import Image from "next/image";
+import { CourseImageCard } from "@/components/media/SecureImage";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCourse } from "@/hooks/use-course";
@@ -68,12 +68,11 @@ const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
     <div className="md:w-full">
       <Card className="sticky top-4">
         <div className="relative w-full h-48 overflow-hidden rounded-t-lg">
-          <Image
-            src={course?.imageUrl || ""}
-            alt={course?.title || "Course cover"}
-            className="object-cover"
-            fill
-            sizes="(max-width: 768px) 100vw, 400px"
+          <CourseImageCard
+            imageKey={course?.imageUrl}
+            courseId={courseId}
+            courseTitle={course?.title || "Course cover"}
+            className="h-full w-full"
           />
         </div>
         <CardHeader>

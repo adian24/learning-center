@@ -78,8 +78,15 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const { title, description, imageUrl, price, categoryId, level } =
-      await req.json();
+    const {
+      title,
+      description,
+      imageUrl,
+      price,
+      categoryId,
+      level,
+      isPublished,
+    } = await req.json();
 
     if (!title || !courseId) {
       return new NextResponse("Missing required fields", { status: 400 });
@@ -119,6 +126,7 @@ export async function PATCH(
         price,
         categoryId,
         level,
+        isPublished,
       },
     });
 

@@ -41,6 +41,7 @@ import visaLogo from "@/assets/international-payment/visa.png";
 import mastercardLogo from "@/assets/international-payment/mastercard.png";
 import paypalLogo from "@/assets/international-payment/paypal.png";
 import jcbLogo from "@/assets/international-payment/jcb.png";
+import { CourseImageCard } from "@/components/media/SecureImage";
 
 // Payment methods config with instructions
 const PAYMENT_METHODS = {
@@ -706,11 +707,11 @@ export default function PaymentInstructions({
 
             <div className="relative aspect-video rounded-md overflow-hidden mb-4">
               {enrollment.course?.imageUrl ? (
-                <Image
-                  src={enrollment.course.imageUrl}
-                  alt={enrollment.course.title}
-                  fill
-                  className="object-cover"
+                <CourseImageCard
+                  imageKey={enrollment.course.imageUrl}
+                  courseId={enrollment.course.id}
+                  courseTitle={enrollment.course.title}
+                  className="aspect-video w-full"
                 />
               ) : (
                 <div className="w-full h-full bg-gray-200"></div>

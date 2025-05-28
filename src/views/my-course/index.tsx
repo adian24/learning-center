@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import {
   useGroupedEnrollments,
   useCancelEnrollment,
@@ -34,6 +33,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { CourseImageCard } from "@/components/media/SecureImage";
 
 import {
   BookOpen,
@@ -429,7 +429,7 @@ const MyCourses = () => {
               )
             ) : (
               <div className="flex flex-col items-center justify-center py-12">
-                <FileQuestion className="h-16 w-16 text-gray-400 mb-4" />
+                <BookOpen className="h-16 w-16 text-gray-400 mb-4" />
                 <h3 className="text-xl font-medium mb-2">No courses found</h3>
                 <p className="text-gray-600 mb-4">
                   No courses match your search criteria.
@@ -716,12 +716,11 @@ const CourseCard = ({
           <div className="flex flex-col sm:flex-row gap-4">
             {/* Course Image */}
             <div className="relative aspect-video w-full sm:w-48 h-auto rounded-md overflow-hidden">
-              <Image
-                src={enrollment.course.imageUrl || "/placeholder-course.jpg"}
-                alt={enrollment.course.title}
-                className="object-cover"
-                fill
-                sizes="(max-width: 768px) 100vw, 200px"
+              <CourseImageCard
+                imageKey={enrollment.course.imageUrl}
+                courseId={enrollment.course.id}
+                courseTitle={enrollment.course.title}
+                className="aspect-video w-full"
               />
               <div className="absolute top-2 right-2">
                 {statusConfig.badge.element}
@@ -793,12 +792,11 @@ const CourseCard = ({
     <Card className="overflow-hidden flex flex-col h-full">
       {/* Course Image */}
       <div className="relative aspect-video w-full overflow-hidden">
-        <Image
-          src={enrollment.course.imageUrl || "/placeholder-course.jpg"}
-          alt={enrollment.course.title}
-          className="object-cover transition-all hover:scale-105"
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        <CourseImageCard
+          imageKey={enrollment.course.imageUrl}
+          courseId={enrollment.course.id}
+          courseTitle={enrollment.course.title}
+          className="aspect-video w-full"
         />
         <div className="absolute top-2 right-2">
           {statusConfig.badge.element}

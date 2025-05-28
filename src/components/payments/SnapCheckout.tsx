@@ -4,10 +4,10 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { formatPrice } from "@/utils/formatPrice";
+import { CourseImageCard } from "@/components/media/SecureImage";
 
 interface SnapCheckoutProps {
   courseId: string;
@@ -128,11 +128,11 @@ export function SnapCheckout({
           <div className="flex items-center gap-4">
             {courseImageUrl && (
               <div className="relative w-20 h-20 rounded overflow-hidden">
-                <Image
-                  src={courseImageUrl}
-                  alt={courseTitle}
-                  fill
-                  className="object-cover"
+                <CourseImageCard
+                  imageKey={courseImageUrl}
+                  courseId={courseId}
+                  courseTitle={courseTitle}
+                  className="w-full h-full"
                 />
               </div>
             )}

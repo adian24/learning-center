@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { useEnrolledCourses } from "@/hooks/use-enrolled-courses";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/utils/formatPrice";
@@ -13,6 +12,7 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
+import { CourseImageCard } from "@/components/media/SecureImage";
 
 import {
   Loader2,
@@ -114,11 +114,11 @@ export function PendingPaymentsWidget() {
             >
               {/* Course thumbnail */}
               <div className="relative w-16 h-16 rounded-md overflow-hidden flex-shrink-0">
-                <Image
-                  src={enrollment.course.imageUrl || "/placeholder-course.jpg"}
-                  alt={enrollment.course.title}
-                  fill
-                  className="object-cover"
+                <CourseImageCard
+                  imageKey={enrollment.course.imageUrl}
+                  courseId={enrollment.course.id}
+                  courseTitle={enrollment.course.title}
+                  className="w-full h-full"
                 />
               </div>
 

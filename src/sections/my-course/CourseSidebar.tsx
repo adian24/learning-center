@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,7 +17,7 @@ import {
   HelpCircle,
   CheckCircle,
 } from "lucide-react";
-import Image from "next/image";
+import { CourseImageCard, AvatarImage } from "@/components/media/SecureImage";
 
 interface CourseSidebarProps {
   course: any;
@@ -50,11 +51,11 @@ export default function CourseSidebar({
         <CardContent className="p-4">
           {/* Course Thumbnail */}
           <div className="relative aspect-video rounded-lg overflow-hidden mb-4">
-            <Image
-              src={course.imageUrl || "/placeholder-course.jpg"}
-              alt={course.title}
-              fill
-              className="object-cover"
+            <CourseImageCard
+              imageKey={course.imageUrl}
+              courseId={course.id}
+              courseTitle={course.title}
+              className="aspect-video w-full"
             />
           </div>
 
@@ -257,15 +258,12 @@ export default function CourseSidebar({
         </CardHeader>
         <CardContent className="pt-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
-              <Image
-                src={course.teacher?.user?.image || "/placeholder-avatar.jpg"}
-                alt={course.teacher?.user?.name || "Instructor"}
-                width={40}
-                height={40}
-                className="w-full h-full object-cover"
-              />
-            </div>
+            <AvatarImage
+              imageKey={course.teacher?.user?.image}
+              userName={course.teacher?.user?.name || "Instructor"}
+              size={40}
+              className="flex-shrink-0"
+            />
             <div>
               <p className="text-sm font-medium">
                 {course.teacher?.user?.name || "Instructor"}

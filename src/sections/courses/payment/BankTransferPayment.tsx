@@ -40,6 +40,7 @@ import {
   usePaymentDetails,
   usePaymentStatus,
 } from "@/hooks/use-payment-status";
+import { CourseImageCard } from "@/components/media/SecureImage";
 
 // Import bank logos
 import bcaLogo from "@/assets/banks/bca.png";
@@ -638,11 +639,11 @@ export default function BankTransferPayment({
 
             <div className="relative aspect-video rounded-md overflow-hidden mb-4">
               {course?.imageUrl ? (
-                <Image
-                  src={course.imageUrl}
-                  alt={course.title}
-                  fill
-                  className="object-cover"
+                <CourseImageCard
+                  imageKey={course.imageUrl}
+                  courseId={courseId}
+                  courseTitle={course.title}
+                  className="aspect-video w-full"
                 />
               ) : (
                 <div className="w-full h-full bg-gray-200"></div>

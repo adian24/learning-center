@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/dialog";
 import { formatPrice } from "@/utils/formatPrice";
 import { usePaymentStatus } from "@/hooks/use-payment-status";
+import { CourseImageCard } from "@/components/media/SecureImage";
 
 // Import e-wallet logos
 import gopayLogo from "@/assets/ewallet/gopay.png";
@@ -547,11 +548,11 @@ export default function EWalletPayment({
 
             <div className="relative aspect-video rounded-md overflow-hidden mb-4">
               {course?.imageUrl ? (
-                <Image
-                  src={course.imageUrl}
-                  alt={course.title}
-                  fill
-                  className="object-cover"
+                <CourseImageCard
+                  imageKey={course.imageUrl}
+                  courseId={courseId}
+                  courseTitle={course.title}
+                  className="aspect-video w-full"
                 />
               ) : (
                 <div className="w-full h-full bg-gray-200"></div>

@@ -93,6 +93,8 @@ const CourseDetail = () => {
   }, [course, isLoadingCourse, courseId]);
 
   async function onSubmit(data: CourseFormValues) {
+    console.log("Form submitted with data:", data);
+    console.log("isPublished value:", data.isPublished);
     updateCourse(data);
   }
 

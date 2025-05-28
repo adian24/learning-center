@@ -1,17 +1,17 @@
 // src/app/courses/[courseId]/checkout/_components/course-details.tsx
-import Image from "next/image";
 import { BookOpen, Clock, Award, Star } from "lucide-react";
+import { CourseImageCard } from "@/components/media/SecureImage";
 
 export function CourseDetails({ course }: { course: any }) {
   return (
     <div className="rounded-lg border overflow-hidden">
       <div className="relative aspect-video">
         {course.imageUrl ? (
-          <Image
-            src={course.imageUrl}
-            alt={course.title}
-            fill
-            className="object-cover"
+          <CourseImageCard
+            imageKey={course.imageUrl}
+            courseId={course.id}
+            courseTitle={course.title}
+            className="aspect-video w-full"
           />
         ) : (
           <div className="w-full h-full bg-gray-200 flex items-center justify-center">

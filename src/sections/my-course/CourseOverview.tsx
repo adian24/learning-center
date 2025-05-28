@@ -15,7 +15,7 @@ import {
   Video,
   VideoOff,
 } from "lucide-react";
-import Image from "next/image";
+import { CourseImageCard } from "@/components/media/SecureImage";
 
 interface CourseOverviewProps {
   course: any;
@@ -58,11 +58,11 @@ export default function CourseOverview({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Course Image */}
             <div className="relative aspect-video rounded-lg overflow-hidden">
-              <Image
-                src={course.imageUrl || "/placeholder-course.jpg"}
-                alt={course.title}
-                fill
-                className="object-cover"
+              <CourseImageCard
+                imageKey={course.imageUrl}
+                courseId={course.id}
+                courseTitle={course.title}
+                className="aspect-video w-full"
               />
               {continueChapter && (
                 <div className="absolute inset-0 bg-black/20 flex items-center justify-center">

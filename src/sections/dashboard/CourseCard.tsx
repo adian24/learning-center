@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import Image from "next/image";
 import Link from "next/link";
+import { CourseImageCard } from "@/components/media/SecureImage";
 
 interface CourseCardProps {
   id: string;
@@ -27,12 +27,11 @@ const CourseCard = ({
       <Card className="overflow-hidden hover:shadow-md transition-shadow">
         <div className="relative h-32 w-full">
           {imageUrl ? (
-            <Image
-              src={imageUrl}
-              alt={title}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            <CourseImageCard
+              imageKey={imageUrl}
+              courseId={id}
+              courseTitle={title}
+              className="h-full w-full"
             />
           ) : (
             <div className="bg-gray-200 h-full w-full flex items-center justify-center">

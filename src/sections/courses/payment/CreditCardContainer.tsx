@@ -30,6 +30,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { CourseImageCard } from "@/components/media/SecureImage";
 
 interface CreditCardContainerProps {
   course: any;
@@ -204,11 +205,11 @@ export default function CreditCardContainer({
 
           <div className="relative aspect-video rounded-md overflow-hidden mb-4">
             {course?.imageUrl ? (
-              <Image
-                src={course.imageUrl}
-                alt={course.title}
-                fill
-                className="object-cover"
+              <CourseImageCard
+                imageKey={course.imageUrl}
+                courseId={courseId}
+                courseTitle={course.title}
+                className="aspect-video w-full"
               />
             ) : (
               <div className="w-full h-full bg-gray-200 flex items-center justify-center">
