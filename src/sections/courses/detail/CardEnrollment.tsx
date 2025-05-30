@@ -56,12 +56,7 @@ const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
   };
 
   const handleStartLearning = () => {
-    const firstChapter = course?.chapters?.[0];
-    if (firstChapter) {
-      router.push(`/courses/${courseId}/chapters/${firstChapter.id}`);
-    } else {
-      router.push(`/dashboard/courses`);
-    }
+    router.push(`/my-courses/${courseId}`);
   };
 
   return (
