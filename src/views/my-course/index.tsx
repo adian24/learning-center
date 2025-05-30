@@ -64,9 +64,9 @@ const StatsCard = ({ icon, title, count, className = "" }: StatsCardProps) => (
     <CardContent className="flex items-center p-6">
       <div
         className={`rounded-full p-4 mr-4 ${
-          title === "Total Courses"
+          title === "Total Kursus"
             ? "bg-blue-50"
-            : title === "In Progress"
+            : title === "Sedang Berlangsung"
             ? "bg-amber-50"
             : "bg-green-50"
         }`}
@@ -200,9 +200,9 @@ const MyCourses = () => {
       <div className="container mx-auto py-8 px-4">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-2xl font-bold">My Courses</h1>
+            <h1 className="text-2xl font-bold">Kursus Saya</h1>
             <p className="text-muted-foreground">
-              Track and continue your learning journey
+              Lacak dan lanjutkan perjalanan belajar Anda
             </p>
           </div>
         </div>
@@ -238,11 +238,11 @@ const MyCourses = () => {
       <div className="container mx-auto py-8 px-4">
         <div className="flex flex-col items-center justify-center py-12">
           <AlertCircle className="h-16 w-16 text-red-500 mb-4" />
-          <h2 className="text-2xl font-bold mb-2">Something went wrong</h2>
+          <h2 className="text-2xl font-bold mb-2">Terjadi kesalahan</h2>
           <p className="text-gray-600 mb-4">
-            We couldn't load your courses. Please try again later.
+            Kami tidak dapat memuat kursus Anda. Silakan coba lagi nanti.
           </p>
-          <Button onClick={() => window.location.reload()}>Refresh</Button>
+          <Button onClick={() => window.location.reload()}>Segarkan</Button>
         </div>
       </div>
     );
@@ -254,43 +254,43 @@ const MyCourses = () => {
       <div className="container mx-auto py-8 px-4">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-2xl font-bold">My Courses</h1>
+            <h1 className="text-2xl font-bold">Kursus Saya</h1>
             <p className="text-muted-foreground">
-              Track and continue your learning journey
+              Lacak dan lanjutkan perjalanan belajar Anda
             </p>
           </div>
           <Button onClick={() => router.push("/courses")}>
-            Browse Courses
+            Jelajahi Kursus
           </Button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <StatsCard
             icon={<BookOpen className="h-6 w-6 text-blue-500" />}
-            title="Total Courses"
+            title="Total Kursus"
             count={0}
           />
           <StatsCard
             icon={<Clock className="h-6 w-6 text-amber-500" />}
-            title="In Progress"
+            title="Sedang Berlangsung"
             count={0}
           />
           <StatsCard
             icon={<CheckCircle className="h-6 w-6 text-green-500" />}
-            title="Completed"
+            title="Selesai"
             count={0}
           />
         </div>
 
         <div className="flex flex-col items-center justify-center py-12 text-center">
           <BookOpen className="h-16 w-16 text-gray-400 mb-4" />
-          <h2 className="text-2xl font-bold mb-2">No courses yet</h2>
+          <h2 className="text-2xl font-bold mb-2">Belum ada kursus</h2>
           <p className="text-gray-600 mb-4 max-w-md">
-            You haven't enrolled in any courses yet. Browse our catalog to find
-            something to learn!
+            Anda belum mendaftar di kursus manapun. Jelajahi katalog kami untuk
+            menemukan sesuatu untuk dipelajari!
           </p>
           <Button onClick={() => router.push("/courses")}>
-            Browse Courses
+            Jelajahi Kursus
           </Button>
         </div>
       </div>
@@ -302,13 +302,13 @@ const MyCourses = () => {
       <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-2xl font-bold">My Courses</h1>
+            <h1 className="text-2xl font-bold">Kursus Saya</h1>
             <p className="text-muted-foreground">
-              Track and continue your learning journey
+              Lacak dan lanjutkan perjalanan belajar Anda
             </p>
           </div>
           <Button onClick={() => router.push("/courses")}>
-            Browse More Courses
+            Jelajahi Kursus
           </Button>
         </div>
 
@@ -317,7 +317,7 @@ const MyCourses = () => {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
             <Input
-              placeholder="Search your courses..."
+              placeholder="Cari kursus Anda..."
               className="pl-9"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -325,14 +325,18 @@ const MyCourses = () => {
           </div>
           <Select value={sortOrder} onValueChange={setSortOrder}>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Sort by" />
+              <SelectValue placeholder="Urutkan berdasarkan" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="last-updated">Last Updated</SelectItem>
-              <SelectItem value="title-asc">Title (A-Z)</SelectItem>
-              <SelectItem value="title-desc">Title (Z-A)</SelectItem>
-              <SelectItem value="progress-asc">Progress (Low-High)</SelectItem>
-              <SelectItem value="progress-desc">Progress (High-Low)</SelectItem>
+              <SelectItem value="last-updated">Terakhir Diperbarui</SelectItem>
+              <SelectItem value="title-asc">Judul (A-Z)</SelectItem>
+              <SelectItem value="title-desc">Judul (Z-A)</SelectItem>
+              <SelectItem value="progress-asc">
+                Progres (Rendah-Tinggi)
+              </SelectItem>
+              <SelectItem value="progress-desc">
+                Progres (Tinggi-Rendah)
+              </SelectItem>
             </SelectContent>
           </Select>
           <div className="flex gap-2">
@@ -357,17 +361,17 @@ const MyCourses = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <StatsCard
             icon={<BookOpen className="h-6 w-6 text-blue-500" />}
-            title="Total Courses"
+            title="Total Kursus"
             count={enrollmentStats.total}
           />
           <StatsCard
             icon={<Clock className="h-6 w-6 text-amber-500" />}
-            title="In Progress"
+            title="Sedang Berlangsung"
             count={enrollmentStats.inProgress}
           />
           <StatsCard
             icon={<CheckCircle className="h-6 w-6 text-green-500" />}
-            title="Completed"
+            title="Selesai"
             count={enrollmentStats.completed}
           />
         </div>
@@ -379,10 +383,10 @@ const MyCourses = () => {
           className="w-full"
         >
           <TabsList className="mb-8">
-            <TabsTrigger value="all-courses">All Courses</TabsTrigger>
-            <TabsTrigger value="in-progress">In Progress</TabsTrigger>
+            <TabsTrigger value="all-courses">Semua Kursus</TabsTrigger>
+            <TabsTrigger value="in-progress">Sedang Berlangsung</TabsTrigger>
             <TabsTrigger value="pending-payment">
-              Pending Payment
+              Menunggu Pembayaran
               {enrollments.pending.length > 0 && (
                 <Badge className="ml-2 bg-amber-100 text-amber-900">
                   {enrollments.pending.length}
@@ -390,7 +394,7 @@ const MyCourses = () => {
               )}
             </TabsTrigger>
             <TabsTrigger value="failed">
-              Failed
+              Gagal
               {enrollments.failed.length > 0 && (
                 <Badge className="ml-2 bg-red-100 text-red-900">
                   {enrollments.failed.length}
@@ -430,9 +434,11 @@ const MyCourses = () => {
             ) : (
               <div className="flex flex-col items-center justify-center py-12">
                 <BookOpen className="h-16 w-16 text-gray-400 mb-4" />
-                <h3 className="text-xl font-medium mb-2">No courses found</h3>
+                <h3 className="text-xl font-medium mb-2">
+                  Tidak ada kursus ditemukan
+                </h3>
                 <p className="text-gray-600 mb-4">
-                  No courses match your search criteria.
+                  Tidak ada kursus yang sesuai dengan kriteria pencarian Anda.
                 </p>
               </div>
             )}
@@ -470,19 +476,19 @@ const MyCourses = () => {
               <div className="flex flex-col items-center justify-center py-12">
                 <Clock className="h-16 w-16 text-gray-400 mb-4" />
                 <h3 className="text-xl font-medium mb-2">
-                  No courses in progress
+                  Tidak ada kursus yang sedang berlangsung
                 </h3>
                 <p className="text-gray-600 mb-4">
-                  You haven't started any courses yet or they're still pending
-                  payment.
+                  Anda belum memulai kursus apapun atau masih menunggu
+                  pembayaran.
                 </p>
                 {enrollments.pending.length > 0 ? (
                   <Button onClick={() => setSelectedTab("pending-payment")}>
-                    View Pending Courses
+                    Lihat Kursus Tertunda
                   </Button>
                 ) : (
                   <Button onClick={() => router.push("/courses")}>
-                    Browse Courses
+                    Jelajahi Kursus
                   </Button>
                 )}
               </div>
@@ -521,13 +527,13 @@ const MyCourses = () => {
               <div className="flex flex-col items-center justify-center py-12">
                 <CreditCard className="h-16 w-16 text-gray-400 mb-4" />
                 <h3 className="text-xl font-medium mb-2">
-                  No pending payments
+                  Tidak ada pembayaran tertunda
                 </h3>
                 <p className="text-gray-600 mb-4">
-                  You don't have any courses with pending payments.
+                  Anda tidak memiliki kursus dengan pembayaran tertunda.
                 </p>
                 <Button onClick={() => router.push("/courses")}>
-                  Browse Courses
+                  Jelajahi Kursus
                 </Button>
               </div>
             )}
@@ -564,12 +570,15 @@ const MyCourses = () => {
             ) : (
               <div className="flex flex-col items-center justify-center py-12">
                 <CheckCircle className="h-16 w-16 text-gray-400 mb-4" />
-                <h3 className="text-xl font-medium mb-2">No failed payments</h3>
+                <h3 className="text-xl font-medium mb-2">
+                  Tidak ada pembayaran gagal
+                </h3>
                 <p className="text-gray-600 mb-4">
-                  Great! You don't have any courses with failed payments.
+                  Bagus! Anda tidak memiliki kursus dengan pembayaran yang
+                  gagal.
                 </p>
                 <Button onClick={() => setSelectedTab("all-courses")}>
-                  View All Courses
+                  Lihat Semua Kursus
                 </Button>
               </div>
             )}
@@ -583,14 +592,14 @@ const MyCourses = () => {
         >
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Cancel Enrollment?</AlertDialogTitle>
+              <AlertDialogTitle>Batalkan Pendaftaran?</AlertDialogTitle>
               <AlertDialogDescription>
-                Are you sure you want to cancel this enrollment? This action
-                cannot be undone.
+                Apakah Anda yakin ingin membatalkan pendaftaran ini? Tindakan
+                ini tidak dapat dibatalkan.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Keep Enrollment</AlertDialogCancel>
+              <AlertDialogCancel>Pertahankan Pendaftaran</AlertDialogCancel>
               <AlertDialogAction
                 onClick={handleCancelEnrollment}
                 className="bg-red-600 hover:bg-red-700"
@@ -599,10 +608,10 @@ const MyCourses = () => {
                 {cancelEnrollment.isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Cancelling...
+                    Membatalkan...
                   </>
                 ) : (
-                  "Yes, Cancel"
+                  "Ya, Batalkan"
                 )}
               </AlertDialogAction>
             </AlertDialogFooter>
@@ -636,20 +645,22 @@ const CourseCard = ({
           badge: {
             element:
               enrollment.progress === 100 ? (
-                <Badge className="bg-green-100 text-green-800">Completed</Badge>
+                <Badge className="bg-green-100 text-green-800">Selesai</Badge>
               ) : enrollment.progress > 0 && enrollment.progress < 100 ? (
-                <Badge className="bg-blue-100 text-blue-800">In Progress</Badge>
+                <Badge className="bg-blue-100 text-blue-800">
+                  Sedang Berlangsung
+                </Badge>
               ) : (
                 <Badge className="bg-amber-100 text-amber-800">
-                  Not Started
+                  Belum Dimulai
                 </Badge>
               ),
           },
           actionButton: {
             text:
               enrollment.progress === 100
-                ? "Review Course"
-                : "Continue Learning",
+                ? "Tinjau Kursus"
+                : "Lanjutkan Belajar",
             onClick: () => router.push(`/my-courses/${enrollment.courseId}`),
             icon: <ArrowRight className="ml-2 h-4 w-4" />,
             variant: "default" as const,
@@ -660,19 +671,19 @@ const CourseCard = ({
           badge: {
             element: (
               <Badge className="bg-amber-100 text-amber-800">
-                Pending Payment
+                Menunggu Pembayaran
               </Badge>
             ),
           },
           actionButton: {
-            text: "Continue Payment",
+            text: "Lanjutkan Pembayaran",
             onClick: () =>
               onContinuePayment(enrollment.id, enrollment.courseId),
             icon: <CreditCard className="ml-2 h-4 w-4" />,
             variant: "default" as const,
           },
           secondaryButton: {
-            text: "Cancel",
+            text: "Batalkan",
             onClick: () => onCancelClick(enrollment.id),
             variant: "outline" as const,
           },
@@ -681,11 +692,13 @@ const CourseCard = ({
         return {
           badge: {
             element: (
-              <Badge className="bg-red-100 text-red-800">Payment Failed</Badge>
+              <Badge className="bg-red-100 text-red-800">
+                Pembayaran Gagal
+              </Badge>
             ),
           },
           actionButton: {
-            text: "Try Again",
+            text: "Coba Lagi",
             onClick: () =>
               router.push(`/courses/${enrollment.courseId}/checkout`),
             icon: <ArrowRight className="ml-2 h-4 w-4" />,
@@ -695,10 +708,10 @@ const CourseCard = ({
       default:
         return {
           badge: {
-            element: <Badge>Unknown</Badge>,
+            element: <Badge>Tidak Diketahui</Badge>,
           },
           actionButton: {
-            text: "View Details",
+            text: "Lihat Detail",
             onClick: () => router.push(`/courses/${enrollment.courseId}`),
             icon: <ArrowRight className="ml-2 h-4 w-4" />,
             variant: "outline" as const,
@@ -738,7 +751,7 @@ const CourseCard = ({
                   {enrollment.totalChapters > 0 && (
                     <>
                       <span>•</span>
-                      <span>{enrollment.totalChapters} chapters</span>
+                      <span>{enrollment.totalChapters} bab</span>
                     </>
                   )}
                 </div>
@@ -747,7 +760,7 @@ const CourseCard = ({
                 {enrollment.status === "COMPLETED" && (
                   <div className="mb-3">
                     <div className="flex justify-between text-sm mb-1">
-                      <span>Progress</span>
+                      <span>Progres</span>
                       <span className="font-medium">
                         {enrollment.progress}%
                       </span>
@@ -755,7 +768,7 @@ const CourseCard = ({
                     <Progress value={enrollment.progress} className="h-2" />
                     <div className="text-xs text-muted-foreground mt-1">
                       {enrollment.completedChapters}/{enrollment.totalChapters}{" "}
-                      chapters completed
+                      bab selesai
                     </div>
                   </div>
                 )}
@@ -815,7 +828,7 @@ const CourseCard = ({
           {enrollment.totalChapters > 0 && (
             <>
               <span>•</span>
-              <span>{enrollment.totalChapters} chapters</span>
+              <span>{enrollment.totalChapters} bab</span>
             </>
           )}
         </div>
@@ -824,15 +837,15 @@ const CourseCard = ({
         {enrollment.status === "COMPLETED" && (
           <div className="mt-auto mb-2">
             <div className="flex justify-between text-sm mb-1">
-              <span>Progress</span>
+              <span>Progres</span>
               <span className="font-medium">
-                {enrollment.progress}% Complete
+                {enrollment.progress}% Selesai
               </span>
             </div>
             <Progress value={enrollment.progress} className="h-2" />
             <div className="text-xs text-muted-foreground mt-1">
-              {enrollment.completedChapters}/{enrollment.totalChapters} chapters
-              completed
+              {enrollment.completedChapters}/{enrollment.totalChapters} bab
+              selesai
             </div>
           </div>
         )}

@@ -25,6 +25,7 @@ const eslintConfig = [
       "@typescript-eslint/no-unused-expressions": "off",
       "@typescript-eslint/no-this-alias": "off",
       "@typescript-eslint/ban-ts-comment": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
     },
   }),
 ];

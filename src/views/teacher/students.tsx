@@ -124,9 +124,9 @@ const TeacherStudents = () => {
         <div className="flex items-center justify-center min-h-[400px]">
           <Card className="w-full max-w-md">
             <CardContent className="pt-6 text-center">
-              <p className="text-red-500 mb-4">Failed to load students data</p>
+              <p className="text-red-500 mb-4">Gagal memuat data siswa</p>
               <Button onClick={() => window.location.reload()}>
-                Try Again
+                Coba Lagi
               </Button>
             </CardContent>
           </Card>
@@ -142,9 +142,9 @@ const TeacherStudents = () => {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Students</h1>
+              <h1 className="text-3xl font-bold text-gray-900">Siswa</h1>
               <p className="text-gray-600 mt-2">
-                Manage and track your students' progress across all courses
+                Kelola dan pantau kemajuan siswa Anda di semua kursus
               </p>
             </div>
             <Button
@@ -156,7 +156,7 @@ const TeacherStudents = () => {
               <RefreshCw
                 className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`}
               />
-              Refresh
+              Segarkan
             </Button>
           </div>
         </div>
@@ -168,7 +168,7 @@ const TeacherStudents = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">
-                    Total Students
+                    Total Siswa
                   </p>
                   <p className="text-3xl font-bold text-gray-900">
                     {stats?.totalStudents || 0}
@@ -186,7 +186,7 @@ const TeacherStudents = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">
-                    Average Progress
+                    Rata-rata Progres
                   </p>
                   <p className="text-3xl font-bold text-gray-900">
                     {stats?.averageProgress || 0}%
@@ -204,7 +204,7 @@ const TeacherStudents = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">
-                    New This Week
+                    Baru Minggu Ini
                   </p>
                   <p className="text-3xl font-bold text-gray-900">
                     {stats?.recentStudents || 0}
@@ -223,7 +223,7 @@ const TeacherStudents = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Filter className="h-5 w-5" />
-              Filter & Search Students
+              Filter & Cari Siswa
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -232,7 +232,7 @@ const TeacherStudents = () => {
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <Input
-                  placeholder="Search by name, email, or course..."
+                  placeholder="Cari berdasarkan nama, email, atau kursus..."
                   className="pl-10"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -250,14 +250,14 @@ const TeacherStudents = () => {
                 }}
               >
                 <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Sort By" />
+                  <SelectValue placeholder="Urutkan Berdasarkan" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="name">Name</SelectItem>
+                  <SelectItem value="name">Nama</SelectItem>
                   <SelectItem value="enrollmentDate">
-                    Enrollment Date
+                    Tanggal Pendaftaran
                   </SelectItem>
-                  <SelectItem value="progress">Progress</SelectItem>
+                  <SelectItem value="progress">Progres</SelectItem>
                 </SelectContent>
               </Select>
 
@@ -270,11 +270,11 @@ const TeacherStudents = () => {
                 }}
               >
                 <SelectTrigger className="w-[120px]">
-                  <SelectValue placeholder="Order" />
+                  <SelectValue placeholder="Urutan" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="asc">Ascending</SelectItem>
-                  <SelectItem value="desc">Descending</SelectItem>
+                  <SelectItem value="asc">Naik</SelectItem>
+                  <SelectItem value="desc">Turun</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -284,12 +284,12 @@ const TeacherStudents = () => {
         {/* Students Table */}
         <Card>
           <CardHeader>
-            <CardTitle>Students List</CardTitle>
+            <CardTitle>Daftar Siswa</CardTitle>
             <CardDescription>
-              {pagination?.totalStudents || 0} student
-              {(pagination?.totalStudents || 0) !== 1 ? "s" : ""} found
+              {pagination?.totalStudents || 0} siswa
+              {(pagination?.totalStudents || 0) !== 1 ? "" : ""} ditemukan
               {isFetching && (
-                <span className="ml-2 text-blue-600">(Updating...)</span>
+                <span className="ml-2 text-blue-600">(Memperbarui...)</span>
               )}
             </CardDescription>
           </CardHeader>
@@ -297,18 +297,18 @@ const TeacherStudents = () => {
             {isLoading ? (
               <div className="flex items-center justify-center py-12">
                 <Loader2 className="h-8 w-8 animate-spin" />
-                <span className="ml-2">Loading students...</span>
+                <span className="ml-2">Memuat siswa...</span>
               </div>
             ) : students.length === 0 ? (
               <div className="text-center py-12">
                 <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  {searchTerm ? "No students found" : "No students yet"}
+                  {searchTerm ? "Tidak ada siswa ditemukan" : "Belum ada siswa"}
                 </h3>
                 <p className="text-gray-500">
                   {searchTerm
-                    ? "Try adjusting your search criteria"
-                    : "Students will appear here once they enroll in your courses"}
+                    ? "Coba sesuaikan kriteria pencarian Anda"
+                    : "Siswa akan muncul di sini setelah mendaftar di kursus Anda"}
                 </p>
               </div>
             ) : (
@@ -317,11 +317,11 @@ const TeacherStudents = () => {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Student</TableHead>
+                        <TableHead>Siswa</TableHead>
                         <TableHead>Email</TableHead>
-                        <TableHead>Enrolled Courses</TableHead>
-                        <TableHead>Progress</TableHead>
-                        <TableHead>Enrolled Date</TableHead>
+                        <TableHead>Kursus Terdaftar</TableHead>
+                        <TableHead>Progres</TableHead>
+                        <TableHead>Tanggal Terdaftar</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -408,12 +408,13 @@ const TeacherStudents = () => {
                 {pagination && pagination.totalPages > 1 && (
                   <div className="flex items-center justify-between mt-6">
                     <div className="text-sm text-gray-700">
-                      Showing {(currentPage - 1) * studentsPerPage + 1} to{" "}
+                      Menampilkan {(currentPage - 1) * studentsPerPage + 1}{" "}
+                      sampai{" "}
                       {Math.min(
                         currentPage * studentsPerPage,
                         pagination.totalStudents
                       )}{" "}
-                      of {pagination.totalStudents} students
+                      dari {pagination.totalStudents} siswa
                     </div>
                     <div className="flex items-center gap-2">
                       <Button
@@ -423,7 +424,7 @@ const TeacherStudents = () => {
                         disabled={!pagination.hasPreviousPage || isFetching}
                       >
                         <ChevronLeft className="h-4 w-4" />
-                        Previous
+                        Sebelumnya
                       </Button>
 
                       <div className="flex items-center gap-1">
@@ -468,7 +469,7 @@ const TeacherStudents = () => {
                         onClick={() => setCurrentPage(currentPage + 1)}
                         disabled={!pagination.hasNextPage || isFetching}
                       >
-                        Next
+                        Selanjutnya
                         <ChevronRight className="h-4 w-4" />
                       </Button>
                     </div>

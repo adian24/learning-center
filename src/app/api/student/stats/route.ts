@@ -59,7 +59,7 @@ export async function GET(req: NextRequest) {
     });
 
     // Calculate stats
-    let totalCourses = enrollments.length;
+    const totalCourses = enrollments.length;
     let inProgressCount = 0;
     let completedCount = 0;
 

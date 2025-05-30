@@ -78,7 +78,7 @@ export default function CourseSidebar({
               </div>
               <div className="flex items-center gap-1">
                 <BookOpen className="h-3 w-3 text-muted-foreground" />
-                <span>{totalChapters} chapters</span>
+                <span>{totalChapters} bab</span>
               </div>
             </div>
 
@@ -87,14 +87,14 @@ export default function CourseSidebar({
             {/* Progress */}
             <div className="space-y-2">
               <div className="flex justify-between text-xs">
-                <span className="font-medium">Progress</span>
+                <span className="font-medium">Progres</span>
                 <span className="text-muted-foreground">
                   {progressPercentage}%
                 </span>
               </div>
               <Progress value={progressPercentage} className="h-2" />
               <p className="text-xs text-muted-foreground">
-                {completedChapters}/{totalChapters} chapters completed
+                {completedChapters}/{totalChapters} bab selesai
               </p>
             </div>
 
@@ -117,7 +117,7 @@ export default function CourseSidebar({
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <HelpCircle className="h-4 w-4" />
-              Chapter Quiz
+              Kuis Bab
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
@@ -134,7 +134,7 @@ export default function CourseSidebar({
                       )}
                       <div className="flex items-center gap-2 mt-1">
                         <span className="text-xs text-muted-foreground">
-                          {quiz.questions?.length || 0} questions
+                          {quiz.questions?.length || 0} soal
                         </span>
                         {quiz.timeLimit && (
                           <>
@@ -142,7 +142,7 @@ export default function CourseSidebar({
                               •
                             </span>
                             <span className="text-xs text-muted-foreground">
-                              {quiz.timeLimit} min
+                              {quiz.timeLimit} menit
                             </span>
                           </>
                         )}
@@ -151,7 +151,7 @@ export default function CourseSidebar({
                   </div>
 
                   <Button size="sm" className="w-full" variant="outline">
-                    Take Quiz
+                    Ikuti Kuis
                   </Button>
                 </div>
               ))}
@@ -166,7 +166,7 @@ export default function CourseSidebar({
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <FileText className="h-4 w-4" />
-              Chapter Resources
+              Materi Bab
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
@@ -226,25 +226,25 @@ export default function CourseSidebar({
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2 text-green-700">
               <Award className="h-4 w-4" />
-              Certificate
+              Sertifikat
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-green-700">
                 <CheckCircle className="h-4 w-4" />
-                <span className="text-sm font-medium">Course Completed!</span>
+                <span className="text-sm font-medium">Kursus Selesai!</span>
               </div>
 
               <p className="text-xs text-green-600">
-                Congratulations! You've completed all chapters in this course.
+                Selamat! Anda telah menyelesaikan semua bab dalam kursus ini.
               </p>
 
               <Button
                 size="sm"
                 className="w-full bg-green-600 hover:bg-green-700"
               >
-                Download Certificate
+                Unduh Sertifikat
               </Button>
             </div>
           </CardContent>
@@ -254,21 +254,21 @@ export default function CourseSidebar({
       {/* Course Instructor */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">Instructor</CardTitle>
+          <CardTitle className="text-base">Instruktur</CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
           <div className="flex items-center gap-3">
             <AvatarImage
               imageKey={course.teacher?.user?.image}
-              userName={course.teacher?.user?.name || "Instructor"}
+              userName={course.teacher?.user?.name || "Instruktur"}
               size={40}
               className="flex-shrink-0"
             />
             <div>
               <p className="text-sm font-medium">
-                {course.teacher?.user?.name || "Instructor"}
+                {course.teacher?.user?.name || "Instruktur"}
               </p>
-              <p className="text-xs text-muted-foreground">Course Instructor</p>
+              <p className="text-xs text-muted-foreground">Instruktur Kursus</p>
             </div>
           </div>
 

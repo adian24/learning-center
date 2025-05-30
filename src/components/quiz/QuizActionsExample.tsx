@@ -201,7 +201,7 @@ const QuizActionsExample: React.FC<QuizActionsExampleProps> = ({
               </li>
               <li>
                 • <strong>Delete Quiz:</strong> Konfirmasi dengan mengetik
-                "HAPUS"
+                &quot;HAPUS&quot;
               </li>
               <li>
                 • <strong>Loading States:</strong> Button disabled dan loading

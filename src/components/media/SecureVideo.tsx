@@ -164,7 +164,7 @@ export default function SecureVideo({
           <VideoOff className="h-12 w-12 mx-auto mb-4 opacity-50" />
           <p className="text-lg">No video available</p>
           <p className="text-sm opacity-75">
-            This chapter doesn't have a video yet
+            This chapter doesn&apos;t have a video yet
           </p>
         </div>
       </div>
