@@ -13,10 +13,10 @@ const updateEnrollmentSchema = z.object({
 // GET: Fetch specific enrollment by ID
 export async function GET(
   req: NextRequest,
-  { params }: { params: { enrollmentId: string } }
+  { params }: { params: Promise<{ enrollmentId: string }> }
 ) {
   try {
-    const { enrollmentId } = params;
+    const { enrollmentId } = await params;
     const session = await auth();
 
     if (!session?.user) {
@@ -115,10 +115,10 @@ export async function GET(
 // PATCH: Update enrollment status
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { enrollmentId: string } }
+  { params }: { params: Promise<{ enrollmentId: string }> }
 ) {
   try {
-    const { enrollmentId } = params;
+    const { enrollmentId } = await params;
     const session = await auth();
 
     if (!session?.user) {
@@ -188,10 +188,10 @@ export async function PATCH(
 // DELETE: Cancel enrollment
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { enrollmentId: string } }
+  { params }: { params: Promise<{ enrollmentId: string }> }
 ) {
   try {
-    const { enrollmentId } = params;
+    const { enrollmentId } = await params;
     const session = await auth();
 
     if (!session?.user) {
