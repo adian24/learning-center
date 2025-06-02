@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Chapter } from "@prisma/client";
+import { Chapter } from "@/lib/db/generated";
 
 interface UseChapterQuery {
   courseId: string;

@@ -429,12 +429,11 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
-  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL",
-        "value": null
+        "value": "postgres://postgres:groupt5p@194.195.92.47:5433/elearning?schema=public&connection_limit=5&pool_timeout=10"
       }
     }
   },
