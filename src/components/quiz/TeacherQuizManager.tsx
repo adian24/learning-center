@@ -206,7 +206,7 @@ const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
                   </div>
 
                   {/* Action Menu */}
-                  <DropdownMenu>
+                  <DropdownMenu modal={false}>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="sm">
                         <MoreVertical className="h-4 w-4" />
