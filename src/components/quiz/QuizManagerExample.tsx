@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import TeacherQuizManager from "./TeacherQuizManager";
-import { useQuizDialogStore } from "@/stores/use-store-quiz-dialog";
+import { useQuizDialogStore } from "@/store/use-store-quiz-dialog";
 
 interface QuizManagerExampleProps {
   chapterId?: string;

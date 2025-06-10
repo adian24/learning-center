@@ -305,6 +305,15 @@ export function useCreateQuestion() {
         queryKey: ["student-quiz", variables.quizId],
       });
 
+      // Invalidate quizzes list to update question count
+      queryClient.invalidateQueries({
+        queryKey: ["teacher-quizzes"],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["student-quizzes"],
+      });
+
       console.log(`Question created successfully`);
     },
     onError: (error) => {

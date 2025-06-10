@@ -34,7 +34,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useQuizDialogStore } from "@/stores/use-store-quiz-dialog";
+import { useQuizDialogStore } from "@/store/use-store-quiz-dialog";
 
 interface EditQuizDialogProps {
   quiz: Quiz | null;

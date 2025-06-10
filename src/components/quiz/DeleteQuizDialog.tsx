@@ -15,7 +15,7 @@ import { toast } from "sonner";
 import { useDeleteQuiz } from "@/hooks/use-quiz-management";
 import { Trash2, Loader2, AlertTriangle } from "lucide-react";
 import { Quiz } from "@/lib/types";
-import { useQuizDialogStore } from "@/stores/use-store-quiz-dialog";
+import { useQuizDialogStore } from "@/store/use-store-quiz-dialog";
 
 interface DeleteQuizDialogProps {
   quiz: Quiz | null;
