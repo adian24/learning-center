@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,10 +13,10 @@ import {
   Award,
   ExternalLink,
   Download,
-  HelpCircle,
   CheckCircle,
 } from "lucide-react";
 import { CourseImageCard, AvatarImage } from "@/components/media/SecureImage";
+import StudentQuizzes from "./StudentQuizzes";
 
 interface CourseSidebarProps {
   course: any;
@@ -42,7 +41,6 @@ export default function CourseSidebar({
 
   // Get current chapter resources and quizzes
   const resources = currentChapter?.resources || [];
-  const quizzes = currentChapter?.quizzes || [];
 
   return (
     <div className="space-y-6">
@@ -112,53 +110,7 @@ export default function CourseSidebar({
       </Card>
 
       {/* Quiz Card */}
-      {quizzes.length > 0 && (
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2">
-              <HelpCircle className="h-4 w-4" />
-              Kuis Bab
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <div className="space-y-3">
-              {quizzes.map((quiz: any, index: number) => (
-                <div key={quiz.id} className="space-y-2">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h4 className="text-sm font-medium">{quiz.title}</h4>
-                      {quiz.description && (
-                        <p className="text-xs text-muted-foreground line-clamp-2">
-                          {quiz.description}
-                        </p>
-                      )}
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="text-xs text-muted-foreground">
-                          {quiz.questions?.length || 0} soal
-                        </span>
-                        {quiz.timeLimit && (
-                          <>
-                            <span className="text-xs text-muted-foreground">
-                              •
-                            </span>
-                            <span className="text-xs text-muted-foreground">
-                              {quiz.timeLimit} menit
-                            </span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <Button size="sm" className="w-full" variant="outline">
-                    Ikuti Kuis
-                  </Button>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      <StudentQuizzes chapterId={currentChapter?.id} />
 
       {/* Resources Card */}
       {resources.length > 0 && (
