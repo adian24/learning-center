@@ -235,65 +235,69 @@ const MyCourses = () => {
   // Error state
   if (error) {
     return (
-      <div className="container mx-auto py-8 px-4">
-        <div className="flex flex-col items-center justify-center py-12">
-          <AlertCircle className="h-16 w-16 text-red-500 mb-4" />
-          <h2 className="text-2xl font-bold mb-2">Terjadi kesalahan</h2>
-          <p className="text-gray-600 mb-4">
-            Kami tidak dapat memuat kursus Anda. Silakan coba lagi nanti.
-          </p>
-          <Button onClick={() => window.location.reload()}>Segarkan</Button>
+      <Layout>
+        <div className="container mx-auto py-8 px-4">
+          <div className="flex flex-col items-center justify-center py-12">
+            <AlertCircle className="h-16 w-16 text-red-500 mb-4" />
+            <h2 className="text-2xl font-bold mb-2">Terjadi kesalahan</h2>
+            <p className="text-gray-600 mb-4">
+              Kami tidak dapat memuat kursus Anda. Silakan coba lagi nanti.
+            </p>
+            <Button onClick={() => window.location.reload()}>Segarkan</Button>
+          </div>
         </div>
-      </div>
+      </Layout>
     );
   }
 
   // Empty state
   if (enrollmentStats.total === 0) {
     return (
-      <div className="container mx-auto py-8 px-4">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-2xl font-bold">Kursus Saya</h1>
-            <p className="text-muted-foreground">
-              Lacak dan lanjutkan perjalanan belajar Anda
-            </p>
+      <Layout>
+        <div className="container mx-auto max-w-7xl py-8 px-4">
+          <div className="flex justify-between items-center mb-8">
+            <div>
+              <h1 className="text-2xl font-bold">Kursus Saya</h1>
+              <p className="text-muted-foreground">
+                Lacak dan lanjutkan perjalanan belajar Anda
+              </p>
+            </div>
+            <Button onClick={() => router.push("/courses")}>
+              Jelajahi Kursus
+            </Button>
           </div>
-          <Button onClick={() => router.push("/courses")}>
-            Jelajahi Kursus
-          </Button>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <StatsCard
-            icon={<BookOpen className="h-6 w-6 text-blue-500" />}
-            title="Total Kursus"
-            count={0}
-          />
-          <StatsCard
-            icon={<Clock className="h-6 w-6 text-amber-500" />}
-            title="Sedang Berlangsung"
-            count={0}
-          />
-          <StatsCard
-            icon={<CheckCircle className="h-6 w-6 text-green-500" />}
-            title="Selesai"
-            count={0}
-          />
-        </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <StatsCard
+              icon={<BookOpen className="h-6 w-6 text-blue-500" />}
+              title="Total Kursus"
+              count={0}
+            />
+            <StatsCard
+              icon={<Clock className="h-6 w-6 text-amber-500" />}
+              title="Sedang Berlangsung"
+              count={0}
+            />
+            <StatsCard
+              icon={<CheckCircle className="h-6 w-6 text-green-500" />}
+              title="Selesai"
+              count={0}
+            />
+          </div>
 
-        <div className="flex flex-col items-center justify-center py-12 text-center">
-          <BookOpen className="h-16 w-16 text-gray-400 mb-4" />
-          <h2 className="text-2xl font-bold mb-2">Belum ada kursus</h2>
-          <p className="text-gray-600 mb-4 max-w-md">
-            Anda belum mendaftar di kursus manapun. Jelajahi katalog kami untuk
-            menemukan sesuatu untuk dipelajari!
-          </p>
-          <Button onClick={() => router.push("/courses")}>
-            Jelajahi Kursus
-          </Button>
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <BookOpen className="h-16 w-16 text-gray-400 mb-4" />
+            <h2 className="text-2xl font-bold mb-2">Belum ada kursus</h2>
+            <p className="text-gray-600 mb-4 max-w-md">
+              Anda belum mendaftar di kursus manapun. Jelajahi katalog kami
+              untuk menemukan sesuatu untuk dipelajari!
+            </p>
+            <Button onClick={() => router.push("/courses")}>
+              Jelajahi Kursus
+            </Button>
+          </div>
         </div>
-      </div>
+      </Layout>
     );
   }
 
