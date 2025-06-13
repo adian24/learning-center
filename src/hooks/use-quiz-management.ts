@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Quiz, Question, QuestionOption } from "@/lib/types";
+import { StudentQuiz } from "@/lib/types/quiz";
 
 interface CreateQuizData {
   title: string;
@@ -31,7 +32,7 @@ interface CreateQuestionOptionData {
 }
 
 // Student API functions
-async function getStudentQuizzes(chapterId?: string): Promise<Quiz[]> {
+async function getStudentQuizzes(chapterId?: string): Promise<StudentQuiz[]> {
   const params = chapterId ? `?chapterId=${chapterId}` : "";
   const response = await fetch(`/api/student/quizzes${params}`);
 
@@ -42,7 +43,7 @@ async function getStudentQuizzes(chapterId?: string): Promise<Quiz[]> {
   return response.json();
 }
 
-async function getStudentQuiz(quizId: string): Promise<Quiz> {
+async function getStudentQuiz(quizId: string): Promise<StudentQuiz[]> {
   const response = await fetch(`/api/student/quizzes?quizId=${quizId}`);
 
   if (!response.ok) {
