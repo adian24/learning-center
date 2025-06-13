@@ -109,7 +109,7 @@ const QuizDrawer: React.FC<QuizDrawerProps> = ({
 
   const handleAnswerChange = (questionId: string, value: string | string[]) => {
     if (!currentQuestion) return;
-    let answer: QuizAnswer = { questionId };
+    const answer: QuizAnswer = { questionId };
     switch (currentQuestion.type) {
       case "SINGLE_CHOICE":
       case "TRUE_FALSE":
