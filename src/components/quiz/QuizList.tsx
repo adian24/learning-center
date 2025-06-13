@@ -17,6 +17,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { Quiz, QuizAttempt } from "@/lib/types";
+import { StudentQuiz } from "@/lib/types/quiz";
 import { useStudentQuizzes } from "@/hooks/use-quiz-management";
 import { useChapterQuizAttempts } from "@/hooks/use-quiz-attempts";
 import QuizInterface from "./QuizInterface";
@@ -26,7 +27,7 @@ interface QuizListProps {
   onQuizComplete?: () => void;
 }
 
-interface QuizWithAttempt extends Quiz {
+interface QuizWithAttempt extends Omit<StudentQuiz, "chapter"> {
   latestAttempt?: QuizAttempt;
   bestScore?: number;
   attemptCount?: number;
@@ -70,8 +71,10 @@ const QuizList: React.FC<QuizListProps> = ({ chapterId, onQuizComplete }) => {
     });
   }, [quizzes, attempts]);
 
-  const handleStartQuiz = (quiz: Quiz) => {
-    setSelectedQuiz(quiz);
+  const handleStartQuiz = (quiz: QuizWithAttempt) => {
+    const { latestAttempt, bestScore, attemptCount, isPassed, ...quizData } =
+      quiz;
+    setSelectedQuiz(quizData as unknown as Quiz);
     setViewMode("taking");
   };
 
