@@ -43,7 +43,7 @@ async function getStudentQuizzes(chapterId?: string): Promise<StudentQuiz[]> {
   return response.json();
 }
 
-async function getStudentQuiz(quizId: string): Promise<StudentQuiz[]> {
+async function getStudentQuiz(quizId: string): Promise<StudentQuiz> {
   const response = await fetch(`/api/student/quizzes?quizId=${quizId}`);
 
   if (!response.ok) {

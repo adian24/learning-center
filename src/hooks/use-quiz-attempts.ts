@@ -98,6 +98,16 @@ export function useSubmitQuizAttempt() {
         queryKey: ["progress"],
       });
 
+      // Invalidate quizzes
+      queryClient.invalidateQueries({
+        queryKey: ["student-quizzes"],
+      });
+
+      // Invalidate quiz
+      queryClient.invalidateQueries({
+        queryKey: ["student-quiz"],
+      });
+
       // ✨ NEW: Add toast notifications
       if (data.passed) {
         toast.success(`Quiz selesai! Skor: ${data.score}% - LULUS ✅`);
