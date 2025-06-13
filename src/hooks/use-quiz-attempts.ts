@@ -1,5 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { QuizAttempt } from "@/lib/types";
+import { toast } from "sonner"; // Add this import
+import { useMemo } from "react";
 
 interface SubmitQuizAttemptData {
   quizId: string;
@@ -96,6 +98,13 @@ export function useSubmitQuizAttempt() {
         queryKey: ["progress"],
       });
 
+      // ✨ NEW: Add toast notifications
+      if (data.passed) {
+        toast.success(`Quiz selesai! Skor: ${data.score}% - LULUS ✅`);
+      } else {
+        toast.warning(`Quiz selesai! Skor: ${data.score}% - Belum Lulus ❌`);
+      }
+
       // You can also show a success message here
       console.log(
         `Quiz completed with score: ${data.score}% (${
@@ -105,6 +114,8 @@ export function useSubmitQuizAttempt() {
     },
     onError: (error) => {
       console.error("Failed to submit quiz attempt:", error);
+      // ✨ NEW: Add error toast
+      toast.error("Gagal mengirim jawaban quiz. Silakan coba lagi.");
     },
   });
 }
@@ -126,4 +137,106 @@ export function useLatestQuizAttempt(quizId?: string) {
 // Hook to get all attempts for a chapter
 export function useChapterQuizAttempts(chapterId?: string) {
   return useQuizAttempts({ chapterId });
+}
+
+// ✨ NEW: Hook to check if student can retake quiz
+export function useCanRetakeQuiz(quizId: string | null) {
+  const { data: attempts } = useQuizAttempts({ quizId: quizId || undefined });
+
+  const canRetake = () => {
+    if (!attempts?.attempts || !quizId) return true;
+
+    // You can implement your retake logic here
+    // For example: allow unlimited retakes, or limit to 3 attempts
+    const attemptCount = attempts.attempts.length;
+    const maxAttempts = 3; // Configurable
+
+    return attemptCount < maxAttempts;
+  };
+
+  const getAttemptsRemaining = () => {
+    if (!attempts?.attempts || !quizId) return 3;
+    const maxAttempts = 3;
+    return Math.max(0, maxAttempts - attempts.attempts.length);
+  };
+
+  const getBestScore = () => {
+    if (!attempts?.attempts || attempts.attempts.length === 0) return 0;
+    return Math.max(...attempts.attempts.map((attempt) => attempt.score));
+  };
+
+  const getLatestAttempt = () => {
+    if (!attempts?.attempts || attempts.attempts.length === 0) return null;
+    return attempts.attempts[0]; // Sorted by latest first
+  };
+
+  const getAverageScore = () => {
+    if (!attempts?.attempts || attempts.attempts.length === 0) return 0;
+    const total = attempts.attempts.reduce(
+      (sum, attempt) => sum + attempt.score,
+      0
+    );
+    return Math.round(total / attempts.attempts.length);
+  };
+
+  return {
+    canRetake: canRetake(),
+    attemptsRemaining: getAttemptsRemaining(),
+    bestScore: getBestScore(),
+    averageScore: getAverageScore(),
+    latestAttempt: getLatestAttempt(),
+    totalAttempts: attempts?.attempts?.length || 0,
+    maxAttempts: 3, // Make this configurable later
+  };
+}
+
+// ✨ NEW: Hook for quiz statistics
+export function useQuizStats(quizId: string | null) {
+  const { data: attempts, isLoading } = useQuizAttempts({
+    quizId: quizId || undefined,
+  });
+
+  const stats = useMemo(() => {
+    if (!attempts?.attempts || attempts.attempts.length === 0) {
+      return {
+        totalAttempts: 0,
+        bestScore: 0,
+        averageScore: 0,
+        lastAttemptDate: null,
+        hasCompleted: false,
+        hasPassed: false,
+        improvement: 0, // Score improvement from first to last attempt
+      };
+    }
+
+    const sortedAttempts = [...attempts.attempts].sort(
+      (a, b) =>
+        new Date(a.completedAt || 0).getTime() -
+        new Date(b.completedAt || 0).getTime()
+    );
+
+    const scores = attempts.attempts.map((attempt) => attempt.score);
+    const bestScore = Math.max(...scores);
+    const averageScore = Math.round(
+      scores.reduce((sum, score) => sum + score, 0) / scores.length
+    );
+    const firstScore = sortedAttempts[0]?.score || 0;
+    const lastScore = sortedAttempts[sortedAttempts.length - 1]?.score || 0;
+    const improvement = lastScore - firstScore;
+
+    return {
+      totalAttempts: attempts.attempts.length,
+      bestScore,
+      averageScore,
+      lastAttemptDate: sortedAttempts[sortedAttempts.length - 1]?.completedAt,
+      hasCompleted: attempts.attempts.length > 0,
+      hasPassed: bestScore >= 60, // Assuming 60% is passing score, make this dynamic
+      improvement,
+    };
+  }, [attempts]);
+
+  return {
+    ...stats,
+    isLoading,
+  };
 }
