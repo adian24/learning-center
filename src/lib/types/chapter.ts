@@ -1,3 +1,4 @@
+import { Resource } from "../types";
 import { Course } from "./course";
 
 // Chapter related types
@@ -34,14 +35,6 @@ export interface ChapterProgress {
   notes: string | null;
   createdAt: string;
   updatedAt: string;
-}
-
-export interface Resource {
-  id: string;
-  title: string;
-  type: "PDF" | "LINK" | "FILE";
-  url: string;
-  chapterId: string;
 }
 
 export interface QuizSummary {

@@ -3,6 +3,7 @@ export * from "./quiz";
 export * from "./course";
 export * from "./chapter";
 export * from "./user";
+export * from "./resource";
 
 // Common utility types
 export interface PaginationMeta {
