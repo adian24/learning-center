@@ -281,7 +281,6 @@ exports.Prisma.ResourceScalarFieldEnum = {
   content: 'content',
   summary: 'summary',
   readTime: 'readTime',
-  isPublished: 'isPublished',
   chapterId: 'chapterId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

@@ -3045,12 +3045,10 @@ export namespace Prisma {
 
   export type UserProgressCountOutputType = {
     quizAttempts: number
-    completedResources: number
   }
 
   export type UserProgressCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     quizAttempts?: boolean | UserProgressCountOutputTypeCountQuizAttemptsArgs
-    completedResources?: boolean | UserProgressCountOutputTypeCountCompletedResourcesArgs
   }
 
   // Custom InputTypes
@@ -3069,44 +3067,6 @@ export namespace Prisma {
    */
   export type UserProgressCountOutputTypeCountQuizAttemptsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: QuizAttemptWhereInput
-  }
-
-  /**
-   * UserProgressCountOutputType without action
-   */
-  export type UserProgressCountOutputTypeCountCompletedResourcesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ResourceWhereInput
-  }
-
-
-  /**
-   * Count Type ResourceCountOutputType
-   */
-
-  export type ResourceCountOutputType = {
-    completedBy: number
-  }
-
-  export type ResourceCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    completedBy?: boolean | ResourceCountOutputTypeCountCompletedByArgs
-  }
-
-  // Custom InputTypes
-  /**
-   * ResourceCountOutputType without action
-   */
-  export type ResourceCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ResourceCountOutputType
-     */
-    select?: ResourceCountOutputTypeSelect<ExtArgs> | null
-  }
-
-  /**
-   * ResourceCountOutputType without action
-   */
-  export type ResourceCountOutputTypeCountCompletedByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: UserProgressWhereInput
   }
 
 
@@ -18513,7 +18473,6 @@ export namespace Prisma {
     student?: boolean | StudentProfileDefaultArgs<ExtArgs>
     chapter?: boolean | ChapterDefaultArgs<ExtArgs>
     quizAttempts?: boolean | UserProgress$quizAttemptsArgs<ExtArgs>
-    completedResources?: boolean | UserProgress$completedResourcesArgs<ExtArgs>
     _count?: boolean | UserProgressCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userProgress"]>
 
@@ -18568,7 +18527,6 @@ export namespace Prisma {
     student?: boolean | StudentProfileDefaultArgs<ExtArgs>
     chapter?: boolean | ChapterDefaultArgs<ExtArgs>
     quizAttempts?: boolean | UserProgress$quizAttemptsArgs<ExtArgs>
-    completedResources?: boolean | UserProgress$completedResourcesArgs<ExtArgs>
     _count?: boolean | UserProgressCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserProgressIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -18586,7 +18544,6 @@ export namespace Prisma {
       student: Prisma.$StudentProfilePayload<ExtArgs>
       chapter: Prisma.$ChapterPayload<ExtArgs>
       quizAttempts: Prisma.$QuizAttemptPayload<ExtArgs>[]
-      completedResources: Prisma.$ResourcePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -18997,7 +18954,6 @@ export namespace Prisma {
     student<T extends StudentProfileDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StudentProfileDefaultArgs<ExtArgs>>): Prisma__StudentProfileClient<$Result.GetResult<Prisma.$StudentProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     chapter<T extends ChapterDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ChapterDefaultArgs<ExtArgs>>): Prisma__ChapterClient<$Result.GetResult<Prisma.$ChapterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     quizAttempts<T extends UserProgress$quizAttemptsArgs<ExtArgs> = {}>(args?: Subset<T, UserProgress$quizAttemptsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$QuizAttemptPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    completedResources<T extends UserProgress$completedResourcesArgs<ExtArgs> = {}>(args?: Subset<T, UserProgress$completedResourcesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ResourcePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -19458,30 +19414,6 @@ export namespace Prisma {
   }
 
   /**
-   * UserProgress.completedResources
-   */
-  export type UserProgress$completedResourcesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Resource
-     */
-    select?: ResourceSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Resource
-     */
-    omit?: ResourceOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ResourceInclude<ExtArgs> | null
-    where?: ResourceWhereInput
-    orderBy?: ResourceOrderByWithRelationInput | ResourceOrderByWithRelationInput[]
-    cursor?: ResourceWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: ResourceScalarFieldEnum | ResourceScalarFieldEnum[]
-  }
-
-  /**
    * UserProgress without action
    */
   export type UserProgressDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -19526,7 +19458,6 @@ export namespace Prisma {
     content: string | null
     summary: string | null
     readTime: number | null
-    isPublished: boolean | null
     chapterId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -19538,7 +19469,6 @@ export namespace Prisma {
     content: string | null
     summary: string | null
     readTime: number | null
-    isPublished: boolean | null
     chapterId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -19550,7 +19480,6 @@ export namespace Prisma {
     content: number
     summary: number
     readTime: number
-    isPublished: number
     chapterId: number
     createdAt: number
     updatedAt: number
@@ -19572,7 +19501,6 @@ export namespace Prisma {
     content?: true
     summary?: true
     readTime?: true
-    isPublished?: true
     chapterId?: true
     createdAt?: true
     updatedAt?: true
@@ -19584,7 +19512,6 @@ export namespace Prisma {
     content?: true
     summary?: true
     readTime?: true
-    isPublished?: true
     chapterId?: true
     createdAt?: true
     updatedAt?: true
@@ -19596,7 +19523,6 @@ export namespace Prisma {
     content?: true
     summary?: true
     readTime?: true
-    isPublished?: true
     chapterId?: true
     createdAt?: true
     updatedAt?: true
@@ -19695,7 +19621,6 @@ export namespace Prisma {
     content: string
     summary: string | null
     readTime: number | null
-    isPublished: boolean
     chapterId: string
     createdAt: Date
     updatedAt: Date
@@ -19726,13 +19651,10 @@ export namespace Prisma {
     content?: boolean
     summary?: boolean
     readTime?: boolean
-    isPublished?: boolean
     chapterId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     chapter?: boolean | ChapterDefaultArgs<ExtArgs>
-    completedBy?: boolean | Resource$completedByArgs<ExtArgs>
-    _count?: boolean | ResourceCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["resource"]>
 
   export type ResourceSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -19741,7 +19663,6 @@ export namespace Prisma {
     content?: boolean
     summary?: boolean
     readTime?: boolean
-    isPublished?: boolean
     chapterId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -19754,7 +19675,6 @@ export namespace Prisma {
     content?: boolean
     summary?: boolean
     readTime?: boolean
-    isPublished?: boolean
     chapterId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -19767,17 +19687,14 @@ export namespace Prisma {
     content?: boolean
     summary?: boolean
     readTime?: boolean
-    isPublished?: boolean
     chapterId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ResourceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "content" | "summary" | "readTime" | "isPublished" | "chapterId" | "createdAt" | "updatedAt", ExtArgs["result"]["resource"]>
+  export type ResourceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "content" | "summary" | "readTime" | "chapterId" | "createdAt" | "updatedAt", ExtArgs["result"]["resource"]>
   export type ResourceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     chapter?: boolean | ChapterDefaultArgs<ExtArgs>
-    completedBy?: boolean | Resource$completedByArgs<ExtArgs>
-    _count?: boolean | ResourceCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ResourceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     chapter?: boolean | ChapterDefaultArgs<ExtArgs>
@@ -19790,7 +19707,6 @@ export namespace Prisma {
     name: "Resource"
     objects: {
       chapter: Prisma.$ChapterPayload<ExtArgs>
-      completedBy: Prisma.$UserProgressPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -19798,7 +19714,6 @@ export namespace Prisma {
       content: string
       summary: string | null
       readTime: number | null
-      isPublished: boolean
       chapterId: string
       createdAt: Date
       updatedAt: Date
@@ -20197,7 +20112,6 @@ export namespace Prisma {
   export interface Prisma__ResourceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     chapter<T extends ChapterDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ChapterDefaultArgs<ExtArgs>>): Prisma__ChapterClient<$Result.GetResult<Prisma.$ChapterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    completedBy<T extends Resource$completedByArgs<ExtArgs> = {}>(args?: Subset<T, Resource$completedByArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserProgressPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -20232,7 +20146,6 @@ export namespace Prisma {
     readonly content: FieldRef<"Resource", 'String'>
     readonly summary: FieldRef<"Resource", 'String'>
     readonly readTime: FieldRef<"Resource", 'Int'>
-    readonly isPublished: FieldRef<"Resource", 'Boolean'>
     readonly chapterId: FieldRef<"Resource", 'String'>
     readonly createdAt: FieldRef<"Resource", 'DateTime'>
     readonly updatedAt: FieldRef<"Resource", 'DateTime'>
@@ -20629,30 +20542,6 @@ export namespace Prisma {
      * Limit how many Resources to delete.
      */
     limit?: number
-  }
-
-  /**
-   * Resource.completedBy
-   */
-  export type Resource$completedByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the UserProgress
-     */
-    select?: UserProgressSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the UserProgress
-     */
-    omit?: UserProgressOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: UserProgressInclude<ExtArgs> | null
-    where?: UserProgressWhereInput
-    orderBy?: UserProgressOrderByWithRelationInput | UserProgressOrderByWithRelationInput[]
-    cursor?: UserProgressWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: UserProgressScalarFieldEnum | UserProgressScalarFieldEnum[]
   }
 
   /**
@@ -27865,7 +27754,6 @@ export namespace Prisma {
     content: 'content',
     summary: 'summary',
     readTime: 'readTime',
-    isPublished: 'isPublished',
     chapterId: 'chapterId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -29116,7 +29004,6 @@ export namespace Prisma {
     student?: XOR<StudentProfileScalarRelationFilter, StudentProfileWhereInput>
     chapter?: XOR<ChapterScalarRelationFilter, ChapterWhereInput>
     quizAttempts?: QuizAttemptListRelationFilter
-    completedResources?: ResourceListRelationFilter
   }
 
   export type UserProgressOrderByWithRelationInput = {
@@ -29134,7 +29021,6 @@ export namespace Prisma {
     student?: StudentProfileOrderByWithRelationInput
     chapter?: ChapterOrderByWithRelationInput
     quizAttempts?: QuizAttemptOrderByRelationAggregateInput
-    completedResources?: ResourceOrderByRelationAggregateInput
   }
 
   export type UserProgressWhereUniqueInput = Prisma.AtLeast<{
@@ -29156,7 +29042,6 @@ export namespace Prisma {
     student?: XOR<StudentProfileScalarRelationFilter, StudentProfileWhereInput>
     chapter?: XOR<ChapterScalarRelationFilter, ChapterWhereInput>
     quizAttempts?: QuizAttemptListRelationFilter
-    completedResources?: ResourceListRelationFilter
   }, "id" | "studentId_chapterId">
 
   export type UserProgressOrderByWithAggregationInput = {
@@ -29204,12 +29089,10 @@ export namespace Prisma {
     content?: StringFilter<"Resource"> | string
     summary?: StringNullableFilter<"Resource"> | string | null
     readTime?: IntNullableFilter<"Resource"> | number | null
-    isPublished?: BoolFilter<"Resource"> | boolean
     chapterId?: StringFilter<"Resource"> | string
     createdAt?: DateTimeFilter<"Resource"> | Date | string
     updatedAt?: DateTimeFilter<"Resource"> | Date | string
     chapter?: XOR<ChapterScalarRelationFilter, ChapterWhereInput>
-    completedBy?: UserProgressListRelationFilter
   }
 
   export type ResourceOrderByWithRelationInput = {
@@ -29218,12 +29101,10 @@ export namespace Prisma {
     content?: SortOrder
     summary?: SortOrderInput | SortOrder
     readTime?: SortOrderInput | SortOrder
-    isPublished?: SortOrder
     chapterId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     chapter?: ChapterOrderByWithRelationInput
-    completedBy?: UserProgressOrderByRelationAggregateInput
   }
 
   export type ResourceWhereUniqueInput = Prisma.AtLeast<{
@@ -29235,12 +29116,10 @@ export namespace Prisma {
     content?: StringFilter<"Resource"> | string
     summary?: StringNullableFilter<"Resource"> | string | null
     readTime?: IntNullableFilter<"Resource"> | number | null
-    isPublished?: BoolFilter<"Resource"> | boolean
     chapterId?: StringFilter<"Resource"> | string
     createdAt?: DateTimeFilter<"Resource"> | Date | string
     updatedAt?: DateTimeFilter<"Resource"> | Date | string
     chapter?: XOR<ChapterScalarRelationFilter, ChapterWhereInput>
-    completedBy?: UserProgressListRelationFilter
   }, "id">
 
   export type ResourceOrderByWithAggregationInput = {
@@ -29249,7 +29128,6 @@ export namespace Prisma {
     content?: SortOrder
     summary?: SortOrderInput | SortOrder
     readTime?: SortOrderInput | SortOrder
-    isPublished?: SortOrder
     chapterId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -29269,7 +29147,6 @@ export namespace Prisma {
     content?: StringWithAggregatesFilter<"Resource"> | string
     summary?: StringNullableWithAggregatesFilter<"Resource"> | string | null
     readTime?: IntNullableWithAggregatesFilter<"Resource"> | number | null
-    isPublished?: BoolWithAggregatesFilter<"Resource"> | boolean
     chapterId?: StringWithAggregatesFilter<"Resource"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Resource"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Resource"> | Date | string
@@ -30812,7 +30689,6 @@ export namespace Prisma {
     student: StudentProfileCreateNestedOneWithoutProgressInput
     chapter: ChapterCreateNestedOneWithoutUserProgressInput
     quizAttempts?: QuizAttemptCreateNestedManyWithoutUserProgressInput
-    completedResources?: ResourceCreateNestedManyWithoutCompletedByInput
   }
 
   export type UserProgressUncheckedCreateInput = {
@@ -30828,7 +30704,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutUserProgressInput
-    completedResources?: ResourceUncheckedCreateNestedManyWithoutCompletedByInput
   }
 
   export type UserProgressUpdateInput = {
@@ -30844,7 +30719,6 @@ export namespace Prisma {
     student?: StudentProfileUpdateOneRequiredWithoutProgressNestedInput
     chapter?: ChapterUpdateOneRequiredWithoutUserProgressNestedInput
     quizAttempts?: QuizAttemptUpdateManyWithoutUserProgressNestedInput
-    completedResources?: ResourceUpdateManyWithoutCompletedByNestedInput
   }
 
   export type UserProgressUncheckedUpdateInput = {
@@ -30860,7 +30734,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutUserProgressNestedInput
-    completedResources?: ResourceUncheckedUpdateManyWithoutCompletedByNestedInput
   }
 
   export type UserProgressCreateManyInput = {
@@ -30909,11 +30782,9 @@ export namespace Prisma {
     content: string
     summary?: string | null
     readTime?: number | null
-    isPublished?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     chapter: ChapterCreateNestedOneWithoutResourcesInput
-    completedBy?: UserProgressCreateNestedManyWithoutCompletedResourcesInput
   }
 
   export type ResourceUncheckedCreateInput = {
@@ -30922,11 +30793,9 @@ export namespace Prisma {
     content: string
     summary?: string | null
     readTime?: number | null
-    isPublished?: boolean
     chapterId: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    completedBy?: UserProgressUncheckedCreateNestedManyWithoutCompletedResourcesInput
   }
 
   export type ResourceUpdateInput = {
@@ -30935,11 +30804,9 @@ export namespace Prisma {
     content?: StringFieldUpdateOperationsInput | string
     summary?: NullableStringFieldUpdateOperationsInput | string | null
     readTime?: NullableIntFieldUpdateOperationsInput | number | null
-    isPublished?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     chapter?: ChapterUpdateOneRequiredWithoutResourcesNestedInput
-    completedBy?: UserProgressUpdateManyWithoutCompletedResourcesNestedInput
   }
 
   export type ResourceUncheckedUpdateInput = {
@@ -30948,11 +30815,9 @@ export namespace Prisma {
     content?: StringFieldUpdateOperationsInput | string
     summary?: NullableStringFieldUpdateOperationsInput | string | null
     readTime?: NullableIntFieldUpdateOperationsInput | number | null
-    isPublished?: BoolFieldUpdateOperationsInput | boolean
     chapterId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    completedBy?: UserProgressUncheckedUpdateManyWithoutCompletedResourcesNestedInput
   }
 
   export type ResourceCreateManyInput = {
@@ -30961,7 +30826,6 @@ export namespace Prisma {
     content: string
     summary?: string | null
     readTime?: number | null
-    isPublished?: boolean
     chapterId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -30973,7 +30837,6 @@ export namespace Prisma {
     content?: StringFieldUpdateOperationsInput | string
     summary?: NullableStringFieldUpdateOperationsInput | string | null
     readTime?: NullableIntFieldUpdateOperationsInput | number | null
-    isPublished?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -30984,7 +30847,6 @@ export namespace Prisma {
     content?: StringFieldUpdateOperationsInput | string
     summary?: NullableStringFieldUpdateOperationsInput | string | null
     readTime?: NullableIntFieldUpdateOperationsInput | number | null
-    isPublished?: BoolFieldUpdateOperationsInput | boolean
     chapterId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -32476,7 +32338,6 @@ export namespace Prisma {
     content?: SortOrder
     summary?: SortOrder
     readTime?: SortOrder
-    isPublished?: SortOrder
     chapterId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -32492,7 +32353,6 @@ export namespace Prisma {
     content?: SortOrder
     summary?: SortOrder
     readTime?: SortOrder
-    isPublished?: SortOrder
     chapterId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -32504,7 +32364,6 @@ export namespace Prisma {
     content?: SortOrder
     summary?: SortOrder
     readTime?: SortOrder
-    isPublished?: SortOrder
     chapterId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -33931,23 +33790,11 @@ export namespace Prisma {
     connect?: QuizAttemptWhereUniqueInput | QuizAttemptWhereUniqueInput[]
   }
 
-  export type ResourceCreateNestedManyWithoutCompletedByInput = {
-    create?: XOR<ResourceCreateWithoutCompletedByInput, ResourceUncheckedCreateWithoutCompletedByInput> | ResourceCreateWithoutCompletedByInput[] | ResourceUncheckedCreateWithoutCompletedByInput[]
-    connectOrCreate?: ResourceCreateOrConnectWithoutCompletedByInput | ResourceCreateOrConnectWithoutCompletedByInput[]
-    connect?: ResourceWhereUniqueInput | ResourceWhereUniqueInput[]
-  }
-
   export type QuizAttemptUncheckedCreateNestedManyWithoutUserProgressInput = {
     create?: XOR<QuizAttemptCreateWithoutUserProgressInput, QuizAttemptUncheckedCreateWithoutUserProgressInput> | QuizAttemptCreateWithoutUserProgressInput[] | QuizAttemptUncheckedCreateWithoutUserProgressInput[]
     connectOrCreate?: QuizAttemptCreateOrConnectWithoutUserProgressInput | QuizAttemptCreateOrConnectWithoutUserProgressInput[]
     createMany?: QuizAttemptCreateManyUserProgressInputEnvelope
     connect?: QuizAttemptWhereUniqueInput | QuizAttemptWhereUniqueInput[]
-  }
-
-  export type ResourceUncheckedCreateNestedManyWithoutCompletedByInput = {
-    create?: XOR<ResourceCreateWithoutCompletedByInput, ResourceUncheckedCreateWithoutCompletedByInput> | ResourceCreateWithoutCompletedByInput[] | ResourceUncheckedCreateWithoutCompletedByInput[]
-    connectOrCreate?: ResourceCreateOrConnectWithoutCompletedByInput | ResourceCreateOrConnectWithoutCompletedByInput[]
-    connect?: ResourceWhereUniqueInput | ResourceWhereUniqueInput[]
   }
 
   export type StudentProfileUpdateOneRequiredWithoutProgressNestedInput = {
@@ -33980,19 +33827,6 @@ export namespace Prisma {
     deleteMany?: QuizAttemptScalarWhereInput | QuizAttemptScalarWhereInput[]
   }
 
-  export type ResourceUpdateManyWithoutCompletedByNestedInput = {
-    create?: XOR<ResourceCreateWithoutCompletedByInput, ResourceUncheckedCreateWithoutCompletedByInput> | ResourceCreateWithoutCompletedByInput[] | ResourceUncheckedCreateWithoutCompletedByInput[]
-    connectOrCreate?: ResourceCreateOrConnectWithoutCompletedByInput | ResourceCreateOrConnectWithoutCompletedByInput[]
-    upsert?: ResourceUpsertWithWhereUniqueWithoutCompletedByInput | ResourceUpsertWithWhereUniqueWithoutCompletedByInput[]
-    set?: ResourceWhereUniqueInput | ResourceWhereUniqueInput[]
-    disconnect?: ResourceWhereUniqueInput | ResourceWhereUniqueInput[]
-    delete?: ResourceWhereUniqueInput | ResourceWhereUniqueInput[]
-    connect?: ResourceWhereUniqueInput | ResourceWhereUniqueInput[]
-    update?: ResourceUpdateWithWhereUniqueWithoutCompletedByInput | ResourceUpdateWithWhereUniqueWithoutCompletedByInput[]
-    updateMany?: ResourceUpdateManyWithWhereWithoutCompletedByInput | ResourceUpdateManyWithWhereWithoutCompletedByInput[]
-    deleteMany?: ResourceScalarWhereInput | ResourceScalarWhereInput[]
-  }
-
   export type QuizAttemptUncheckedUpdateManyWithoutUserProgressNestedInput = {
     create?: XOR<QuizAttemptCreateWithoutUserProgressInput, QuizAttemptUncheckedCreateWithoutUserProgressInput> | QuizAttemptCreateWithoutUserProgressInput[] | QuizAttemptUncheckedCreateWithoutUserProgressInput[]
     connectOrCreate?: QuizAttemptCreateOrConnectWithoutUserProgressInput | QuizAttemptCreateOrConnectWithoutUserProgressInput[]
@@ -34007,35 +33841,10 @@ export namespace Prisma {
     deleteMany?: QuizAttemptScalarWhereInput | QuizAttemptScalarWhereInput[]
   }
 
-  export type ResourceUncheckedUpdateManyWithoutCompletedByNestedInput = {
-    create?: XOR<ResourceCreateWithoutCompletedByInput, ResourceUncheckedCreateWithoutCompletedByInput> | ResourceCreateWithoutCompletedByInput[] | ResourceUncheckedCreateWithoutCompletedByInput[]
-    connectOrCreate?: ResourceCreateOrConnectWithoutCompletedByInput | ResourceCreateOrConnectWithoutCompletedByInput[]
-    upsert?: ResourceUpsertWithWhereUniqueWithoutCompletedByInput | ResourceUpsertWithWhereUniqueWithoutCompletedByInput[]
-    set?: ResourceWhereUniqueInput | ResourceWhereUniqueInput[]
-    disconnect?: ResourceWhereUniqueInput | ResourceWhereUniqueInput[]
-    delete?: ResourceWhereUniqueInput | ResourceWhereUniqueInput[]
-    connect?: ResourceWhereUniqueInput | ResourceWhereUniqueInput[]
-    update?: ResourceUpdateWithWhereUniqueWithoutCompletedByInput | ResourceUpdateWithWhereUniqueWithoutCompletedByInput[]
-    updateMany?: ResourceUpdateManyWithWhereWithoutCompletedByInput | ResourceUpdateManyWithWhereWithoutCompletedByInput[]
-    deleteMany?: ResourceScalarWhereInput | ResourceScalarWhereInput[]
-  }
-
   export type ChapterCreateNestedOneWithoutResourcesInput = {
     create?: XOR<ChapterCreateWithoutResourcesInput, ChapterUncheckedCreateWithoutResourcesInput>
     connectOrCreate?: ChapterCreateOrConnectWithoutResourcesInput
     connect?: ChapterWhereUniqueInput
-  }
-
-  export type UserProgressCreateNestedManyWithoutCompletedResourcesInput = {
-    create?: XOR<UserProgressCreateWithoutCompletedResourcesInput, UserProgressUncheckedCreateWithoutCompletedResourcesInput> | UserProgressCreateWithoutCompletedResourcesInput[] | UserProgressUncheckedCreateWithoutCompletedResourcesInput[]
-    connectOrCreate?: UserProgressCreateOrConnectWithoutCompletedResourcesInput | UserProgressCreateOrConnectWithoutCompletedResourcesInput[]
-    connect?: UserProgressWhereUniqueInput | UserProgressWhereUniqueInput[]
-  }
-
-  export type UserProgressUncheckedCreateNestedManyWithoutCompletedResourcesInput = {
-    create?: XOR<UserProgressCreateWithoutCompletedResourcesInput, UserProgressUncheckedCreateWithoutCompletedResourcesInput> | UserProgressCreateWithoutCompletedResourcesInput[] | UserProgressUncheckedCreateWithoutCompletedResourcesInput[]
-    connectOrCreate?: UserProgressCreateOrConnectWithoutCompletedResourcesInput | UserProgressCreateOrConnectWithoutCompletedResourcesInput[]
-    connect?: UserProgressWhereUniqueInput | UserProgressWhereUniqueInput[]
   }
 
   export type ChapterUpdateOneRequiredWithoutResourcesNestedInput = {
@@ -34044,32 +33853,6 @@ export namespace Prisma {
     upsert?: ChapterUpsertWithoutResourcesInput
     connect?: ChapterWhereUniqueInput
     update?: XOR<XOR<ChapterUpdateToOneWithWhereWithoutResourcesInput, ChapterUpdateWithoutResourcesInput>, ChapterUncheckedUpdateWithoutResourcesInput>
-  }
-
-  export type UserProgressUpdateManyWithoutCompletedResourcesNestedInput = {
-    create?: XOR<UserProgressCreateWithoutCompletedResourcesInput, UserProgressUncheckedCreateWithoutCompletedResourcesInput> | UserProgressCreateWithoutCompletedResourcesInput[] | UserProgressUncheckedCreateWithoutCompletedResourcesInput[]
-    connectOrCreate?: UserProgressCreateOrConnectWithoutCompletedResourcesInput | UserProgressCreateOrConnectWithoutCompletedResourcesInput[]
-    upsert?: UserProgressUpsertWithWhereUniqueWithoutCompletedResourcesInput | UserProgressUpsertWithWhereUniqueWithoutCompletedResourcesInput[]
-    set?: UserProgressWhereUniqueInput | UserProgressWhereUniqueInput[]
-    disconnect?: UserProgressWhereUniqueInput | UserProgressWhereUniqueInput[]
-    delete?: UserProgressWhereUniqueInput | UserProgressWhereUniqueInput[]
-    connect?: UserProgressWhereUniqueInput | UserProgressWhereUniqueInput[]
-    update?: UserProgressUpdateWithWhereUniqueWithoutCompletedResourcesInput | UserProgressUpdateWithWhereUniqueWithoutCompletedResourcesInput[]
-    updateMany?: UserProgressUpdateManyWithWhereWithoutCompletedResourcesInput | UserProgressUpdateManyWithWhereWithoutCompletedResourcesInput[]
-    deleteMany?: UserProgressScalarWhereInput | UserProgressScalarWhereInput[]
-  }
-
-  export type UserProgressUncheckedUpdateManyWithoutCompletedResourcesNestedInput = {
-    create?: XOR<UserProgressCreateWithoutCompletedResourcesInput, UserProgressUncheckedCreateWithoutCompletedResourcesInput> | UserProgressCreateWithoutCompletedResourcesInput[] | UserProgressUncheckedCreateWithoutCompletedResourcesInput[]
-    connectOrCreate?: UserProgressCreateOrConnectWithoutCompletedResourcesInput | UserProgressCreateOrConnectWithoutCompletedResourcesInput[]
-    upsert?: UserProgressUpsertWithWhereUniqueWithoutCompletedResourcesInput | UserProgressUpsertWithWhereUniqueWithoutCompletedResourcesInput[]
-    set?: UserProgressWhereUniqueInput | UserProgressWhereUniqueInput[]
-    disconnect?: UserProgressWhereUniqueInput | UserProgressWhereUniqueInput[]
-    delete?: UserProgressWhereUniqueInput | UserProgressWhereUniqueInput[]
-    connect?: UserProgressWhereUniqueInput | UserProgressWhereUniqueInput[]
-    update?: UserProgressUpdateWithWhereUniqueWithoutCompletedResourcesInput | UserProgressUpdateWithWhereUniqueWithoutCompletedResourcesInput[]
-    updateMany?: UserProgressUpdateManyWithWhereWithoutCompletedResourcesInput | UserProgressUpdateManyWithWhereWithoutCompletedResourcesInput[]
-    deleteMany?: UserProgressScalarWhereInput | UserProgressScalarWhereInput[]
   }
 
   export type ChapterCreateNestedOneWithoutQuizzesInput = {
@@ -35604,7 +35387,6 @@ export namespace Prisma {
     updatedAt?: Date | string
     chapter: ChapterCreateNestedOneWithoutUserProgressInput
     quizAttempts?: QuizAttemptCreateNestedManyWithoutUserProgressInput
-    completedResources?: ResourceCreateNestedManyWithoutCompletedByInput
   }
 
   export type UserProgressUncheckedCreateWithoutStudentInput = {
@@ -35619,7 +35401,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutUserProgressInput
-    completedResources?: ResourceUncheckedCreateNestedManyWithoutCompletedByInput
   }
 
   export type UserProgressCreateOrConnectWithoutStudentInput = {
@@ -36854,7 +36635,6 @@ export namespace Prisma {
     updatedAt?: Date | string
     student: StudentProfileCreateNestedOneWithoutProgressInput
     quizAttempts?: QuizAttemptCreateNestedManyWithoutUserProgressInput
-    completedResources?: ResourceCreateNestedManyWithoutCompletedByInput
   }
 
   export type UserProgressUncheckedCreateWithoutChapterInput = {
@@ -36869,7 +36649,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutUserProgressInput
-    completedResources?: ResourceUncheckedCreateNestedManyWithoutCompletedByInput
   }
 
   export type UserProgressCreateOrConnectWithoutChapterInput = {
@@ -36888,10 +36667,8 @@ export namespace Prisma {
     content: string
     summary?: string | null
     readTime?: number | null
-    isPublished?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    completedBy?: UserProgressCreateNestedManyWithoutCompletedResourcesInput
   }
 
   export type ResourceUncheckedCreateWithoutChapterInput = {
@@ -36900,10 +36677,8 @@ export namespace Prisma {
     content: string
     summary?: string | null
     readTime?: number | null
-    isPublished?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    completedBy?: UserProgressUncheckedCreateNestedManyWithoutCompletedResourcesInput
   }
 
   export type ResourceCreateOrConnectWithoutChapterInput = {
@@ -37048,7 +36823,6 @@ export namespace Prisma {
     content?: StringFilter<"Resource"> | string
     summary?: StringNullableFilter<"Resource"> | string | null
     readTime?: IntNullableFilter<"Resource"> | number | null
-    isPublished?: BoolFilter<"Resource"> | boolean
     chapterId?: StringFilter<"Resource"> | string
     createdAt?: DateTimeFilter<"Resource"> | Date | string
     updatedAt?: DateTimeFilter<"Resource"> | Date | string
@@ -37178,35 +36952,6 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type ResourceCreateWithoutCompletedByInput = {
-    id?: string
-    title: string
-    content: string
-    summary?: string | null
-    readTime?: number | null
-    isPublished?: boolean
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    chapter: ChapterCreateNestedOneWithoutResourcesInput
-  }
-
-  export type ResourceUncheckedCreateWithoutCompletedByInput = {
-    id?: string
-    title: string
-    content: string
-    summary?: string | null
-    readTime?: number | null
-    isPublished?: boolean
-    chapterId: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type ResourceCreateOrConnectWithoutCompletedByInput = {
-    where: ResourceWhereUniqueInput
-    create: XOR<ResourceCreateWithoutCompletedByInput, ResourceUncheckedCreateWithoutCompletedByInput>
-  }
-
   export type StudentProfileUpsertWithoutProgressInput = {
     update: XOR<StudentProfileUpdateWithoutProgressInput, StudentProfileUncheckedUpdateWithoutProgressInput>
     create: XOR<StudentProfileCreateWithoutProgressInput, StudentProfileUncheckedCreateWithoutProgressInput>
@@ -37299,22 +37044,6 @@ export namespace Prisma {
     data: XOR<QuizAttemptUpdateManyMutationInput, QuizAttemptUncheckedUpdateManyWithoutUserProgressInput>
   }
 
-  export type ResourceUpsertWithWhereUniqueWithoutCompletedByInput = {
-    where: ResourceWhereUniqueInput
-    update: XOR<ResourceUpdateWithoutCompletedByInput, ResourceUncheckedUpdateWithoutCompletedByInput>
-    create: XOR<ResourceCreateWithoutCompletedByInput, ResourceUncheckedCreateWithoutCompletedByInput>
-  }
-
-  export type ResourceUpdateWithWhereUniqueWithoutCompletedByInput = {
-    where: ResourceWhereUniqueInput
-    data: XOR<ResourceUpdateWithoutCompletedByInput, ResourceUncheckedUpdateWithoutCompletedByInput>
-  }
-
-  export type ResourceUpdateManyWithWhereWithoutCompletedByInput = {
-    where: ResourceScalarWhereInput
-    data: XOR<ResourceUpdateManyMutationInput, ResourceUncheckedUpdateManyWithoutCompletedByInput>
-  }
-
   export type ChapterCreateWithoutResourcesInput = {
     id?: string
     title: string
@@ -37350,41 +37079,6 @@ export namespace Prisma {
   export type ChapterCreateOrConnectWithoutResourcesInput = {
     where: ChapterWhereUniqueInput
     create: XOR<ChapterCreateWithoutResourcesInput, ChapterUncheckedCreateWithoutResourcesInput>
-  }
-
-  export type UserProgressCreateWithoutCompletedResourcesInput = {
-    id?: string
-    isCompleted?: boolean
-    chapterScore?: number | null
-    watchedSeconds?: number
-    lastWatchedAt?: Date | string | null
-    completedAt?: Date | string | null
-    notes?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    student: StudentProfileCreateNestedOneWithoutProgressInput
-    chapter: ChapterCreateNestedOneWithoutUserProgressInput
-    quizAttempts?: QuizAttemptCreateNestedManyWithoutUserProgressInput
-  }
-
-  export type UserProgressUncheckedCreateWithoutCompletedResourcesInput = {
-    id?: string
-    studentId: string
-    chapterId: string
-    isCompleted?: boolean
-    chapterScore?: number | null
-    watchedSeconds?: number
-    lastWatchedAt?: Date | string | null
-    completedAt?: Date | string | null
-    notes?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutUserProgressInput
-  }
-
-  export type UserProgressCreateOrConnectWithoutCompletedResourcesInput = {
-    where: UserProgressWhereUniqueInput
-    create: XOR<UserProgressCreateWithoutCompletedResourcesInput, UserProgressUncheckedCreateWithoutCompletedResourcesInput>
   }
 
   export type ChapterUpsertWithoutResourcesInput = {
@@ -37428,22 +37122,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userProgress?: UserProgressUncheckedUpdateManyWithoutChapterNestedInput
     quizzes?: QuizUncheckedUpdateManyWithoutChapterNestedInput
-  }
-
-  export type UserProgressUpsertWithWhereUniqueWithoutCompletedResourcesInput = {
-    where: UserProgressWhereUniqueInput
-    update: XOR<UserProgressUpdateWithoutCompletedResourcesInput, UserProgressUncheckedUpdateWithoutCompletedResourcesInput>
-    create: XOR<UserProgressCreateWithoutCompletedResourcesInput, UserProgressUncheckedCreateWithoutCompletedResourcesInput>
-  }
-
-  export type UserProgressUpdateWithWhereUniqueWithoutCompletedResourcesInput = {
-    where: UserProgressWhereUniqueInput
-    data: XOR<UserProgressUpdateWithoutCompletedResourcesInput, UserProgressUncheckedUpdateWithoutCompletedResourcesInput>
-  }
-
-  export type UserProgressUpdateManyWithWhereWithoutCompletedResourcesInput = {
-    where: UserProgressScalarWhereInput
-    data: XOR<UserProgressUpdateManyMutationInput, UserProgressUncheckedUpdateManyWithoutCompletedResourcesInput>
   }
 
   export type ChapterCreateWithoutQuizzesInput = {
@@ -37983,7 +37661,6 @@ export namespace Prisma {
     updatedAt?: Date | string
     student: StudentProfileCreateNestedOneWithoutProgressInput
     chapter: ChapterCreateNestedOneWithoutUserProgressInput
-    completedResources?: ResourceCreateNestedManyWithoutCompletedByInput
   }
 
   export type UserProgressUncheckedCreateWithoutQuizAttemptsInput = {
@@ -37998,7 +37675,6 @@ export namespace Prisma {
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    completedResources?: ResourceUncheckedCreateNestedManyWithoutCompletedByInput
   }
 
   export type UserProgressCreateOrConnectWithoutQuizAttemptsInput = {
@@ -38125,7 +37801,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     student?: StudentProfileUpdateOneRequiredWithoutProgressNestedInput
     chapter?: ChapterUpdateOneRequiredWithoutUserProgressNestedInput
-    completedResources?: ResourceUpdateManyWithoutCompletedByNestedInput
   }
 
   export type UserProgressUncheckedUpdateWithoutQuizAttemptsInput = {
@@ -38140,7 +37815,6 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    completedResources?: ResourceUncheckedUpdateManyWithoutCompletedByNestedInput
   }
 
   export type StudentAnswerUpsertWithWhereUniqueWithoutAttemptInput = {
@@ -38767,7 +38441,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     chapter?: ChapterUpdateOneRequiredWithoutUserProgressNestedInput
     quizAttempts?: QuizAttemptUpdateManyWithoutUserProgressNestedInput
-    completedResources?: ResourceUpdateManyWithoutCompletedByNestedInput
   }
 
   export type UserProgressUncheckedUpdateWithoutStudentInput = {
@@ -38782,7 +38455,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutUserProgressNestedInput
-    completedResources?: ResourceUncheckedUpdateManyWithoutCompletedByNestedInput
   }
 
   export type UserProgressUncheckedUpdateManyWithoutStudentInput = {
@@ -39290,7 +38962,6 @@ export namespace Prisma {
     content: string
     summary?: string | null
     readTime?: number | null
-    isPublished?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -39317,7 +38988,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     student?: StudentProfileUpdateOneRequiredWithoutProgressNestedInput
     quizAttempts?: QuizAttemptUpdateManyWithoutUserProgressNestedInput
-    completedResources?: ResourceUpdateManyWithoutCompletedByNestedInput
   }
 
   export type UserProgressUncheckedUpdateWithoutChapterInput = {
@@ -39332,7 +39002,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutUserProgressNestedInput
-    completedResources?: ResourceUncheckedUpdateManyWithoutCompletedByNestedInput
   }
 
   export type UserProgressUncheckedUpdateManyWithoutChapterInput = {
@@ -39354,10 +39023,8 @@ export namespace Prisma {
     content?: StringFieldUpdateOperationsInput | string
     summary?: NullableStringFieldUpdateOperationsInput | string | null
     readTime?: NullableIntFieldUpdateOperationsInput | number | null
-    isPublished?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    completedBy?: UserProgressUpdateManyWithoutCompletedResourcesNestedInput
   }
 
   export type ResourceUncheckedUpdateWithoutChapterInput = {
@@ -39366,10 +39033,8 @@ export namespace Prisma {
     content?: StringFieldUpdateOperationsInput | string
     summary?: NullableStringFieldUpdateOperationsInput | string | null
     readTime?: NullableIntFieldUpdateOperationsInput | number | null
-    isPublished?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    completedBy?: UserProgressUncheckedUpdateManyWithoutCompletedResourcesNestedInput
   }
 
   export type ResourceUncheckedUpdateManyWithoutChapterInput = {
@@ -39378,7 +39043,6 @@ export namespace Prisma {
     content?: StringFieldUpdateOperationsInput | string
     summary?: NullableStringFieldUpdateOperationsInput | string | null
     readTime?: NullableIntFieldUpdateOperationsInput | number | null
-    isPublished?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -39453,86 +39117,6 @@ export namespace Prisma {
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     quizId?: StringFieldUpdateOperationsInput | string
     studentId?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type ResourceUpdateWithoutCompletedByInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    content?: StringFieldUpdateOperationsInput | string
-    summary?: NullableStringFieldUpdateOperationsInput | string | null
-    readTime?: NullableIntFieldUpdateOperationsInput | number | null
-    isPublished?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    chapter?: ChapterUpdateOneRequiredWithoutResourcesNestedInput
-  }
-
-  export type ResourceUncheckedUpdateWithoutCompletedByInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    content?: StringFieldUpdateOperationsInput | string
-    summary?: NullableStringFieldUpdateOperationsInput | string | null
-    readTime?: NullableIntFieldUpdateOperationsInput | number | null
-    isPublished?: BoolFieldUpdateOperationsInput | boolean
-    chapterId?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type ResourceUncheckedUpdateManyWithoutCompletedByInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    content?: StringFieldUpdateOperationsInput | string
-    summary?: NullableStringFieldUpdateOperationsInput | string | null
-    readTime?: NullableIntFieldUpdateOperationsInput | number | null
-    isPublished?: BoolFieldUpdateOperationsInput | boolean
-    chapterId?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type UserProgressUpdateWithoutCompletedResourcesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    isCompleted?: BoolFieldUpdateOperationsInput | boolean
-    chapterScore?: NullableFloatFieldUpdateOperationsInput | number | null
-    watchedSeconds?: IntFieldUpdateOperationsInput | number
-    lastWatchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    student?: StudentProfileUpdateOneRequiredWithoutProgressNestedInput
-    chapter?: ChapterUpdateOneRequiredWithoutUserProgressNestedInput
-    quizAttempts?: QuizAttemptUpdateManyWithoutUserProgressNestedInput
-  }
-
-  export type UserProgressUncheckedUpdateWithoutCompletedResourcesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    studentId?: StringFieldUpdateOperationsInput | string
-    chapterId?: StringFieldUpdateOperationsInput | string
-    isCompleted?: BoolFieldUpdateOperationsInput | boolean
-    chapterScore?: NullableFloatFieldUpdateOperationsInput | number | null
-    watchedSeconds?: IntFieldUpdateOperationsInput | number
-    lastWatchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutUserProgressNestedInput
-  }
-
-  export type UserProgressUncheckedUpdateManyWithoutCompletedResourcesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    studentId?: StringFieldUpdateOperationsInput | string
-    chapterId?: StringFieldUpdateOperationsInput | string
-    isCompleted?: BoolFieldUpdateOperationsInput | boolean
-    chapterScore?: NullableFloatFieldUpdateOperationsInput | number | null
-    watchedSeconds?: IntFieldUpdateOperationsInput | number
-    lastWatchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type QuestionCreateManyQuizInput = {

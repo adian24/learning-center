@@ -270,9 +270,6 @@ model UserProgress {
   // If you have quizzes
   quizAttempts QuizAttempt[]
 
-  // Optional: track completion status of chapter resources
-  completedResources Resource[] @relation("CompletedResources")
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -283,17 +280,14 @@ model UserProgress {
 
 // New models to support additional features
 model Resource {
-  id          String  @id @default(uuid()) @map("_id")
-  title       String
-  content     String // Article content (HTML from text editor)
-  summary     String? // Optional article summary/excerpt
-  readTime    Int? // Estimated reading time in minutes
-  isPublished Boolean @default(false)
+  id       String  @id @default(uuid()) @map("_id")
+  title    String
+  content  String // Article content (HTML from text editor)
+  summary  String? // Optional article summary/excerpt
+  readTime Int? // Estimated reading time in minutes
 
   chapterId String
   chapter   Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
-
-  completedBy UserProgress[] @relation("CompletedResources")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
