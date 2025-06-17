@@ -104,7 +104,6 @@ export interface Resource {
   url: string;
   chapterId: string;
   chapter: Chapter;
-  completedBy?: UserProgress[];
 }
 
 export interface Quiz {

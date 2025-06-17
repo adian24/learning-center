@@ -6,7 +6,6 @@ export interface Resource {
   content: string;
   summary?: string | null;
   readTime?: number | null;
-  isPublished: boolean;
   chapterId: string;
   createdAt: string;
   updatedAt: string;
@@ -29,7 +28,6 @@ export interface CreateResourceRequest {
   content: string;
   summary?: string;
   readTime?: number;
-  isPublished?: boolean;
   chapterId: string;
 }
 
@@ -38,7 +36,6 @@ export interface UpdateResourceRequest {
   content?: string;
   summary?: string;
   readTime?: number;
-  isPublished?: boolean;
 }
 
 // API response types
@@ -60,7 +57,7 @@ export interface ResourceFilters {
 }
 
 // Resource status for display
-export type ResourceStatus = 'draft' | 'published';
+export type ResourceStatus = "draft" | "published";
 
 export interface ResourceSummary {
   id: string;

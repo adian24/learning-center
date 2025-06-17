@@ -191,62 +191,6 @@ export const useDeleteResource = () => {
   });
 };
 
-// Hook to toggle resource published status
-export const useToggleResourcePublished = (resourceId: string) => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (isPublished: boolean) => {
-      console.log(
-        "Toggling resource published status:",
-        resourceId,
-        isPublished
-      );
-
-      const response = await fetch(`/api/teacher/resources/${resourceId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ isPublished }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.text();
-        console.error("Toggle Resource Published API Error:", errorData);
-        throw new Error("Failed to update resource status");
-      }
-
-      const result = await response.json();
-      console.log("Toggle Resource Published API Response:", result);
-      return result;
-    },
-    onSuccess: (data) => {
-      const status = data.isPublished ? "published" : "unpublished";
-      toast.success(`Article ${status} successfully`);
-
-      // Invalidate specific resource query
-      queryClient.invalidateQueries({
-        queryKey: ["teacher-resource", resourceId],
-      });
-
-      // Invalidate resources list
-      queryClient.invalidateQueries({ queryKey: ["teacher-resources"] });
-
-      // If we have chapter info, also invalidate chapter-specific queries
-      if (data.chapter?.id) {
-        queryClient.invalidateQueries({
-          queryKey: ["teacher-resources", { chapterId: data.chapter.id }],
-        });
-      }
-    },
-    onError: (error: Error) => {
-      toast.error("Failed to update article status");
-      console.error("[TOGGLE_RESOURCE_PUBLISHED_ERROR]", error);
-    },
-  });
-};
-
 // Hook to get resources by chapter
 export const useResourcesByChapter = (chapterId: string | undefined) => {
   return useResources({ chapterId });
