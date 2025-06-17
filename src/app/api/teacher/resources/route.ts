@@ -34,7 +34,7 @@ export async function GET(req: Request) {
 
     // Build where clause
     const whereClause: any = {};
-    
+
     if (chapterId) {
       // Verify the chapter belongs to the teacher
       const chapter = await db.chapter.findFirst({
@@ -47,7 +47,9 @@ export async function GET(req: Request) {
       });
 
       if (!chapter) {
-        return new NextResponse("Chapter not found or unauthorized", { status: 404 });
+        return new NextResponse("Chapter not found or unauthorized", {
+          status: 404,
+        });
       }
 
       whereClause.chapterId = chapterId;
@@ -119,7 +121,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { title, content, summary, readTime, isPublished, chapterId } = body;
+    const { title, content, summary, readTime, chapterId } = body;
 
     console.log("[RESOURCES_POST] Body:", body);
 
@@ -150,7 +152,9 @@ export async function POST(req: Request) {
     });
 
     if (!chapter) {
-      return new NextResponse("Chapter not found or unauthorized", { status: 404 });
+      return new NextResponse("Chapter not found or unauthorized", {
+        status: 404,
+      });
     }
 
     // Create resource
@@ -160,7 +164,6 @@ export async function POST(req: Request) {
         content,
         summary,
         readTime: readTime ? parseInt(readTime) : null,
-        isPublished: isPublished ?? false,
         chapterId,
       },
       include: {

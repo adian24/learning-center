@@ -82,7 +82,7 @@ export async function PUT(
 
     const resourceId = (await params).resourceId;
     const body = await req.json();
-    const { title, content, summary, readTime, isPublished } = body;
+    const { title, content, summary, readTime } = body;
 
     if (!resourceId) {
       return new NextResponse("Resource ID is required", { status: 400 });
@@ -129,7 +129,6 @@ export async function PUT(
         ...(readTime !== undefined && {
           readTime: readTime ? parseInt(readTime) : null,
         }),
-        ...(isPublished !== undefined && { isPublished }),
       },
       include: {
         chapter: {
