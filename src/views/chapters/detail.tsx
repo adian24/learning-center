@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import ContentVideo from "@/sections/chapters/detail/ContentVideo";
 import QuizTabContent from "@/components/quiz/QuizTabContent";
 import ChapterProgress from "@/components/quiz/ChapterProgress";
+import ResourcesTabContent from "@/components/resources/ResourcesTabContent";
 
 const DetailChapter = ({
   chapterId,
@@ -114,11 +115,7 @@ const DetailChapter = ({
 
           {/* Resources Tab */}
           <TabsContent value="resources">
-            <Card>
-              <CardContent className="p-6 flex items-center justify-center">
-                <h3 className="text-xl font-semibold">Resource Coming Soon</h3>
-              </CardContent>
-            </Card>
+            <ResourcesTabContent chapterId={chapterId} />
           </TabsContent>
 
           {/* Progress Tab */}

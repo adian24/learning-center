@@ -6,6 +6,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { useUserRole } from "@/hooks/use-user-role";
 import { Skeleton } from "@/components/ui/skeleton";
+import TeacherResourceManager from "./TeacherResourceManager";
 // import ResourcesList from "./ResourcesList";
 // import TeacherResourcesManager from "./TeacherResourcesManager";
 
@@ -68,16 +69,7 @@ const ResourcesTabContent: React.FC<ResourcesTabContentProps> = ({
 
   if (isTeacher) {
     // Show teacher interface for resource management
-    return (
-      <Card>
-        <CardContent className="p-6">
-          <div className="text-center text-muted-foreground">
-            {/* <TeacherResourcesManager chapterId={chapterId} /> */}
-            Teacher Resources Manager - Coming Soon
-          </div>
-        </CardContent>
-      </Card>
-    );
+    return <TeacherResourceManager chapterId={chapterId} />;
   } else if (isStudent) {
     // Show student interface for reading resources
     return (
