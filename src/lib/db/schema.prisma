@@ -285,12 +285,18 @@ model UserProgress {
 model Resource {
   id          String   @id @default(uuid()) @map("_id")
   title       String
-  type        ResourceType
-  url         String
+  content     String   // Article content (HTML from text editor)
+  summary     String?  // Optional article summary/excerpt
+  readTime    Int?     // Estimated reading time in minutes
+  isPublished Boolean  @default(false)
+  
   chapterId   String
   chapter     Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
   
   completedBy UserProgress[] @relation("CompletedResources")
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([chapterId])
 }
@@ -441,11 +447,6 @@ enum Level {
   ADVANCED
 }
 
-enum ResourceType {
-  PDF
-  LINK
-  FILE
-}
 
 enum ReviewStatus {
   PENDING

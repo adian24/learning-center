@@ -153,15 +153,6 @@ export const Level: {
 export type Level = (typeof Level)[keyof typeof Level]
 
 
-export const ResourceType: {
-  PDF: 'PDF',
-  LINK: 'LINK',
-  FILE: 'FILE'
-};
-
-export type ResourceType = (typeof ResourceType)[keyof typeof ResourceType]
-
-
 export const ReviewStatus: {
   PENDING: 'PENDING',
   PUBLISHED: 'PUBLISHED',
@@ -184,10 +175,6 @@ export const QuestionType: typeof $Enums.QuestionType
 export type Level = $Enums.Level
 
 export const Level: typeof $Enums.Level
-
-export type ResourceType = $Enums.ResourceType
-
-export const ResourceType: typeof $Enums.ResourceType
 
 export type ReviewStatus = $Enums.ReviewStatus
 
@@ -19519,58 +19506,100 @@ export namespace Prisma {
 
   export type AggregateResource = {
     _count: ResourceCountAggregateOutputType | null
+    _avg: ResourceAvgAggregateOutputType | null
+    _sum: ResourceSumAggregateOutputType | null
     _min: ResourceMinAggregateOutputType | null
     _max: ResourceMaxAggregateOutputType | null
+  }
+
+  export type ResourceAvgAggregateOutputType = {
+    readTime: number | null
+  }
+
+  export type ResourceSumAggregateOutputType = {
+    readTime: number | null
   }
 
   export type ResourceMinAggregateOutputType = {
     id: string | null
     title: string | null
-    type: $Enums.ResourceType | null
-    url: string | null
+    content: string | null
+    summary: string | null
+    readTime: number | null
+    isPublished: boolean | null
     chapterId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type ResourceMaxAggregateOutputType = {
     id: string | null
     title: string | null
-    type: $Enums.ResourceType | null
-    url: string | null
+    content: string | null
+    summary: string | null
+    readTime: number | null
+    isPublished: boolean | null
     chapterId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type ResourceCountAggregateOutputType = {
     id: number
     title: number
-    type: number
-    url: number
+    content: number
+    summary: number
+    readTime: number
+    isPublished: number
     chapterId: number
+    createdAt: number
+    updatedAt: number
     _all: number
   }
 
 
+  export type ResourceAvgAggregateInputType = {
+    readTime?: true
+  }
+
+  export type ResourceSumAggregateInputType = {
+    readTime?: true
+  }
+
   export type ResourceMinAggregateInputType = {
     id?: true
     title?: true
-    type?: true
-    url?: true
+    content?: true
+    summary?: true
+    readTime?: true
+    isPublished?: true
     chapterId?: true
+    createdAt?: true
+    updatedAt?: true
   }
 
   export type ResourceMaxAggregateInputType = {
     id?: true
     title?: true
-    type?: true
-    url?: true
+    content?: true
+    summary?: true
+    readTime?: true
+    isPublished?: true
     chapterId?: true
+    createdAt?: true
+    updatedAt?: true
   }
 
   export type ResourceCountAggregateInputType = {
     id?: true
     title?: true
-    type?: true
-    url?: true
+    content?: true
+    summary?: true
+    readTime?: true
+    isPublished?: true
     chapterId?: true
+    createdAt?: true
+    updatedAt?: true
     _all?: true
   }
 
@@ -19612,6 +19641,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: ResourceAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ResourceSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: ResourceMinAggregateInputType
@@ -19642,6 +19683,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: ResourceCountAggregateInputType | true
+    _avg?: ResourceAvgAggregateInputType
+    _sum?: ResourceSumAggregateInputType
     _min?: ResourceMinAggregateInputType
     _max?: ResourceMaxAggregateInputType
   }
@@ -19649,10 +19692,16 @@ export namespace Prisma {
   export type ResourceGroupByOutputType = {
     id: string
     title: string
-    type: $Enums.ResourceType
-    url: string
+    content: string
+    summary: string | null
+    readTime: number | null
+    isPublished: boolean
     chapterId: string
+    createdAt: Date
+    updatedAt: Date
     _count: ResourceCountAggregateOutputType | null
+    _avg: ResourceAvgAggregateOutputType | null
+    _sum: ResourceSumAggregateOutputType | null
     _min: ResourceMinAggregateOutputType | null
     _max: ResourceMaxAggregateOutputType | null
   }
@@ -19674,9 +19723,13 @@ export namespace Prisma {
   export type ResourceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     title?: boolean
-    type?: boolean
-    url?: boolean
+    content?: boolean
+    summary?: boolean
+    readTime?: boolean
+    isPublished?: boolean
     chapterId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
     chapter?: boolean | ChapterDefaultArgs<ExtArgs>
     completedBy?: boolean | Resource$completedByArgs<ExtArgs>
     _count?: boolean | ResourceCountOutputTypeDefaultArgs<ExtArgs>
@@ -19685,30 +19738,42 @@ export namespace Prisma {
   export type ResourceSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     title?: boolean
-    type?: boolean
-    url?: boolean
+    content?: boolean
+    summary?: boolean
+    readTime?: boolean
+    isPublished?: boolean
     chapterId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
     chapter?: boolean | ChapterDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["resource"]>
 
   export type ResourceSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     title?: boolean
-    type?: boolean
-    url?: boolean
+    content?: boolean
+    summary?: boolean
+    readTime?: boolean
+    isPublished?: boolean
     chapterId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
     chapter?: boolean | ChapterDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["resource"]>
 
   export type ResourceSelectScalar = {
     id?: boolean
     title?: boolean
-    type?: boolean
-    url?: boolean
+    content?: boolean
+    summary?: boolean
+    readTime?: boolean
+    isPublished?: boolean
     chapterId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
   }
 
-  export type ResourceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "type" | "url" | "chapterId", ExtArgs["result"]["resource"]>
+  export type ResourceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "content" | "summary" | "readTime" | "isPublished" | "chapterId" | "createdAt" | "updatedAt", ExtArgs["result"]["resource"]>
   export type ResourceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     chapter?: boolean | ChapterDefaultArgs<ExtArgs>
     completedBy?: boolean | Resource$completedByArgs<ExtArgs>
@@ -19730,9 +19795,13 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       title: string
-      type: $Enums.ResourceType
-      url: string
+      content: string
+      summary: string | null
+      readTime: number | null
+      isPublished: boolean
       chapterId: string
+      createdAt: Date
+      updatedAt: Date
     }, ExtArgs["result"]["resource"]>
     composites: {}
   }
@@ -20160,9 +20229,13 @@ export namespace Prisma {
   interface ResourceFieldRefs {
     readonly id: FieldRef<"Resource", 'String'>
     readonly title: FieldRef<"Resource", 'String'>
-    readonly type: FieldRef<"Resource", 'ResourceType'>
-    readonly url: FieldRef<"Resource", 'String'>
+    readonly content: FieldRef<"Resource", 'String'>
+    readonly summary: FieldRef<"Resource", 'String'>
+    readonly readTime: FieldRef<"Resource", 'Int'>
+    readonly isPublished: FieldRef<"Resource", 'Boolean'>
     readonly chapterId: FieldRef<"Resource", 'String'>
+    readonly createdAt: FieldRef<"Resource", 'DateTime'>
+    readonly updatedAt: FieldRef<"Resource", 'DateTime'>
   }
     
 
@@ -27789,9 +27862,13 @@ export namespace Prisma {
   export const ResourceScalarFieldEnum: {
     id: 'id',
     title: 'title',
-    type: 'type',
-    url: 'url',
-    chapterId: 'chapterId'
+    content: 'content',
+    summary: 'summary',
+    readTime: 'readTime',
+    isPublished: 'isPublished',
+    chapterId: 'chapterId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
   };
 
   export type ResourceScalarFieldEnum = (typeof ResourceScalarFieldEnum)[keyof typeof ResourceScalarFieldEnum]
@@ -27995,20 +28072,6 @@ export namespace Prisma {
    * Reference to a field of type 'ReviewStatus[]'
    */
   export type ListEnumReviewStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReviewStatus[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'ResourceType'
-   */
-  export type EnumResourceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ResourceType'>
-    
-
-
-  /**
-   * Reference to a field of type 'ResourceType[]'
-   */
-  export type ListEnumResourceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ResourceType[]'>
     
 
 
@@ -29138,9 +29201,13 @@ export namespace Prisma {
     NOT?: ResourceWhereInput | ResourceWhereInput[]
     id?: StringFilter<"Resource"> | string
     title?: StringFilter<"Resource"> | string
-    type?: EnumResourceTypeFilter<"Resource"> | $Enums.ResourceType
-    url?: StringFilter<"Resource"> | string
+    content?: StringFilter<"Resource"> | string
+    summary?: StringNullableFilter<"Resource"> | string | null
+    readTime?: IntNullableFilter<"Resource"> | number | null
+    isPublished?: BoolFilter<"Resource"> | boolean
     chapterId?: StringFilter<"Resource"> | string
+    createdAt?: DateTimeFilter<"Resource"> | Date | string
+    updatedAt?: DateTimeFilter<"Resource"> | Date | string
     chapter?: XOR<ChapterScalarRelationFilter, ChapterWhereInput>
     completedBy?: UserProgressListRelationFilter
   }
@@ -29148,9 +29215,13 @@ export namespace Prisma {
   export type ResourceOrderByWithRelationInput = {
     id?: SortOrder
     title?: SortOrder
-    type?: SortOrder
-    url?: SortOrder
+    content?: SortOrder
+    summary?: SortOrderInput | SortOrder
+    readTime?: SortOrderInput | SortOrder
+    isPublished?: SortOrder
     chapterId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
     chapter?: ChapterOrderByWithRelationInput
     completedBy?: UserProgressOrderByRelationAggregateInput
   }
@@ -29161,9 +29232,13 @@ export namespace Prisma {
     OR?: ResourceWhereInput[]
     NOT?: ResourceWhereInput | ResourceWhereInput[]
     title?: StringFilter<"Resource"> | string
-    type?: EnumResourceTypeFilter<"Resource"> | $Enums.ResourceType
-    url?: StringFilter<"Resource"> | string
+    content?: StringFilter<"Resource"> | string
+    summary?: StringNullableFilter<"Resource"> | string | null
+    readTime?: IntNullableFilter<"Resource"> | number | null
+    isPublished?: BoolFilter<"Resource"> | boolean
     chapterId?: StringFilter<"Resource"> | string
+    createdAt?: DateTimeFilter<"Resource"> | Date | string
+    updatedAt?: DateTimeFilter<"Resource"> | Date | string
     chapter?: XOR<ChapterScalarRelationFilter, ChapterWhereInput>
     completedBy?: UserProgressListRelationFilter
   }, "id">
@@ -29171,12 +29246,18 @@ export namespace Prisma {
   export type ResourceOrderByWithAggregationInput = {
     id?: SortOrder
     title?: SortOrder
-    type?: SortOrder
-    url?: SortOrder
+    content?: SortOrder
+    summary?: SortOrderInput | SortOrder
+    readTime?: SortOrderInput | SortOrder
+    isPublished?: SortOrder
     chapterId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
     _count?: ResourceCountOrderByAggregateInput
+    _avg?: ResourceAvgOrderByAggregateInput
     _max?: ResourceMaxOrderByAggregateInput
     _min?: ResourceMinOrderByAggregateInput
+    _sum?: ResourceSumOrderByAggregateInput
   }
 
   export type ResourceScalarWhereWithAggregatesInput = {
@@ -29185,9 +29266,13 @@ export namespace Prisma {
     NOT?: ResourceScalarWhereWithAggregatesInput | ResourceScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Resource"> | string
     title?: StringWithAggregatesFilter<"Resource"> | string
-    type?: EnumResourceTypeWithAggregatesFilter<"Resource"> | $Enums.ResourceType
-    url?: StringWithAggregatesFilter<"Resource"> | string
+    content?: StringWithAggregatesFilter<"Resource"> | string
+    summary?: StringNullableWithAggregatesFilter<"Resource"> | string | null
+    readTime?: IntNullableWithAggregatesFilter<"Resource"> | number | null
+    isPublished?: BoolWithAggregatesFilter<"Resource"> | boolean
     chapterId?: StringWithAggregatesFilter<"Resource"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"Resource"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Resource"> | Date | string
   }
 
   export type QuizWhereInput = {
@@ -30821,8 +30906,12 @@ export namespace Prisma {
   export type ResourceCreateInput = {
     id?: string
     title: string
-    type: $Enums.ResourceType
-    url: string
+    content: string
+    summary?: string | null
+    readTime?: number | null
+    isPublished?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
     chapter: ChapterCreateNestedOneWithoutResourcesInput
     completedBy?: UserProgressCreateNestedManyWithoutCompletedResourcesInput
   }
@@ -30830,17 +30919,25 @@ export namespace Prisma {
   export type ResourceUncheckedCreateInput = {
     id?: string
     title: string
-    type: $Enums.ResourceType
-    url: string
+    content: string
+    summary?: string | null
+    readTime?: number | null
+    isPublished?: boolean
     chapterId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
     completedBy?: UserProgressUncheckedCreateNestedManyWithoutCompletedResourcesInput
   }
 
   export type ResourceUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    type?: EnumResourceTypeFieldUpdateOperationsInput | $Enums.ResourceType
-    url?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    readTime?: NullableIntFieldUpdateOperationsInput | number | null
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     chapter?: ChapterUpdateOneRequiredWithoutResourcesNestedInput
     completedBy?: UserProgressUpdateManyWithoutCompletedResourcesNestedInput
   }
@@ -30848,33 +30945,49 @@ export namespace Prisma {
   export type ResourceUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    type?: EnumResourceTypeFieldUpdateOperationsInput | $Enums.ResourceType
-    url?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    readTime?: NullableIntFieldUpdateOperationsInput | number | null
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
     chapterId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedBy?: UserProgressUncheckedUpdateManyWithoutCompletedResourcesNestedInput
   }
 
   export type ResourceCreateManyInput = {
     id?: string
     title: string
-    type: $Enums.ResourceType
-    url: string
+    content: string
+    summary?: string | null
+    readTime?: number | null
+    isPublished?: boolean
     chapterId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type ResourceUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    type?: EnumResourceTypeFieldUpdateOperationsInput | $Enums.ResourceType
-    url?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    readTime?: NullableIntFieldUpdateOperationsInput | number | null
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ResourceUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    type?: EnumResourceTypeFieldUpdateOperationsInput | $Enums.ResourceType
-    url?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    readTime?: NullableIntFieldUpdateOperationsInput | number | null
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
     chapterId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type QuizCreateInput = {
@@ -32357,45 +32470,48 @@ export namespace Prisma {
     watchedSeconds?: SortOrder
   }
 
-  export type EnumResourceTypeFilter<$PrismaModel = never> = {
-    equals?: $Enums.ResourceType | EnumResourceTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.ResourceType[] | ListEnumResourceTypeFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ResourceType[] | ListEnumResourceTypeFieldRefInput<$PrismaModel>
-    not?: NestedEnumResourceTypeFilter<$PrismaModel> | $Enums.ResourceType
-  }
-
   export type ResourceCountOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
-    type?: SortOrder
-    url?: SortOrder
+    content?: SortOrder
+    summary?: SortOrder
+    readTime?: SortOrder
+    isPublished?: SortOrder
     chapterId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ResourceAvgOrderByAggregateInput = {
+    readTime?: SortOrder
   }
 
   export type ResourceMaxOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
-    type?: SortOrder
-    url?: SortOrder
+    content?: SortOrder
+    summary?: SortOrder
+    readTime?: SortOrder
+    isPublished?: SortOrder
     chapterId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type ResourceMinOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
-    type?: SortOrder
-    url?: SortOrder
+    content?: SortOrder
+    summary?: SortOrder
+    readTime?: SortOrder
+    isPublished?: SortOrder
     chapterId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
-  export type EnumResourceTypeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.ResourceType | EnumResourceTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.ResourceType[] | ListEnumResourceTypeFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ResourceType[] | ListEnumResourceTypeFieldRefInput<$PrismaModel>
-    not?: NestedEnumResourceTypeWithAggregatesFilter<$PrismaModel> | $Enums.ResourceType
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumResourceTypeFilter<$PrismaModel>
-    _max?: NestedEnumResourceTypeFilter<$PrismaModel>
+  export type ResourceSumOrderByAggregateInput = {
+    readTime?: SortOrder
   }
 
   export type QuestionListRelationFilter = {
@@ -33922,10 +34038,6 @@ export namespace Prisma {
     connect?: UserProgressWhereUniqueInput | UserProgressWhereUniqueInput[]
   }
 
-  export type EnumResourceTypeFieldUpdateOperationsInput = {
-    set?: $Enums.ResourceType
-  }
-
   export type ChapterUpdateOneRequiredWithoutResourcesNestedInput = {
     create?: XOR<ChapterCreateWithoutResourcesInput, ChapterUncheckedCreateWithoutResourcesInput>
     connectOrCreate?: ChapterCreateOrConnectWithoutResourcesInput
@@ -34643,23 +34755,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumReviewStatusFilter<$PrismaModel>
     _max?: NestedEnumReviewStatusFilter<$PrismaModel>
-  }
-
-  export type NestedEnumResourceTypeFilter<$PrismaModel = never> = {
-    equals?: $Enums.ResourceType | EnumResourceTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.ResourceType[] | ListEnumResourceTypeFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ResourceType[] | ListEnumResourceTypeFieldRefInput<$PrismaModel>
-    not?: NestedEnumResourceTypeFilter<$PrismaModel> | $Enums.ResourceType
-  }
-
-  export type NestedEnumResourceTypeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.ResourceType | EnumResourceTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.ResourceType[] | ListEnumResourceTypeFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ResourceType[] | ListEnumResourceTypeFieldRefInput<$PrismaModel>
-    not?: NestedEnumResourceTypeWithAggregatesFilter<$PrismaModel> | $Enums.ResourceType
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumResourceTypeFilter<$PrismaModel>
-    _max?: NestedEnumResourceTypeFilter<$PrismaModel>
   }
 
   export type NestedEnumQuestionTypeFilter<$PrismaModel = never> = {
@@ -36790,16 +36885,24 @@ export namespace Prisma {
   export type ResourceCreateWithoutChapterInput = {
     id?: string
     title: string
-    type: $Enums.ResourceType
-    url: string
+    content: string
+    summary?: string | null
+    readTime?: number | null
+    isPublished?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
     completedBy?: UserProgressCreateNestedManyWithoutCompletedResourcesInput
   }
 
   export type ResourceUncheckedCreateWithoutChapterInput = {
     id?: string
     title: string
-    type: $Enums.ResourceType
-    url: string
+    content: string
+    summary?: string | null
+    readTime?: number | null
+    isPublished?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
     completedBy?: UserProgressUncheckedCreateNestedManyWithoutCompletedResourcesInput
   }
 
@@ -36942,9 +37045,13 @@ export namespace Prisma {
     NOT?: ResourceScalarWhereInput | ResourceScalarWhereInput[]
     id?: StringFilter<"Resource"> | string
     title?: StringFilter<"Resource"> | string
-    type?: EnumResourceTypeFilter<"Resource"> | $Enums.ResourceType
-    url?: StringFilter<"Resource"> | string
+    content?: StringFilter<"Resource"> | string
+    summary?: StringNullableFilter<"Resource"> | string | null
+    readTime?: IntNullableFilter<"Resource"> | number | null
+    isPublished?: BoolFilter<"Resource"> | boolean
     chapterId?: StringFilter<"Resource"> | string
+    createdAt?: DateTimeFilter<"Resource"> | Date | string
+    updatedAt?: DateTimeFilter<"Resource"> | Date | string
   }
 
   export type QuizUpsertWithWhereUniqueWithoutChapterInput = {
@@ -37074,17 +37181,25 @@ export namespace Prisma {
   export type ResourceCreateWithoutCompletedByInput = {
     id?: string
     title: string
-    type: $Enums.ResourceType
-    url: string
+    content: string
+    summary?: string | null
+    readTime?: number | null
+    isPublished?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
     chapter: ChapterCreateNestedOneWithoutResourcesInput
   }
 
   export type ResourceUncheckedCreateWithoutCompletedByInput = {
     id?: string
     title: string
-    type: $Enums.ResourceType
-    url: string
+    content: string
+    summary?: string | null
+    readTime?: number | null
+    isPublished?: boolean
     chapterId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type ResourceCreateOrConnectWithoutCompletedByInput = {
@@ -39172,8 +39287,12 @@ export namespace Prisma {
   export type ResourceCreateManyChapterInput = {
     id?: string
     title: string
-    type: $Enums.ResourceType
-    url: string
+    content: string
+    summary?: string | null
+    readTime?: number | null
+    isPublished?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type QuizCreateManyChapterInput = {
@@ -39232,24 +39351,36 @@ export namespace Prisma {
   export type ResourceUpdateWithoutChapterInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    type?: EnumResourceTypeFieldUpdateOperationsInput | $Enums.ResourceType
-    url?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    readTime?: NullableIntFieldUpdateOperationsInput | number | null
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedBy?: UserProgressUpdateManyWithoutCompletedResourcesNestedInput
   }
 
   export type ResourceUncheckedUpdateWithoutChapterInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    type?: EnumResourceTypeFieldUpdateOperationsInput | $Enums.ResourceType
-    url?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    readTime?: NullableIntFieldUpdateOperationsInput | number | null
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedBy?: UserProgressUncheckedUpdateManyWithoutCompletedResourcesNestedInput
   }
 
   export type ResourceUncheckedUpdateManyWithoutChapterInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    type?: EnumResourceTypeFieldUpdateOperationsInput | $Enums.ResourceType
-    url?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    readTime?: NullableIntFieldUpdateOperationsInput | number | null
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type QuizUpdateWithoutChapterInput = {
@@ -39327,25 +39458,37 @@ export namespace Prisma {
   export type ResourceUpdateWithoutCompletedByInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    type?: EnumResourceTypeFieldUpdateOperationsInput | $Enums.ResourceType
-    url?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    readTime?: NullableIntFieldUpdateOperationsInput | number | null
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     chapter?: ChapterUpdateOneRequiredWithoutResourcesNestedInput
   }
 
   export type ResourceUncheckedUpdateWithoutCompletedByInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    type?: EnumResourceTypeFieldUpdateOperationsInput | $Enums.ResourceType
-    url?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    readTime?: NullableIntFieldUpdateOperationsInput | number | null
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
     chapterId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ResourceUncheckedUpdateManyWithoutCompletedByInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    type?: EnumResourceTypeFieldUpdateOperationsInput | $Enums.ResourceType
-    url?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    readTime?: NullableIntFieldUpdateOperationsInput | number | null
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
     chapterId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UserProgressUpdateWithoutCompletedResourcesInput = {

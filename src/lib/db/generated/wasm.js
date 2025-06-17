@@ -278,9 +278,13 @@ exports.Prisma.UserProgressScalarFieldEnum = {
 exports.Prisma.ResourceScalarFieldEnum = {
   id: 'id',
   title: 'title',
-  type: 'type',
-  url: 'url',
-  chapterId: 'chapterId'
+  content: 'content',
+  summary: 'summary',
+  readTime: 'readTime',
+  isPublished: 'isPublished',
+  chapterId: 'chapterId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.QuizScalarFieldEnum = {
@@ -371,12 +375,6 @@ exports.ReviewStatus = exports.$Enums.ReviewStatus = {
   PUBLISHED: 'PUBLISHED',
   REJECTED: 'REJECTED',
   HIDDEN: 'HIDDEN'
-};
-
-exports.ResourceType = exports.$Enums.ResourceType = {
-  PDF: 'PDF',
-  LINK: 'LINK',
-  FILE: 'FILE'
 };
 
 exports.QuestionType = exports.$Enums.QuestionType = {
