@@ -18,6 +18,7 @@ import { useResources } from "@/hooks/use-resources";
 import { Alert, AlertDescription } from "../ui/alert";
 import { useResourcesStore } from "@/store/use-store-resources";
 import DrawerCreateResource from "./DrawerCreateResource";
+import DrawerEditResource from "./DrawerEditResource";
 import {
   Accordion,
   AccordionContent,
@@ -177,6 +178,7 @@ const TeacherResourceManager: React.FC<TeacherResourceManagerProps> = ({
         </div>
       </div>
       <DrawerCreateResource />
+      <DrawerEditResource />
     </div>
   );
 };

@@ -8,6 +8,24 @@ import {
   ResourceFilters,
 } from "@/lib/types/";
 
+async function updateResource(resourceId: string, data: UpdateResourceRequest) {
+  const response = await fetch(`/api/teacher/resources/${resourceId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.text();
+    console.error("Update Resource API Error:", errorData);
+    throw new Error("Failed to update resource");
+  }
+
+  return response.json();
+}
+
 // Hook to fetch resources list
 export const useResources = (filters: ResourceFilters = {}) => {
   // Build query string from filters
@@ -103,37 +121,23 @@ export const useCreateResource = () => {
 };
 
 // Hook to update resource
-export const useUpdateResource = (resourceId: string) => {
+export const useUpdateResource = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: UpdateResourceRequest) => {
-      console.log("Updating resource:", resourceId, data);
-
-      const response = await fetch(`/api/teacher/resources/${resourceId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.text();
-        console.error("Update Resource API Error:", errorData);
-        throw new Error("Failed to update resource");
-      }
-
-      const result = await response.json();
-      console.log("Update Resource API Response:", result);
-      return result;
-    },
+    mutationFn: ({
+      resourceId,
+      data,
+    }: {
+      resourceId: string;
+      data: UpdateResourceRequest;
+    }) => updateResource(resourceId, data),
     onSuccess: (data) => {
       toast.success("Article updated successfully");
 
       // Invalidate specific resource query
       queryClient.invalidateQueries({
-        queryKey: ["teacher-resource", resourceId],
+        queryKey: ["teacher-resource", data.id],
       });
 
       // Invalidate resources list

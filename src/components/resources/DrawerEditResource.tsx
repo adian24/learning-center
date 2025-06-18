@@ -1,21 +1,18 @@
-"use client";
-
+import { useResource, useUpdateResource } from "@/hooks/use-resources";
+import { useResourcesStore } from "@/store/use-store-resources";
+import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
   Drawer,
+  DrawerClose,
   DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
   DrawerDescription,
   DrawerFooter,
-  DrawerClose,
-} from "@/components/ui/drawer";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+  DrawerHeader,
+  DrawerTitle,
+} from "../ui/drawer";
 import {
   Form,
   FormControl,
@@ -23,11 +20,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { useResourcesStore } from "@/store/use-store-resources";
-import { Save, X } from "lucide-react";
+} from "../ui/form";
+import { Input } from "../ui/input";
+import { Textarea } from "../ui/textarea";
 import TiptapEditor from "./TipTapEditor";
-import { useCreateResource } from "@/hooks/use-resources";
+import { Button } from "../ui/button";
+import { Save, X } from "lucide-react";
 
 const resourceSchema = z.object({
   title: z
@@ -40,38 +38,39 @@ const resourceSchema = z.object({
 
 type ResourceForm = z.infer<typeof resourceSchema>;
 
-const DrawerCreateResource: React.FC = () => {
-  const { isCreateOpen, closeCreateDialog, chapterId } = useResourcesStore();
-
-  const isOpen = isCreateOpen;
-
-  const { mutate: createResource, isPending } = useCreateResource();
+const DrawerEditResource = () => {
+  const { isEditOpen, editingResourceId, closeEditDialog } =
+    useResourcesStore();
+  const { data: existingResource } = useResource(
+    editingResourceId || undefined
+  );
+  const { mutate: updateResource, isPending } = useUpdateResource();
 
   const form = useForm<ResourceForm>({
     resolver: zodResolver(resourceSchema),
     defaultValues: {
-      title: "",
-      content: "",
-      summary: "",
+      title: existingResource?.title,
+      content: existingResource?.content,
+      summary: existingResource?.summary || "",
     },
   });
 
-  const onSubmit = (data: ResourceForm) => {
-    const readTime = calculateReadTime(data.content);
-
-    createResource({
-      ...data,
-      chapterId: chapterId || "",
-      readTime: readTime || 1,
-    });
-
-    handleClose();
-  };
-
-  const handleClose = () => {
-    form.reset();
-    closeCreateDialog();
-  };
+  // Update form when editing and data is loaded
+  React.useEffect(() => {
+    if (isEditOpen && existingResource) {
+      form.reset({
+        title: existingResource.title,
+        content: existingResource.content,
+        summary: existingResource.summary || "",
+      });
+    } else if (!isEditOpen) {
+      form.reset({
+        title: "",
+        content: "",
+        summary: "",
+      });
+    }
+  }, [isEditOpen, existingResource, form]);
 
   const calculateReadTime = (content: string) => {
     // Remove HTML tags and calculate reading time
@@ -81,13 +80,36 @@ const DrawerCreateResource: React.FC = () => {
     return readTime > 0 ? readTime : 1;
   };
 
+  const handleClose = () => {
+    form.reset({
+      title: "",
+      content: "",
+      summary: "",
+    });
+    closeEditDialog();
+  };
+
+  const onSubmit = (data: ResourceForm) => {
+    const readTime = calculateReadTime(data.content);
+
+    updateResource({
+      resourceId: editingResourceId || "",
+      data: {
+        ...data,
+        readTime: readTime || 1,
+      },
+    });
+
+    handleClose();
+  };
+
   return (
-    <Drawer open={isOpen} onOpenChange={(open) => !open && handleClose()}>
+    <Drawer open={isEditOpen} onOpenChange={(open) => !open && handleClose()}>
       <DrawerContent className="h-screen max-w-2xl ml-auto w-full p-0">
         <DrawerHeader>
-          <DrawerTitle>Buat Resource Baru</DrawerTitle>
+          <DrawerTitle>Edit Resource</DrawerTitle>
           <DrawerDescription>
-            Buat sumber belajar yang komprehensif dengan konten teks yang
+            Edit sumber belajar yang komprehensif dengan konten teks yang
             variatif
           </DrawerDescription>
         </DrawerHeader>
@@ -182,12 +204,12 @@ const DrawerCreateResource: React.FC = () => {
               {isPending ? (
                 <>
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                  Membuat...
+                  MEngubah...
                 </>
               ) : (
                 <>
                   <Save className="w-4 h-4 mr-2" />
-                  Buat Resource
+                  Edit Resource
                 </>
               )}
             </Button>
@@ -204,4 +226,4 @@ const DrawerCreateResource: React.FC = () => {
   );
 };
 
-export default DrawerCreateResource;
+export default DrawerEditResource;

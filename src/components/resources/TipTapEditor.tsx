@@ -16,6 +16,7 @@ import {
   Heading3,
   Italic,
   Redo,
+  Underline,
   Undo,
 } from "lucide-react";
 
@@ -105,6 +106,18 @@ const MenuBar = ({ editor }: { editor: any }) => {
           }`}
         >
           <Italic className="h-4 w-4" />
+        </Button>
+        <Button
+          type="button"
+          size={"sm"}
+          onClick={() => editor.chain().focus().toggleUnderline().run()}
+          className={`text-xs rounded border transition-colors ${
+            editor.isActive("underline")
+              ? "bg-blue-500 text-white border-blue-500"
+              : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+          }`}
+        >
+          <Underline className="h-4 w-4" />
         </Button>
         <Button
           type="button"
