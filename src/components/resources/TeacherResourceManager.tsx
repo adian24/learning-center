@@ -1,16 +1,4 @@
-import {
-  AlertCircle,
-  Calendar,
-  Clock,
-  Edit,
-  Eye,
-  FileText,
-  NotebookPen,
-  NotepadText,
-  Plus,
-  RefreshCcw,
-  Trash2,
-} from "lucide-react";
+import { AlertCircle, NotepadText, Plus, RefreshCcw } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
@@ -20,13 +8,7 @@ import { useResourcesStore } from "@/store/use-store-resources";
 import DrawerCreateResource from "./DrawerCreateResource";
 import DrawerEditResource from "./DrawerEditResource";
 import DeleteResourceDialog from "./DeleteResourceDialog";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "../ui/accordion";
-import HTMLContent from "./HTMLContent";
+import { Accordion } from "../ui/accordion";
 import ResourcesList from "./ResourcesList";
 
 interface TeacherResourceManagerProps {
