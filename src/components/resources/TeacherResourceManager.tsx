@@ -18,8 +18,7 @@ interface TeacherResourceManagerProps {
 const TeacherResourceManager: React.FC<TeacherResourceManagerProps> = ({
   chapterId,
 }) => {
-  const { openCreateDialog, openEditDialog, openDeleteDialog } =
-    useResourcesStore();
+  const { openCreateDialog } = useResourcesStore();
 
   const {
     data: resources,
@@ -62,8 +61,6 @@ const TeacherResourceManager: React.FC<TeacherResourceManagerProps> = ({
       </Card>
     );
   }
-
-  console.log("Resources data:", resources);
 
   return (
     <div className="space-y-6">
