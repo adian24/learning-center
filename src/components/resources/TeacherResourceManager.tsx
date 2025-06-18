@@ -1,4 +1,16 @@
-import { AlertCircle, NotepadText, Plus, RefreshCcw } from "lucide-react";
+import {
+  AlertCircle,
+  Calendar,
+  Clock,
+  Edit,
+  Eye,
+  FileText,
+  NotebookPen,
+  NotepadText,
+  Plus,
+  RefreshCcw,
+  Trash2,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
@@ -6,6 +18,14 @@ import { useResources } from "@/hooks/use-resources";
 import { Alert, AlertDescription } from "../ui/alert";
 import { useResourcesStore } from "@/store/use-store-resources";
 import DrawerCreateResource from "./DrawerCreateResource";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "../ui/accordion";
+import HTMLContent from "./HTMLContent";
+import ResourcesList from "./ResourcesList";
 
 interface TeacherResourceManagerProps {
   chapterId: string;
@@ -59,6 +79,8 @@ const TeacherResourceManager: React.FC<TeacherResourceManagerProps> = ({
     );
   }
 
+  console.log("Resources data:", resources);
+
   return (
     <div className="space-y-6">
       {/* Resource Header */}
@@ -89,60 +111,71 @@ const TeacherResourceManager: React.FC<TeacherResourceManagerProps> = ({
         </CardHeader>
       </Card>
 
-      {/* Resources List */}
-      <div className="space-y-4">
-        {resources?.resources.length === 0 ? (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Resources List */}
+        <div className="space-y-4 col-span-1 md:col-span-2">
+          {resources?.resources.length === 0 ? (
+            <Card>
+              <CardContent className="p-12">
+                <div className="text-center space-y-4">
+                  <div className="mx-auto w-16 h-16 bg-muted rounded-full flex items-center justify-center">
+                    <NotepadText className="h-8 w-8 text-muted-foreground" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold">
+                      Belum Ada Resource
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Mulai dengan membuat resource pertama untuk chapter ini.
+                    </p>
+                    <Button
+                      className="gap-2"
+                      onClick={() => openCreateDialog(chapterId)}
+                    >
+                      <Plus className="h-4 w-4" />
+                      Buat Resource Baru
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <Accordion type="multiple" className="space-y-4">
+              {resources?.resources.map((resource) => (
+                <ResourcesList key={resource.id} resource={resource} />
+              ))}
+            </Accordion>
+          )}
+        </div>
+
+        {/* Resources Tips */}
+        <div>
           <Card>
-            <CardContent className="p-12">
-              <div className="text-center space-y-4">
-                <div className="mx-auto w-16 h-16 bg-muted rounded-full flex items-center justify-center">
-                  <NotepadText className="h-8 w-8 text-muted-foreground" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold">Belum Ada Resource</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Mulai dengan membuat resource pertama untuk chapter ini.
-                  </p>
-                  <Button
-                    className="gap-2"
-                    onClick={() => openCreateDialog(chapterId)}
-                  >
-                    <Plus className="h-4 w-4" />
-                    Buat Resource Baru
-                  </Button>
-                </div>
+            <CardContent className="p-4">
+              <div className="text-sm text-muted-foreground">
+                <p className="font-medium mb-2">💡 Tips untuk Resource:</p>
+                <ul className="space-y-2 text-xs">
+                  <li>
+                    • Setiap resource berkontribusi terhadap pemahaman siswa
+                  </li>
+                  <li>
+                    • Siswa perlu mengakses resource untuk materi tambahan
+                  </li>
+                  <li>
+                    • Resource dengan pertanyaan yang jelas akan membantu
+                    pemahaman siswa
+                  </li>
+                  <li>• Setiap resource harus memiliki ringkasan yang jelas</li>
+                  <li>
+                    • Edit resource hanya jika diperlukan, karena akan
+                    mempengaruhi siswa
+                  </li>
+                </ul>
               </div>
             </CardContent>
           </Card>
-        ) : (
-          <div className="space-y-4">
-            {resources?.resources.map((resource) => (
-              <Card key={resource.id}>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold">{resource.title}</h3>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        onClick={() => openEditDialog(resource.id)}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="outline"
-                        onClick={() => openDeleteDialog(resource.id)}
-                      >
-                        Delete
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+        </div>
       </div>
-
       <DrawerCreateResource />
     </div>
   );
