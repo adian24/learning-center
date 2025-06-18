@@ -19,6 +19,7 @@ import { Alert, AlertDescription } from "../ui/alert";
 import { useResourcesStore } from "@/store/use-store-resources";
 import DrawerCreateResource from "./DrawerCreateResource";
 import DrawerEditResource from "./DrawerEditResource";
+import DeleteResourceDialog from "./DeleteResourceDialog";
 import {
   Accordion,
   AccordionContent,
@@ -179,6 +180,7 @@ const TeacherResourceManager: React.FC<TeacherResourceManagerProps> = ({
       </div>
       <DrawerCreateResource />
       <DrawerEditResource />
+      <DeleteResourceDialog />
     </div>
   );
 };
