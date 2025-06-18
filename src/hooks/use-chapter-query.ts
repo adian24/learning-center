@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Chapter } from "@/lib/db/generated";
+import { ChapterWithProgress } from "../lib/types/chapter";
 
 interface UseChapterQuery {
   courseId: string;
@@ -9,7 +9,7 @@ interface UseChapterQuery {
 async function getChapter(
   courseId: string,
   chapterId: string
-): Promise<Chapter> {
+): Promise<ChapterWithProgress> {
   const response = await fetch(
     `/api/teacher/courses/${courseId}/chapters/${chapterId}`
   );

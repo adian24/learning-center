@@ -1,11 +1,11 @@
-import { Chapter } from "@/lib/types";
 import { create } from "zustand";
+import { ChapterWithProgress } from "../lib/types/chapter";
 
 interface DeleteVideoStore {
   isOpen: boolean;
   isDeleting: boolean;
-  videoToDelete: Chapter | null | undefined;
-  onOpen: (chapter: Chapter | undefined) => void;
+  videoToDelete: ChapterWithProgress | undefined;
+  onOpen: (chapter: ChapterWithProgress | undefined) => void;
   onClose: () => void;
   setIsDeleting: (isDeleting: boolean) => void;
   reset: () => void;
@@ -14,9 +14,10 @@ interface DeleteVideoStore {
 export const useDeleteVideoStore = create<DeleteVideoStore>((set) => ({
   isOpen: false,
   isDeleting: false,
-  videoToDelete: null,
+  videoToDelete: undefined,
   onOpen: (chapter) => set({ isOpen: true, videoToDelete: chapter }),
   onClose: () => set({ isOpen: false }),
   setIsDeleting: (isDeleting) => set({ isDeleting }),
-  reset: () => set({ isOpen: false, isDeleting: false, videoToDelete: null }),
+  reset: () =>
+    set({ isOpen: false, isDeleting: false, videoToDelete: undefined }),
 }));

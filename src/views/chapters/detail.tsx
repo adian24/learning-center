@@ -10,6 +10,7 @@ import {
   Book,
   HelpCircle,
   ArrowLeft,
+  NotebookPen,
 } from "lucide-react";
 import Layout from "@/layout";
 import { useRouter } from "next/navigation";
@@ -30,6 +31,8 @@ const DetailChapter = ({
   const router = useRouter();
 
   const { data: chapter } = useChapterQuery({ courseId, chapterId });
+
+  console.log("Chapter Data:", chapter);
 
   const handleProgressUpdate = () => {
     // This will trigger re-fetching of data when progress is updated
@@ -77,18 +80,18 @@ const DetailChapter = ({
 
         {/* Main Content Tabs */}
         <Tabs defaultValue="content" className="mt-10 w-full">
-          <TabsList className="mb-4 grid w-full grid-cols-4 lg:w-1/2">
+          <TabsList className="mb-4 grid w-full grid-cols-4 lg:w-3/5">
             <TabsTrigger value="content" className="flex items-center gap-2">
               <Book className="w-4 h-4" />
               Content
             </TabsTrigger>
             <TabsTrigger value="quiz" className="flex items-center gap-2">
               <HelpCircle className="w-4 h-4" />
-              Quiz
+              Quiz <Badge>{chapter?.quizzes?.length || 0}</Badge>
             </TabsTrigger>
             <TabsTrigger value="resources" className="flex items-center gap-2">
-              <FileText className="w-4 h-4" />
-              Resources
+              <NotebookPen className="w-4 h-4" />
+              Resources <Badge>{chapter?.resources?.length || 0}</Badge>
             </TabsTrigger>
             <TabsTrigger value="progress" className="flex items-center gap-2">
               <CheckCircle className="w-4 h-4" />

@@ -4,16 +4,16 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Chapter } from "@/lib/types";
 import { useDeleteVideoStore } from "@/store/use-store delete-video";
 import { useQueryClient } from "@tanstack/react-query";
 import { Loader2, Trash2, Upload, Video } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import SecureVideo from "@/components/media/SecureVideo";
+import { ChapterWithProgress } from "@/lib/types/chapter";
 
 interface ContentVideoProps {
-  chapter: Chapter | undefined;
+  chapter: ChapterWithProgress | undefined;
   initialVideoKey?: string | undefined;
   onUploadComplete?: (key: string) => void;
   onDelete?: () => void;
