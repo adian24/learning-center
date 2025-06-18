@@ -17,7 +17,8 @@ import { Trash2, Loader2, AlertTriangle } from "lucide-react";
 import { useResourcesStore } from "@/store/use-store-resources";
 
 const DeleteResourceDialog: React.FC = () => {
-  const { isDeleteOpen, deletingResourceId, closeDeleteDialog } = useResourcesStore();
+  const { isDeleteOpen, deletingResourceId, closeDeleteDialog } =
+    useResourcesStore();
   const { data: resource } = useResource(deletingResourceId || undefined);
   const [confirmText, setConfirmText] = useState("");
   const deleteResourceMutation = useDeleteResource();
@@ -36,7 +37,8 @@ const DeleteResourceDialog: React.FC = () => {
       setConfirmText("");
     } catch (error: any) {
       toast.error("Gagal Menghapus Resource", {
-        description: error.message || "Terjadi kesalahan saat menghapus resource.",
+        description:
+          error.message || "Terjadi kesalahan saat menghapus resource.",
       });
     }
   };
@@ -103,9 +105,11 @@ const DeleteResourceDialog: React.FC = () => {
               <div className="space-y-2">
                 <p className="font-medium">Data yang akan dihapus:</p>
                 <ul className="text-sm space-y-1">
-                  <li>" Resource dan semua pengaturannya</li>
-                  <li>" Konten dan ringkasan resource</li>
-                  <li>" Progress siswa yang terkait dengan resource ini</li>
+                  <li>&quot; Resource dan semua pengaturannya</li>
+                  <li>&quot; Konten dan ringkasan resource</li>
+                  <li>
+                    &quot; Progress siswa yang terkait dengan resource ini
+                  </li>
                 </ul>
               </div>
             </AlertDescription>
@@ -114,8 +118,8 @@ const DeleteResourceDialog: React.FC = () => {
           {/* Confirmation */}
           <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
             <p className="text-sm text-amber-800">
-              <span className="font-medium">Konfirmasi:</span> Ketik "
-              <span className="font-mono font-bold">HAPUS</span>" untuk
+              <span className="font-medium">Konfirmasi:</span> Ketik &quot;
+              <span className="font-mono font-bold">HAPUS</span>&quot; untuk
               melanjutkan penghapusan.
             </p>
           </div>
