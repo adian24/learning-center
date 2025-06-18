@@ -4,8 +4,6 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 import {
   Drawer,
   DrawerContent,
@@ -27,9 +25,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useResourcesStore } from "@/store/use-store-resources";
-import { CreateResourceRequest } from "@/lib/types/resource";
 import { Save, X } from "lucide-react";
 import TiptapEditor from "./TipTapEditor";
+import { useCreateResource } from "@/hooks/use-resources";
 
 const createResourceSchema = z.object({
   title: z
@@ -44,7 +42,8 @@ type CreateResourceForm = z.infer<typeof createResourceSchema>;
 
 const DrawerCreateResource: React.FC = () => {
   const { isCreateOpen, closeCreateDialog, chapterId } = useResourcesStore();
-  const queryClient = useQueryClient();
+
+  const { mutate: createResource, isPending } = useCreateResource();
 
   const form = useForm<CreateResourceForm>({
     resolver: zodResolver(createResourceSchema),
@@ -55,40 +54,16 @@ const DrawerCreateResource: React.FC = () => {
     },
   });
 
-  const createResourceMutation = useMutation({
-    mutationFn: async (data: CreateResourceRequest) => {
-      const response = await fetch("/api/teacher/resources", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to create resource");
-      }
-
-      return response.json();
-    },
-    onSuccess: () => {
-      toast.success("Resource created successfully!");
-      queryClient.invalidateQueries({ queryKey: ["resources"] });
-      handleClose();
-    },
-    onError: (error) => {
-      toast.error(error.message || "Failed to create resource");
-    },
-  });
-
   const onSubmit = (data: CreateResourceForm) => {
     const readTime = calculateReadTime(data.content);
 
-    createResourceMutation.mutate({
+    createResource({
       ...data,
       chapterId: chapterId || "",
       readTime: readTime || 1,
     });
+
+    handleClose();
   };
 
   const handleClose = () => {
@@ -198,10 +173,10 @@ const DrawerCreateResource: React.FC = () => {
             <Button
               type="button"
               onClick={form.handleSubmit(onSubmit)}
-              disabled={createResourceMutation.isPending}
+              disabled={isPending}
               className="flex-1"
             >
-              {createResourceMutation.isPending ? (
+              {isPending ? (
                 <>
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
                   Membuat...

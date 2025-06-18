@@ -116,8 +116,8 @@ const ResourcesList = ({ resource }: { resource: Resource }) => {
               </div>
             </div>
           </div>
-          <AccordionTrigger className="text-sm text-muted-foreground underline">
-            Artikel
+          <AccordionTrigger className="text-sm underline">
+            Lihat artikel selengkapnya
           </AccordionTrigger>
         </CardContent>
 
