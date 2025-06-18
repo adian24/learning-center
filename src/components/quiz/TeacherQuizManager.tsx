@@ -151,259 +151,273 @@ const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
         )}
       </Card>
 
-      {/* Quiz List */}
-      {quizzes.length === 0 ? (
-        <Card>
-          <CardContent className="p-12">
-            <div className="text-center space-y-4">
-              <div className="mx-auto w-16 h-16 bg-muted rounded-full flex items-center justify-center">
-                <BookOpen className="h-8 w-8 text-muted-foreground" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold">Belum Ada Quiz</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Mulai dengan membuat quiz pertama untuk chapter ini.
-                </p>
-                <Button
-                  disabled={maxQuizzesReached}
-                  className="gap-2"
-                  onClick={openCreateDialog}
-                >
-                  <Plus className="h-4 w-4" />
-                  Buat Quiz Baru
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="space-y-4">
-          {quizzes.map((quiz, index) => (
-            <Card key={quiz.id}>
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1 space-y-3">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <h3 className="text-lg font-semibold">
-                          Quiz {index + 1}: {quiz.title}
-                        </h3>
-                        <Badge variant="outline">
-                          {quiz.questions?.length || 0} soal
-                        </Badge>
-                      </div>
-                      {quiz.description && (
-                        <p className="text-sm text-muted-foreground">
-                          {quiz.description}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Quiz Details */}
-                    <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Trophy className="h-4 w-4" />
-                        <span>Passing Score: {quiz.passingScore}%</span>
-                      </div>
-                      {quiz.timeLimit ? (
-                        <div className="flex items-center gap-1">
-                          <Clock className="h-4 w-4" />
-                          <span>Waktu: {quiz.timeLimit} menit</span>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-1">
-                          <Clock className="h-4 w-4" />
-                          <span>Tanpa batas waktu</span>
-                        </div>
-                      )}
-                      <div className="flex items-center gap-1">
-                        <Eye className="h-4 w-4" />
-                        <span>{quiz.questions?.length || 0} pertanyaan</span>
-                      </div>
-                    </div>
-
-                    {/* Quiz Status */}
-                    <div className="flex gap-2">
-                      {quiz.questions?.length === 0 ? (
-                        <Badge variant="secondary">Belum ada soal</Badge>
-                      ) : (
-                        <Badge variant="default">Siap digunakan</Badge>
-                      )}
-                    </div>
-
-                    {/* Questions Accordion */}
-                    {quiz.questions && quiz.questions.length > 0 && (
-                      <div className="mt-4">
-                        <Accordion type="single" collapsible className="w-full">
-                          <AccordionItem value={`questions-${quiz.id}`}>
-                            <AccordionTrigger className="text-sm font-medium">
-                              Lihat {quiz.questions.length} Pertanyaan
-                            </AccordionTrigger>
-                            <AccordionContent>
-                              <div className="space-y-4">
-                                {quiz.questions.map((question, qIndex) => (
-                                  <div
-                                    key={question.id}
-                                    className="bg-gray-50 border rounded-lg p-4"
-                                  >
-                                    <div className="space-y-3">
-                                      {/* Question Header */}
-                                      <div className="flex items-start justify-between">
-                                        <div className="flex-1">
-                                          <div className="flex items-center gap-2 mb-2">
-                                            <Badge
-                                              variant="outline"
-                                              className="text-xs"
-                                            >
-                                              Soal {qIndex + 1}
-                                            </Badge>
-                                            <Badge
-                                              variant="outline"
-                                              className="text-xs"
-                                            >
-                                              {questionTypeLabels[
-                                                question.type
-                                              ] || question.type}
-                                            </Badge>
-                                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                              <Hash className="h-3 w-3" />
-                                              {question.points} poin
-                                            </div>
-                                          </div>
-                                          <p className="text-sm text-gray-800 font-medium">
-                                            {question.text}
-                                          </p>
-                                        </div>
-                                      </div>
-
-                                      {/* Question Options */}
-                                      {question.options &&
-                                        question.options.length > 0 && (
-                                          <div className="space-y-2">
-                                            <p className="text-xs font-medium text-muted-foreground">
-                                              Pilihan Jawaban:
-                                            </p>
-                                            <div className="grid gap-2">
-                                              {question.options.map(
-                                                (option, oIndex) => (
-                                                  <div
-                                                    key={option.id}
-                                                    className={`flex items-center gap-2 p-2 rounded text-xs ${
-                                                      option.isCorrect
-                                                        ? "bg-green-100 border border-green-200"
-                                                        : "bg-white border"
-                                                    }`}
-                                                  >
-                                                    <span className="font-medium text-muted-foreground">
-                                                      {String.fromCharCode(
-                                                        65 + oIndex
-                                                      )}
-                                                      .
-                                                    </span>
-                                                    <span className="flex-1">
-                                                      {option.text}
-                                                    </span>
-                                                    {option.isCorrect && (
-                                                      <CheckCircle className="h-4 w-4 text-green-600" />
-                                                    )}
-                                                  </div>
-                                                )
-                                              )}
-                                            </div>
-                                          </div>
-                                        )}
-
-                                      {/* Question Explanation */}
-                                      {question.explanation && (
-                                        <div className="bg-blue-50 border border-blue-200 rounded p-3">
-                                          <div className="flex items-start gap-2">
-                                            <HelpCircle className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                                            <div>
-                                              <p className="text-xs font-medium text-blue-800 mb-1">
-                                                Penjelasan:
-                                              </p>
-                                              <p className="text-xs text-blue-700">
-                                                {question.explanation}
-                                              </p>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            </AccordionContent>
-                          </AccordionItem>
-                        </Accordion>
-                      </div>
-                    )}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Quiz List */}
+        <div className="space-y-4 col-span-1 md:col-span-2">
+          {quizzes.length === 0 ? (
+            <Card>
+              <CardContent className="p-12">
+                <div className="text-center space-y-4">
+                  <div className="mx-auto w-16 h-16 bg-muted rounded-full flex items-center justify-center">
+                    <BookOpen className="h-8 w-8 text-muted-foreground" />
                   </div>
-
-                  {/* Action Menu */}
-                  <div className="flex items-center gap-2">
+                  <div>
+                    <h3 className="text-lg font-semibold">Belum Ada Quiz</h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Mulai dengan membuat quiz pertama untuk chapter ini.
+                    </p>
                     <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => openCreateQuestionDialog(quiz.id)}
+                      disabled={maxQuizzesReached}
+                      className="gap-2"
+                      onClick={openCreateDialog}
                     >
                       <Plus className="h-4 w-4" />
-                      Tambah Soal
+                      Buat Quiz Baru
                     </Button>
-                    <DropdownMenu modal={false}>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="sm">
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onClick={() => openEditDialog(quiz.id)}
-                        >
-                          <Edit className="h-4 w-4 mr-2" />
-                          Edit Quiz
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          className="text-red-600 focus:text-red-600"
-                          onClick={() => openDeleteDialog(quiz.id)}
-                        >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Hapus Quiz
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
                   </div>
                 </div>
               </CardContent>
             </Card>
-          ))}
-        </div>
-      )}
+          ) : (
+            <div className="space-y-4">
+              {quizzes.map((quiz, index) => (
+                <Card key={quiz.id}>
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1 space-y-3">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-lg font-semibold">
+                              Quiz {index + 1}: {quiz.title}
+                            </h3>
+                            <Badge variant="outline">
+                              {quiz.questions?.length || 0} soal
+                            </Badge>
+                          </div>
+                          {quiz.description && (
+                            <p className="text-sm text-muted-foreground">
+                              {quiz.description}
+                            </p>
+                          )}
+                        </div>
 
-      {/* Tips */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="text-sm text-muted-foreground">
-            <p className="font-medium mb-2">💡 Tips untuk Quiz:</p>
-            <ul className="space-y-1 text-xs">
-              <li>• Setiap quiz berkontribusi terhadap skor chapter siswa</li>
-              <li>• Siswa perlu mencapai skor chapter ≥ 65% untuk lulus</li>
-              <li>
-                • Quiz dengan pertanyaan yang jelas akan membantu pemahaman
-                siswa
-              </li>
-              <li>
-                • Gunakan batas waktu yang sesuai dengan tingkat kesulitan
-              </li>
-              <li>
-                • Edit quiz hanya jika diperlukan, karena akan mempengaruhi
-                siswa
-              </li>
-            </ul>
-          </div>
-        </CardContent>
-      </Card>
+                        {/* Quiz Details */}
+                        <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-1">
+                            <Trophy className="h-4 w-4" />
+                            <span>Passing Score: {quiz.passingScore}%</span>
+                          </div>
+                          {quiz.timeLimit ? (
+                            <div className="flex items-center gap-1">
+                              <Clock className="h-4 w-4" />
+                              <span>Waktu: {quiz.timeLimit} menit</span>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-1">
+                              <Clock className="h-4 w-4" />
+                              <span>Tanpa batas waktu</span>
+                            </div>
+                          )}
+                          <div className="flex items-center gap-1">
+                            <Eye className="h-4 w-4" />
+                            <span>
+                              {quiz.questions?.length || 0} pertanyaan
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Quiz Status */}
+                        <div className="flex gap-2">
+                          {quiz.questions?.length === 0 ? (
+                            <Badge variant="secondary">Belum ada soal</Badge>
+                          ) : (
+                            <Badge variant="default">Siap digunakan</Badge>
+                          )}
+                        </div>
+
+                        {/* Questions Accordion */}
+                        {quiz.questions && quiz.questions.length > 0 && (
+                          <div className="mt-4">
+                            <Accordion
+                              type="single"
+                              collapsible
+                              className="w-full"
+                            >
+                              <AccordionItem value={`questions-${quiz.id}`}>
+                                <AccordionTrigger className="text-sm font-medium">
+                                  Lihat {quiz.questions.length} Pertanyaan
+                                </AccordionTrigger>
+                                <AccordionContent>
+                                  <div className="space-y-4">
+                                    {quiz.questions.map((question, qIndex) => (
+                                      <div
+                                        key={question.id}
+                                        className="bg-gray-50 border rounded-lg p-4"
+                                      >
+                                        <div className="space-y-3">
+                                          {/* Question Header */}
+                                          <div className="flex items-start justify-between">
+                                            <div className="flex-1">
+                                              <div className="flex items-center gap-2 mb-2">
+                                                <Badge
+                                                  variant="outline"
+                                                  className="text-xs"
+                                                >
+                                                  Soal {qIndex + 1}
+                                                </Badge>
+                                                <Badge
+                                                  variant="outline"
+                                                  className="text-xs"
+                                                >
+                                                  {questionTypeLabels[
+                                                    question.type
+                                                  ] || question.type}
+                                                </Badge>
+                                                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                                  <Hash className="h-3 w-3" />
+                                                  {question.points} poin
+                                                </div>
+                                              </div>
+                                              <p className="text-sm text-gray-800 font-medium">
+                                                {question.text}
+                                              </p>
+                                            </div>
+                                          </div>
+
+                                          {/* Question Options */}
+                                          {question.options &&
+                                            question.options.length > 0 && (
+                                              <div className="space-y-2">
+                                                <p className="text-xs font-medium text-muted-foreground">
+                                                  Pilihan Jawaban:
+                                                </p>
+                                                <div className="grid gap-2">
+                                                  {question.options.map(
+                                                    (option, oIndex) => (
+                                                      <div
+                                                        key={option.id}
+                                                        className={`flex items-center gap-2 p-2 rounded text-xs ${
+                                                          option.isCorrect
+                                                            ? "bg-green-100 border border-green-200"
+                                                            : "bg-white border"
+                                                        }`}
+                                                      >
+                                                        <span className="font-medium text-muted-foreground">
+                                                          {String.fromCharCode(
+                                                            65 + oIndex
+                                                          )}
+                                                          .
+                                                        </span>
+                                                        <span className="flex-1">
+                                                          {option.text}
+                                                        </span>
+                                                        {option.isCorrect && (
+                                                          <CheckCircle className="h-4 w-4 text-green-600" />
+                                                        )}
+                                                      </div>
+                                                    )
+                                                  )}
+                                                </div>
+                                              </div>
+                                            )}
+
+                                          {/* Question Explanation */}
+                                          {question.explanation && (
+                                            <div className="bg-blue-50 border border-blue-200 rounded p-3">
+                                              <div className="flex items-start gap-2">
+                                                <HelpCircle className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                                                <div>
+                                                  <p className="text-xs font-medium text-blue-800 mb-1">
+                                                    Penjelasan:
+                                                  </p>
+                                                  <p className="text-xs text-blue-700">
+                                                    {question.explanation}
+                                                  </p>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </AccordionContent>
+                              </AccordionItem>
+                            </Accordion>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Action Menu */}
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => openCreateQuestionDialog(quiz.id)}
+                        >
+                          <Plus className="h-4 w-4" />
+                          Tambah Soal
+                        </Button>
+                        <DropdownMenu modal={false}>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="outline" size="sm">
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={() => openEditDialog(quiz.id)}
+                            >
+                              <Edit className="h-4 w-4 mr-2" />
+                              Edit Quiz
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              className="text-red-600 focus:text-red-600"
+                              onClick={() => openDeleteDialog(quiz.id)}
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Hapus Quiz
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Tips */}
+        <div>
+          <Card>
+            <CardContent className="p-4">
+              <div className="text-sm text-muted-foreground">
+                <p className="font-medium mb-2">💡 Tips untuk Quiz:</p>
+                <ul className="space-y-2 text-xs">
+                  <li>
+                    • Setiap quiz berkontribusi terhadap skor chapter siswa
+                  </li>
+                  <li>• Siswa perlu mencapai skor chapter ≥ 65% untuk lulus</li>
+                  <li>
+                    • Quiz dengan pertanyaan yang jelas akan membantu pemahaman
+                    siswa
+                  </li>
+                  <li>
+                    • Gunakan batas waktu yang sesuai dengan tingkat kesulitan
+                  </li>
+                  <li>
+                    • Edit quiz hanya jika diperlukan, karena akan mempengaruhi
+                    siswa
+                  </li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
 
       {/* Dialog Components */}
       <CreateQuizDialog chapterId={chapterId} />
