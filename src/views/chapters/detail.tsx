@@ -32,8 +32,6 @@ const DetailChapter = ({
 
   const { data: chapter } = useChapterQuery({ courseId, chapterId });
 
-  console.log("Chapter Data:", chapter);
-
   const handleProgressUpdate = () => {
     // This will trigger re-fetching of data when progress is updated
     // The queries will automatically update due to React Query invalidation
