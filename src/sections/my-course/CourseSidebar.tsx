@@ -14,9 +14,11 @@ import {
   ExternalLink,
   Download,
   CheckCircle,
+  Clock1,
 } from "lucide-react";
 import { CourseImageCard, AvatarImage } from "@/components/media/SecureImage";
 import StudentQuizzes from "./StudentQuizzes";
+import { Resource } from "@/lib/types/resource";
 
 interface CourseSidebarProps {
   course: any;
@@ -118,55 +120,38 @@ export default function CourseSidebar({
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <FileText className="h-4 w-4" />
-              Materi Bab
+              Materi Chapter
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
             <div className="space-y-2">
-              {resources.map(
-                (
-                  resource: {
-                    id: string;
-                    type: string;
-                    title: string;
-                    url: string;
-                  },
-                  index: number
-                ) => (
-                  <div
-                    key={resource.id}
-                    className="flex items-center justify-between p-2 rounded-lg border hover:bg-gray-50 transition-colors"
-                  >
-                    <div className="flex items-center gap-2">
-                      {resource.type === "PDF" ? (
-                        <FileText className="h-4 w-4 text-red-500" />
-                      ) : resource.type === "LINK" ? (
-                        <ExternalLink className="h-4 w-4 text-blue-500" />
-                      ) : (
-                        <Download className="h-4 w-4 text-green-500" />
-                      )}
-                      <div>
-                        <p className="text-sm font-medium">{resource.title}</p>
-                        <p className="text-xs text-muted-foreground capitalize">
-                          {resource.type.toLowerCase()}
-                        </p>
+              {resources.map((resource: Resource, index: number) => (
+                <div
+                  key={resource.id}
+                  className="flex flex-col p-4 rounded-lg border hover:bg-gray-50 transition-colors"
+                >
+                  <div>
+                    <p className="text-md font-medium">{resource.title}</p>
+                    <p className="text-xs text-muted-foreground capitalize">
+                      {resource.summary || "Tidak ada deskripsi"}
+                    </p>
+                  </div>
+                  <div className="flex items-center mt-4">
+                    <div className="flex items-center justify-between w-full">
+                      <p className="text-xs">Waktu Baca</p>
+                      <div className="flex items-center gap-1">
+                        <Clock1 className="h-3 w-3 text-muted-foreground" />
+                        <span className="text-xs text-muted-foreground">
+                          {resource.readTime} menit
+                        </span>
                       </div>
                     </div>
-
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => window.open(resource.url, "_blank")}
-                    >
-                      {resource.type === "LINK" ? (
-                        <ExternalLink className="h-3 w-3" />
-                      ) : (
-                        <Download className="h-3 w-3" />
-                      )}
-                    </Button>
                   </div>
-                )
-              )}
+                  <Button size="sm" className="w-full mt-2">
+                    Baca Materi
+                  </Button>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
