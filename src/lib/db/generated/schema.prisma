@@ -374,17 +374,17 @@ model StudentAnswer {
   id String @id @default(uuid()) @map("_id")
 
   questionId String
-  question   Question @relation(fields: [questionId], references: [id])
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
   // For multiple choice questions
   selectedOptionId String?
-  selectedOption   QuestionOption? @relation(fields: [selectedOptionId], references: [id])
+  selectedOption   QuestionOption? @relation(fields: [selectedOptionId], references: [id], onDelete: Cascade)
 
   // For text/number type questions
   textAnswer String?
 
   attemptId String
-  attempt   QuizAttempt @relation(fields: [attemptId], references: [id])
+  attempt   QuizAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
 
   isCorrect    Boolean
   pointsEarned Float
