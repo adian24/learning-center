@@ -74,6 +74,55 @@ export const useResource = (resourceId: string | undefined) => {
   });
 };
 
+// Hook to fetch list resource for student
+export const useStudentResources = (
+  chapterId: string,
+  page = 1,
+  perPage = 10
+) => {
+  const params = new URLSearchParams({
+    chapterId,
+    page: page.toString(),
+    perPage: perPage.toString(),
+  });
+
+  return useQuery<ResourcesResponse>({
+    queryKey: ["student-resources", chapterId],
+    queryFn: async () => {
+      const url = `/api/student/resources${params ? `?${params}` : ""}`;
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch resources");
+      }
+
+      return response.json();
+    },
+    enabled: !!chapterId,
+  });
+};
+
+// Hook to fetch single resource for student
+export const useStudentResource = (resourceId: string) => {
+  return useQuery<ResourceWithChapter>({
+    queryKey: ["student-resource", resourceId],
+    queryFn: async () => {
+      if (!resourceId) {
+        throw new Error("Resource ID is required");
+      }
+
+      const response = await fetch(`/api/student/resources/${resourceId}`);
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch resource");
+      }
+
+      return response.json();
+    },
+    enabled: !!resourceId,
+  });
+};
+
 // Hook to create new resource
 export const useCreateResource = () => {
   const queryClient = useQueryClient();
