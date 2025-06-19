@@ -13,6 +13,7 @@ import CourseSidebar from "@/sections/my-course/CourseSidebar";
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Layout from "@/layout";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function MyCoursePlayerPage() {
   const params = useParams();
@@ -22,6 +23,7 @@ export default function MyCoursePlayerPage() {
 
   const courseId = params.courseId as string;
   const playChapterId = searchParams.get("play");
+  const queryClient = useQueryClient();
 
   // Fetch course data
   const {
@@ -55,6 +57,10 @@ export default function MyCoursePlayerPage() {
   // Navigation functions
   const handleChapterSelect = (chapterId: string) => {
     const url = `/my-courses/${courseId}?play=${chapterId}`;
+    queryClient.invalidateQueries({
+      queryKey: ["student-resources", chapterId],
+    });
+
     router.push(url);
   };
 

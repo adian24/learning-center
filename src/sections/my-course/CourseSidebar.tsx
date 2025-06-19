@@ -11,14 +11,16 @@ import {
   Clock,
   FileText,
   Award,
-  ExternalLink,
-  Download,
   CheckCircle,
   Clock1,
 } from "lucide-react";
 import { CourseImageCard, AvatarImage } from "@/components/media/SecureImage";
 import StudentQuizzes from "./StudentQuizzes";
 import { Resource } from "@/lib/types/resource";
+import { useState } from "react";
+import ResourceDrawer from "./ResourceDrawer";
+import { useStudentResources } from "@/hooks/use-resources";
+import { useSearchParams } from "next/navigation";
 
 interface CourseSidebarProps {
   course: any;
@@ -31,6 +33,29 @@ export default function CourseSidebar({
   currentChapter,
   chapters,
 }: CourseSidebarProps) {
+  const searchParams = useSearchParams();
+  const playChapterId = searchParams.get("play") as string;
+
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [selectedResourceId, setSelectedResourceId] = useState<string | null>(
+    null
+  );
+
+  const { data } = useStudentResources(playChapterId);
+
+  // Get current chapter resources and quizzes
+  const resources = data?.resources || [];
+
+  const handleOpenResource = (resourceId: string) => {
+    setSelectedResourceId(resourceId);
+    setIsDrawerOpen(true);
+  };
+
+  const handleCloseDrawer = () => {
+    setIsDrawerOpen(false);
+    setSelectedResourceId(null);
+  };
+
   // Calculate progress
   const totalChapters = chapters.length;
   const completedChapters = chapters.filter(
@@ -40,9 +65,6 @@ export default function CourseSidebar({
     totalChapters > 0
       ? Math.round((completedChapters / totalChapters) * 100)
       : 0;
-
-  // Get current chapter resources and quizzes
-  const resources = currentChapter?.resources || [];
 
   return (
     <div className="space-y-6">
@@ -147,7 +169,13 @@ export default function CourseSidebar({
                       </div>
                     </div>
                   </div>
-                  <Button size="sm" className="w-full mt-2">
+                  <Button
+                    size="sm"
+                    className="w-full mt-2"
+                    onClick={() => {
+                      handleOpenResource(resource.id);
+                    }}
+                  >
                     Baca Materi
                   </Button>
                 </div>
@@ -216,6 +244,12 @@ export default function CourseSidebar({
           )}
         </CardContent>
       </Card>
+
+      <ResourceDrawer
+        isOpen={isDrawerOpen}
+        onClose={handleCloseDrawer}
+        resourceId={selectedResourceId}
+      />
     </div>
   );
 }
