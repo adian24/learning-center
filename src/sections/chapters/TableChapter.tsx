@@ -21,6 +21,7 @@ import { formatVideoDuration } from "@/utils/formatVideoDuration";
 import {
   GraduationCap,
   MoreVertical,
+  NotebookPen,
   Pencil,
   Trash,
   Video,
@@ -50,6 +51,7 @@ const TableChapter = ({ chapters }: TableChapterProps) => {
             <TableHead className="w-24">Akses</TableHead>
             <TableHead className="w-32">Video</TableHead>
             <TableHead className="w-32">Quis</TableHead>
+            <TableHead className="w-32">Resource</TableHead>
             <TableHead className="w-20">Aksi</TableHead>
           </TableRow>
         </TableHeader>
@@ -94,6 +96,14 @@ const TableChapter = ({ chapters }: TableChapterProps) => {
                   <Badge variant="outline" className="flex items-center gap-1">
                     <GraduationCap className="h-4 w-4" />
                     {chapter?.quizzes?.length}
+                  </Badge>
+                </div>
+              </TableCell>
+              <TableCell>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="flex items-center gap-1">
+                    <NotebookPen className="h-4 w-4" />
+                    {chapter?.resources?.length}
                   </Badge>
                 </div>
               </TableCell>
