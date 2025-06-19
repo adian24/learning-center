@@ -118,10 +118,6 @@ const QuizDrawer: React.FC<QuizDrawerProps> = ({
       case "MULTIPLE_CHOICE":
         answer.selectedOptionIds = value as string[];
         break;
-      case "TEXT":
-      case "NUMBER":
-        answer.textAnswer = value as string;
-        break;
     }
     setAnswers({ ...answers, [questionId]: answer });
   };
@@ -452,38 +448,6 @@ const QuizDrawer: React.FC<QuizDrawerProps> = ({
                               );
                             })}
                           </div>
-                        )}
-
-                        {currentQuestion.type === "TEXT" && (
-                          <Textarea
-                            placeholder="Tulis jawaban Anda di sini..."
-                            value={
-                              answers[currentQuestion.id]?.textAnswer || ""
-                            }
-                            onChange={(e) =>
-                              handleAnswerChange(
-                                currentQuestion.id,
-                                e.target.value
-                              )
-                            }
-                            rows={4}
-                          />
-                        )}
-
-                        {currentQuestion.type === "NUMBER" && (
-                          <Input
-                            type="number"
-                            placeholder="Masukkan angka"
-                            value={
-                              answers[currentQuestion.id]?.textAnswer || ""
-                            }
-                            onChange={(e) =>
-                              handleAnswerChange(
-                                currentQuestion.id,
-                                e.target.value
-                              )
-                            }
-                          />
                         )}
                       </div>
                     </CardContent>

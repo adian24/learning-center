@@ -19,7 +19,7 @@ interface UpdateQuizData {
 
 interface CreateQuestionData {
   text: string;
-  type: "MULTIPLE_CHOICE" | "SINGLE_CHOICE" | "TRUE_FALSE" | "TEXT" | "NUMBER";
+  type: "MULTIPLE_CHOICE" | "SINGLE_CHOICE" | "TRUE_FALSE";
   points: number;
   explanation?: string;
   quizId: string;

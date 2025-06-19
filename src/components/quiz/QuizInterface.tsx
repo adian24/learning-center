@@ -375,24 +375,6 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({
                     </div>
                   ))}
                 </RadioGroup>
-              ) : currentQuestion.type === "TEXT" ||
-                currentQuestion.type === "NUMBER" ? (
-                <Textarea
-                  placeholder={
-                    currentQuestion.type === "NUMBER"
-                      ? "Masukkan angka..."
-                      : "Tulis jawaban Anda..."
-                  }
-                  value={getCurrentAnswer(currentQuestion.id)?.textAnswer || ""}
-                  onChange={(e) =>
-                    handleAnswerChange(
-                      currentQuestion.id,
-                      e.target.value,
-                      "text"
-                    )
-                  }
-                  className="min-h-[100px]"
-                />
               ) : null}
             </div>
           </div>
