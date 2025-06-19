@@ -1,12 +1,7 @@
 import { EnrolledCourse, Level, PurchaseStatus } from "../types";
 
 // Base types
-export type QuestionType =
-  | "MULTIPLE_CHOICE"
-  | "SINGLE_CHOICE"
-  | "TRUE_FALSE"
-  | "TEXT"
-  | "NUMBER";
+export type QuestionType = "MULTIPLE_CHOICE" | "SINGLE_CHOICE" | "TRUE_FALSE";
 
 // Question Option Interface
 export interface QuestionOption {

@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Quiz, Question, QuestionOption } from "@/lib/types";
-import { StudentQuiz } from "@/lib/types/quiz";
+import { QuestionType, StudentQuiz } from "@/lib/types/quiz";
 
 interface CreateQuizData {
   title: string;
@@ -70,6 +70,26 @@ async function getQuiz(quizId: string): Promise<Quiz> {
 
   if (!response.ok) {
     throw new Error("Failed to fetch quiz");
+  }
+
+  return response.json();
+}
+
+async function getQuestions(chapterId?: string): Promise<Question[]> {
+  const response = await fetch(`/api/teacher/questions?chapterId=${chapterId}`);
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch questions");
+  }
+
+  return response.json();
+}
+
+async function getQuestion(questionId?: string): Promise<Question> {
+  const response = await fetch(`/api/teacher/questions/${questionId}`);
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch question");
   }
 
   return response.json();
@@ -183,6 +203,7 @@ export function useQuizzes(chapterId?: string) {
     queryFn: () => getQuizzes(chapterId),
     staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
     retry: 2,
+    enabled: !!chapterId,
   });
 }
 
@@ -193,6 +214,26 @@ export function useQuiz(quizId?: string) {
     enabled: !!quizId,
     staleTime: 1000 * 60 * 5,
     retry: 2,
+  });
+}
+
+export function useQuestions(chapterId?: string) {
+  return useQuery({
+    queryKey: ["teacher-questions", chapterId],
+    queryFn: () => getQuestions(chapterId),
+    staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
+    retry: 2,
+    enabled: !!chapterId,
+  });
+}
+
+export function useQuestion(questionId?: string) {
+  return useQuery({
+    queryKey: ["teacher-question", questionId],
+    queryFn: () => getQuestion(questionId),
+    staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
+    retry: 2,
+    enabled: !!questionId,
   });
 }
 
@@ -342,6 +383,133 @@ export function useCreateQuestionOption() {
     },
     onError: (error) => {
       console.error("Failed to create question option:", error);
+    },
+  });
+}
+
+// Update Question
+export function useUpdateQuestion() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      questionId,
+      data,
+    }: {
+      questionId: string;
+      data: {
+        text: string;
+        type: QuestionType;
+        points: number;
+        explanation?: string;
+      };
+    }) => {
+      const response = await fetch(`/api/teacher/questions/${questionId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to update question");
+      }
+
+      return response.json();
+    },
+    onSuccess: (_, { questionId }) => {
+      // Invalidate quiz queries to refresh the question list
+      queryClient.invalidateQueries({ queryKey: ["teacher-quizzes"] });
+      queryClient.invalidateQueries({ queryKey: ["teacher-questions"] });
+    },
+  });
+}
+
+// Update Question Option
+export function useUpdateQuestionOption() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      optionId,
+      data,
+    }: {
+      optionId: string;
+      data: {
+        text: string;
+        isCorrect: boolean;
+      };
+    }) => {
+      const response = await fetch(
+        `/api/teacher/question-options/${optionId}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        }
+      );
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to update option");
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["teacher-quizzes"] });
+      queryClient.invalidateQueries({ queryKey: ["teacher-questions"] });
+    },
+  });
+}
+
+// Delete Question Option
+export function useDeleteQuestionOption() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ optionId }: { optionId: string }) => {
+      const response = await fetch(
+        `/api/teacher/question-options/${optionId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to delete option");
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["teacher-quizzes"] });
+      queryClient.invalidateQueries({ queryKey: ["teacher-questions"] });
+    },
+  });
+}
+
+// Delete Question
+export function useDeleteQuestion() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ questionId }: { questionId: string }) => {
+      const response = await fetch(`/api/teacher/questions/${questionId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to delete question");
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["teacher-quizzes"] });
+      queryClient.invalidateQueries({ queryKey: ["teacher-questions"] });
     },
   });
 }

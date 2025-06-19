@@ -53,12 +53,9 @@ import { useQuizDialogStore } from "@/store/use-store-quiz-dialog";
 // Step 1 Schema - Question Details
 const questionSchema = z.object({
   text: z.string().min(1, "Teks pertanyaan wajib diisi"),
-  type: z.enum(
-    ["MULTIPLE_CHOICE", "SINGLE_CHOICE", "TRUE_FALSE", "TEXT", "NUMBER"],
-    {
-      required_error: "Tipe pertanyaan wajib dipilih",
-    }
-  ),
+  type: z.enum(["MULTIPLE_CHOICE", "SINGLE_CHOICE", "TRUE_FALSE"], {
+    required_error: "Tipe pertanyaan wajib dipilih",
+  }),
   points: z.number().min(1, "Minimal 1 poin").max(100, "Maksimal 100 poin"),
   explanation: z.string().optional(),
 });
@@ -124,20 +121,20 @@ const CreateQuestionDialog: React.FC = () => {
       minCorrectOptions: 1,
       maxCorrectOptions: undefined,
     },
-    TEXT: {
-      label: "Teks Bebas",
-      description: "Jawaban berupa teks bebas",
-      needsOptions: false,
-      minCorrectOptions: 1,
-      maxCorrectOptions: undefined,
-    },
-    NUMBER: {
-      label: "Angka",
-      description: "Jawaban berupa angka/bilangan",
-      needsOptions: false,
-      minCorrectOptions: 1,
-      maxCorrectOptions: undefined,
-    },
+    // TEXT: {
+    //   label: "Teks Bebas",
+    //   description: "Jawaban berupa teks bebas",
+    //   needsOptions: false,
+    //   minCorrectOptions: 1,
+    //   maxCorrectOptions: undefined,
+    // },
+    // NUMBER: {
+    //   label: "Angka",
+    //   description: "Jawaban berupa angka/bilangan",
+    //   needsOptions: false,
+    //   minCorrectOptions: 1,
+    //   maxCorrectOptions: undefined,
+    // },
   };
 
   // Reset all states when dialog opens/closes

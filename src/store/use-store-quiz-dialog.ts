@@ -24,6 +24,18 @@ interface QuizDialogState {
   openCreateQuestionDialog: (quizId: string) => void;
   closeCreateQuestionDialog: () => void;
 
+  // Edit Question Dialog - NEW
+  isEditQuestionOpen: boolean;
+  editingQuestionId: string | null;
+  openEditQuestionDialog: (questionId: string) => void;
+  closeEditQuestionDialog: () => void;
+
+  // Delete Question Dialog - NEW
+  isDeleteQuestionOpen: boolean;
+  deletingQuestionId: string | null;
+  openDeleteQuestionDialog: (questionId: string) => void;
+  closeDeleteQuestionDialog: () => void;
+
   // Reset all states
   resetAllDialogs: () => void;
 }
@@ -56,6 +68,22 @@ export const useQuizDialogStore = create<QuizDialogState>((set) => ({
   closeCreateQuestionDialog: () =>
     set({ isCreateQuestionOpen: false, createQuestionQuizId: null }),
 
+  // Edit Question Dialog - NEW
+  isEditQuestionOpen: false,
+  editingQuestionId: null,
+  openEditQuestionDialog: (questionId: string) =>
+    set({ isEditQuestionOpen: true, editingQuestionId: questionId }),
+  closeEditQuestionDialog: () =>
+    set({ isEditQuestionOpen: false, editingQuestionId: null }),
+
+  // Delete Question Dialog - NEW
+  isDeleteQuestionOpen: false,
+  deletingQuestionId: null,
+  openDeleteQuestionDialog: (questionId: string) =>
+    set({ isDeleteQuestionOpen: true, deletingQuestionId: questionId }),
+  closeDeleteQuestionDialog: () =>
+    set({ isDeleteQuestionOpen: false, deletingQuestionId: null }),
+
   // Reset all states
   resetAllDialogs: () =>
     set({
@@ -63,8 +91,12 @@ export const useQuizDialogStore = create<QuizDialogState>((set) => ({
       isEditOpen: false,
       isDeleteOpen: false,
       isCreateQuestionOpen: false,
+      isEditQuestionOpen: false,
+      isDeleteQuestionOpen: false,
       editingQuizId: null,
       deletingQuizId: null,
       createQuestionQuizId: null,
+      editingQuestionId: null,
+      deletingQuestionId: null,
     }),
 }));

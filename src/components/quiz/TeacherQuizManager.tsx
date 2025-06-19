@@ -39,6 +39,9 @@ import EditQuizDialog from "./EditQuizDialog";
 import DeleteQuizDialog from "./DeleteQuizDialog";
 import CreateQuestionDialog from "./questions/CreateQuestionDialog";
 import { useQuizDialogStore } from "@/store/use-store-quiz-dialog";
+import QuestionItem from "./questions/QuestionItem";
+import EditQuestionDialog from "./questions/EditQuestionDialog";
+import DeleteQuestionDialog from "./questions/DeleteQuestionDialog";
 
 interface TeacherQuizManagerProps {
   chapterId: string;
@@ -67,15 +70,6 @@ const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
   const deletingQuiz = deletingQuizId
     ? quizzes.find((quiz) => quiz.id === deletingQuizId) || null
     : null;
-
-  // Question type labels
-  const questionTypeLabels = {
-    MULTIPLE_CHOICE: "Pilihan Ganda (Banyak Jawaban)",
-    SINGLE_CHOICE: "Pilihan Ganda (Satu Jawaban)",
-    TRUE_FALSE: "Benar/Salah",
-    TEXT: "Teks Bebas",
-    NUMBER: "Angka",
-  };
 
   if (isLoading) {
     return (
@@ -250,95 +244,11 @@ const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
                                 <AccordionContent>
                                   <div className="space-y-4">
                                     {quiz.questions.map((question, qIndex) => (
-                                      <div
-                                        key={question.id}
-                                        className="bg-gray-50 border rounded-lg p-4"
-                                      >
-                                        <div className="space-y-3">
-                                          {/* Question Header */}
-                                          <div className="flex items-start justify-between">
-                                            <div className="flex-1">
-                                              <div className="flex items-center gap-2 mb-2">
-                                                <Badge
-                                                  variant="outline"
-                                                  className="text-xs"
-                                                >
-                                                  Soal {qIndex + 1}
-                                                </Badge>
-                                                <Badge
-                                                  variant="outline"
-                                                  className="text-xs"
-                                                >
-                                                  {questionTypeLabels[
-                                                    question.type
-                                                  ] || question.type}
-                                                </Badge>
-                                                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                                  <Hash className="h-3 w-3" />
-                                                  {question.points} poin
-                                                </div>
-                                              </div>
-                                              <p className="text-sm text-gray-800 font-medium">
-                                                {question.text}
-                                              </p>
-                                            </div>
-                                          </div>
-
-                                          {/* Question Options */}
-                                          {question.options &&
-                                            question.options.length > 0 && (
-                                              <div className="space-y-2">
-                                                <p className="text-xs font-medium text-muted-foreground">
-                                                  Pilihan Jawaban:
-                                                </p>
-                                                <div className="grid gap-2">
-                                                  {question.options.map(
-                                                    (option, oIndex) => (
-                                                      <div
-                                                        key={option.id}
-                                                        className={`flex items-center gap-2 p-2 rounded text-xs ${
-                                                          option.isCorrect
-                                                            ? "bg-green-100 border border-green-200"
-                                                            : "bg-white border"
-                                                        }`}
-                                                      >
-                                                        <span className="font-medium text-muted-foreground">
-                                                          {String.fromCharCode(
-                                                            65 + oIndex
-                                                          )}
-                                                          .
-                                                        </span>
-                                                        <span className="flex-1">
-                                                          {option.text}
-                                                        </span>
-                                                        {option.isCorrect && (
-                                                          <CheckCircle className="h-4 w-4 text-green-600" />
-                                                        )}
-                                                      </div>
-                                                    )
-                                                  )}
-                                                </div>
-                                              </div>
-                                            )}
-
-                                          {/* Question Explanation */}
-                                          {question.explanation && (
-                                            <div className="bg-blue-50 border border-blue-200 rounded p-3">
-                                              <div className="flex items-start gap-2">
-                                                <HelpCircle className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                                                <div>
-                                                  <p className="text-xs font-medium text-blue-800 mb-1">
-                                                    Penjelasan:
-                                                  </p>
-                                                  <p className="text-xs text-blue-700">
-                                                    {question.explanation}
-                                                  </p>
-                                                </div>
-                                              </div>
-                                            </div>
-                                          )}
-                                        </div>
-                                      </div>
+                                      <QuestionItem
+                                        key={qIndex}
+                                        question={question}
+                                        qIndex={qIndex}
+                                      />
                                     ))}
                                   </div>
                                 </AccordionContent>
@@ -424,6 +334,8 @@ const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
       <EditQuizDialog quiz={editingQuiz} />
       <DeleteQuizDialog quiz={deletingQuiz} />
       <CreateQuestionDialog />
+      <EditQuestionDialog />
+      <DeleteQuestionDialog />
     </div>
   );
 };
