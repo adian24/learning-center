@@ -231,7 +231,7 @@ const StudentQuizzes = ({ chapterId }: StudentQuizzesProps) => {
                 const attemptsRemaining = attemptData?.attemptsRemaining || 3;
 
                 return (
-                  <div className="space-y-2 border rounded-lg bg-card">
+                  <div className="space-y-2 border p-3 rounded-lg bg-card">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
