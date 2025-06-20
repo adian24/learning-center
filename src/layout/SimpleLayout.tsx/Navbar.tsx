@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { LogOut, User } from "lucide-react";
+import { Fragment } from "react";
 
 const Navbar = () => {
   const { data: session, status } = useSession();
@@ -76,10 +77,26 @@ const Navbar = () => {
                 </DropdownMenu>
               </>
             ) : (
-              /* Unauthenticated - Signup Button */
-              <Button asChild>
-                <Link href="/sign-up">Sign up</Link>
-              </Button>
+              <Fragment>
+                {/* Unauthenticated - Signin Button */}
+                <Button
+                  className="bg-white hover:bg-black border hover:border-none border-sky-700"
+                  asChild
+                >
+                  <Link
+                    href="/sign-in"
+                    className="text-sky-600 hover:text-white font-semibold"
+                  >
+                    Sign in
+                  </Link>
+                </Button>
+                {/* Unauthenticated - Signup Button */}
+                <Button className="bg-sky-600" asChild>
+                  <Link href="/sign-up" className="font-semibold">
+                    Sign up
+                  </Link>
+                </Button>
+              </Fragment>
             )}
           </div>
         </div>

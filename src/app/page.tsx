@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
-import Landing from "@/views/landing";
 import { redirect } from "next/navigation";
+import Landing from "@/views/landing";
 
 const Page = async () => {
   const session = await auth();
