@@ -43,8 +43,11 @@ import {
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useStudents } from "@/hooks/use-students";
+import { useRouter } from "next/navigation";
 
 const TeacherStudents = () => {
+  const router = useRouter();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<"name" | "enrollmentDate" | "progress">(
     "enrollmentDate"
@@ -304,81 +307,91 @@ const TeacherStudents = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {students.map((student) => (
-                        <TableRow key={student.id}>
-                          <TableCell>
-                            <div className="flex items-center gap-3">
-                              <Avatar className="h-10 w-10">
-                                <AvatarImage
-                                  src={student.image}
-                                  alt={student.name}
-                                />
-                                <AvatarFallback>
-                                  {getInitials(student.name)}
-                                </AvatarFallback>
-                              </Avatar>
-                              <div>
-                                <p className="font-medium text-gray-900">
-                                  {student.name}
-                                </p>
-                                <p className="text-sm text-gray-500">
-                                  ID: {student.studentId.slice(-8)}
-                                </p>
+                      {students.map((student, idx) => {
+                        return (
+                          <TableRow
+                            key={idx}
+                            className="cursor-pointer hover:bg-gray-50"
+                            onClick={() =>
+                              router.push(`/teacher/students/${student.id}`)
+                            }
+                          >
+                            <TableCell>
+                              <div className="flex items-center gap-3">
+                                <Avatar className="h-10 w-10">
+                                  <AvatarImage
+                                    src={student.image}
+                                    alt={student.name}
+                                  />
+                                  <AvatarFallback>
+                                    {getInitials(student.name)}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <div>
+                                  <p className="font-medium text-gray-900">
+                                    {student.name}
+                                  </p>
+                                  <p className="text-sm text-gray-500">
+                                    ID: {student.studentId.slice(-8)}
+                                  </p>
+                                </div>
                               </div>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <Mail className="h-4 w-4 text-gray-400" />
-                              <span className="text-sm">{student.email}</span>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex flex-wrap gap-1 max-w-xs">
-                              {student.enrolledCourses.map((course, index) => (
-                                <Badge
-                                  key={index}
-                                  variant="outline"
-                                  className="text-xs"
-                                >
-                                  {course}
-                                </Badge>
-                              ))}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <div className="w-full bg-gray-200 rounded-full h-2 max-w-[80px]">
-                                <div
-                                  className={`h-2 rounded-full ${getProgressColor(
-                                    student.progressPercentage
-                                  )}`}
-                                  style={{
-                                    width: `${student.progressPercentage}%`,
-                                  }}
-                                ></div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <Mail className="h-4 w-4 text-gray-400" />
+                                <span className="text-sm">{student.email}</span>
                               </div>
-                              <Badge
-                                variant={getProgressBadgeVariant(
-                                  student.progressPercentage
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex flex-wrap gap-1 max-w-xs">
+                                {student.enrolledCourses.map(
+                                  (course, index) => (
+                                    <Badge
+                                      key={index}
+                                      variant="outline"
+                                      className="text-xs"
+                                    >
+                                      {course}
+                                    </Badge>
+                                  )
                                 )}
-                              >
-                                {student.progressPercentage}%
-                              </Badge>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="text-sm text-gray-600">
-                              {formatDistanceToNow(
-                                new Date(student.enrollmentDate),
-                                {
-                                  addSuffix: true,
-                                }
-                              )}
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <div className="w-full bg-gray-200 rounded-full h-2 max-w-[80px]">
+                                  <div
+                                    className={`h-2 rounded-full ${getProgressColor(
+                                      student.progressPercentage
+                                    )}`}
+                                    style={{
+                                      width: `${student.progressPercentage}%`,
+                                    }}
+                                  ></div>
+                                </div>
+                                <Badge
+                                  variant={getProgressBadgeVariant(
+                                    student.progressPercentage
+                                  )}
+                                >
+                                  {student.progressPercentage}%
+                                </Badge>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="text-sm text-gray-600">
+                                {formatDistanceToNow(
+                                  new Date(student.enrollmentDate),
+                                  {
+                                    addSuffix: true,
+                                  }
+                                )}
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
                     </TableBody>
                   </Table>
                 </div>

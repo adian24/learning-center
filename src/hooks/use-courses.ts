@@ -44,6 +44,21 @@ export const useCourses = (filters: CourseFilters) => {
   });
 };
 
+export const useAllCourses = () => {
+  return useQuery<CoursesResponse>({
+    queryKey: ["allCourses"],
+    queryFn: async () => {
+      const response = await fetch(`/api/courses`);
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch courses");
+      }
+
+      return response.json();
+    },
+  });
+};
+
 export const useCategories = () => {
   return useQuery<Category[]>({
     queryKey: ["categories"],

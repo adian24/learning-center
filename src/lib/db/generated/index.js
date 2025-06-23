@@ -398,7 +398,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "E:\\work\\tsi\\learning-center\\src\\lib\\db\\generated",
+      "value": "/Users/ayuarmadani/Documents/TSIProject/website/2025/learning-center/src/lib/db/generated",
       "fromEnvVar": null
     },
     "config": {
@@ -407,17 +407,16 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "windows",
+        "value": "darwin-arm64",
         "native": true
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "E:\\work\\tsi\\learning-center\\src\\lib\\db\\schema.prisma",
+    "sourceFilePath": "/Users/ayuarmadani/Documents/TSIProject/website/2025/learning-center/src/lib/db/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null,
-    "schemaEnvPath": "../../../../.env"
+    "rootEnvPath": null
   },
   "relativePath": "..",
   "clientVersion": "6.6.0",
@@ -426,11 +425,12 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": true,
   "inlineDatasources": {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL",
-        "value": "postgres://postgres:groupt5p@194.195.92.47:5433/elearning?schema=public&connection_limit=5&pool_timeout=10"
+        "value": null
       }
     }
   },
@@ -474,8 +474,8 @@ exports.PrismaClient = PrismaClient
 Object.assign(exports, Prisma)
 
 // file annotations for bundling tools to include these files
-path.join(__dirname, "query_engine-windows.dll.node");
-path.join(process.cwd(), "src/lib/db/generated/query_engine-windows.dll.node")
+path.join(__dirname, "libquery_engine-darwin-arm64.dylib.node");
+path.join(process.cwd(), "src/lib/db/generated/libquery_engine-darwin-arm64.dylib.node")
 // file annotations for bundling tools to include these files
 path.join(__dirname, "schema.prisma");
 path.join(process.cwd(), "src/lib/db/generated/schema.prisma")
