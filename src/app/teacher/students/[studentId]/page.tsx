@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/table";
 import { ChevronDown, ChevronUp, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useStudents } from "@/hooks/use-students";
+import { useStudentOverview, useStudents } from "@/hooks/use-students";
 import clsx from "clsx";
 import React from "react";
 
@@ -31,6 +31,9 @@ const StudentDetailPage = () => {
 
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const { students, isLoading } = useStudents();
+  const { overview } = useStudentOverview(studentId);
+
+  console.log("Student Overview:", overview);
 
   const student = students.find((item) => item.id === studentId);
 

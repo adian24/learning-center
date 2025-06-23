@@ -1,3 +1,4 @@
+// src/app/api/teacher/students/[studentId]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import db from "@/lib/db/db";
@@ -17,7 +18,7 @@ export async function GET(
   { params }: { params: Promise<{ studentId: string }> }
 ) {
   try {
-    const studentId = (await params).studentId;
+    const { studentId } = await params;
     const session = await auth();
 
     if (!session?.user) {

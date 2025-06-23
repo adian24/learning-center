@@ -313,7 +313,9 @@ const TeacherStudents = () => {
                             key={idx}
                             className="cursor-pointer hover:bg-gray-50"
                             onClick={() =>
-                              router.push(`/teacher/students/${student.id}`)
+                              router.push(
+                                `/teacher/students/${student.studentId}`
+                              )
                             }
                           >
                             <TableCell>
