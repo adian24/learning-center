@@ -180,3 +180,60 @@ export async function getChapterProgressWithQuizzes(
     calculation,
   };
 }
+
+// Enhanced function untuk cek prerequisite completion
+export async function canAccessChapter(
+  studentId: string,
+  targetChapterId: string
+): Promise<{
+  canAccess: boolean;
+  reason: string;
+  requiredChapter?: string;
+}> {
+  // Get target chapter
+  const targetChapter = await db.chapter.findUnique({
+    where: { id: targetChapterId },
+    include: { course: true },
+  });
+
+  // Jika chapter pertama (position 1) atau isFree = true, selalu bisa akses
+  if (targetChapter?.position === 1 || targetChapter?.isFree) {
+    return { canAccess: true, reason: "First chapter or free chapter" };
+  }
+
+  // Get previous chapter (position - 1)
+  let previousChapter = null;
+  if (targetChapter && typeof targetChapter.position === "number") {
+    previousChapter = await db.chapter.findFirst({
+      where: {
+        courseId: targetChapter.courseId,
+        position: targetChapter.position - 1,
+      },
+    });
+  }
+
+  if (!previousChapter) {
+    return { canAccess: true, reason: "No previous chapter required" };
+  }
+
+  // Check if previous chapter is completed
+  const previousProgress = await db.userProgress.findUnique({
+    where: {
+      studentId_chapterId: {
+        studentId,
+        chapterId: previousChapter.id,
+      },
+    },
+  });
+
+  const isPreviousCompleted =
+    previousProgress?.isCompleted && (previousProgress.chapterScore ?? 0) >= 65;
+
+  return {
+    canAccess: !!isPreviousCompleted,
+    reason: isPreviousCompleted
+      ? "Previous chapter completed"
+      : "Must complete previous chapter first",
+    requiredChapter: isPreviousCompleted ? undefined : previousChapter.id,
+  };
+}
