@@ -5,6 +5,7 @@ import {
   getChapterProgressWithQuizzes,
   canProceedToNextChapter,
   calculateChapterScore,
+  canAccessChapter,
 } from "@/lib/services/quiz-score-service";
 
 export async function GET(req: NextRequest) {
@@ -115,12 +116,24 @@ export async function GET(req: NextRequest) {
           );
           const userProgress = chapter.userProgress[0] || null;
 
+          // Check access berdasarkan prerequisite
+          const accessCheck = await canAccessChapter(
+            studentProfile.id,
+            chapter.id
+          );
+
           return {
             chapterId: chapter.id,
             chapterTitle: chapter.title,
             position: chapter.position,
             userProgress,
             calculation,
+            duration: chapter.duration,
+            videoUrl: chapter.videoUrl,
+            canAccess: accessCheck.canAccess,
+            lockReason: accessCheck.reason,
+            requiredChapter: accessCheck.requiredChapter,
+            isLocked: !accessCheck.canAccess,
             quizzes: chapter.quizzes.map((quiz) => ({
               id: quiz.id,
               title: quiz.title,
