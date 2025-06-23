@@ -34,36 +34,15 @@ import {
   ChevronRight,
   Search,
   Users,
-  BookOpen,
   TrendingUp,
   Loader2,
   Filter,
   Calendar,
   Mail,
-  User,
   RefreshCw,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useStudents } from "@/hooks/use-students";
-
-interface Student {
-  id: string;
-  studentId: string;
-  name: string;
-  email: string;
-  image?: string;
-  enrolledCourses: string[];
-  enrollmentDate: string;
-  progressPercentage: number;
-}
-
-const fetchStudents = async (): Promise<Student[]> => {
-  const response = await fetch("/api/teacher/students");
-  if (!response.ok) {
-    throw new Error("Failed to fetch students");
-  }
-  return response.json();
-};
 
 const TeacherStudents = () => {
   const [searchTerm, setSearchTerm] = useState("");
