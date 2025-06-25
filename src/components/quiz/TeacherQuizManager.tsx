@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -21,9 +22,6 @@ import {
   AlertCircle,
   BookOpen,
   Plus,
-  HelpCircle,
-  Hash,
-  CheckCircle,
   RefreshCcw,
 } from "lucide-react";
 import {
@@ -42,6 +40,7 @@ import { useQuizDialogStore } from "@/store/use-store-quiz-dialog";
 import QuestionItem from "./questions/QuestionItem";
 import EditQuestionDialog from "./questions/EditQuestionDialog";
 import DeleteQuestionDialog from "./questions/DeleteQuestionDialog";
+import { useChapterQuery } from "@/hooks/use-chapter-query";
 
 interface TeacherQuizManagerProps {
   chapterId: string;
@@ -50,8 +49,16 @@ interface TeacherQuizManagerProps {
 const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
   chapterId,
 }) => {
+  const params = useParams();
+  const courseId = params.courseId as string;
+
   const { quizzes, isLoading, error, quizCount, maxQuizzesReached, refetch } =
     useQuizBuilder(chapterId);
+
+  const { data: chapterData } = useChapterQuery({ courseId, chapterId });
+
+  // Check if course is free
+  const isFree = chapterData?.isFree;
 
   const {
     openCreateDialog,
@@ -121,14 +128,16 @@ const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
                 />
                 Refresh
               </Button>
-              <Button
-                disabled={maxQuizzesReached}
-                className="gap-2"
-                onClick={openCreateDialog}
-              >
-                <Plus className="h-4 w-4" />
-                Buat Quiz Baru
-              </Button>
+              {!isFree && (
+                <Button
+                  disabled={maxQuizzesReached}
+                  className="gap-2"
+                  onClick={openCreateDialog}
+                >
+                  <Plus className="h-4 w-4" />
+                  Buat Quiz Baru
+                </Button>
+              )}
             </div>
           </div>
         </CardHeader>
@@ -158,16 +167,20 @@ const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
                   <div>
                     <h3 className="text-lg font-semibold">Belum Ada Quiz</h3>
                     <p className="text-sm text-muted-foreground mb-4">
-                      Mulai dengan membuat quiz pertama untuk chapter ini.
+                      {isFree
+                        ? "Quiz tidak tersedia untuk course gratis."
+                        : "Mulai dengan membuat quiz pertama untuk chapter ini."}
                     </p>
-                    <Button
-                      disabled={maxQuizzesReached}
-                      className="gap-2"
-                      onClick={openCreateDialog}
-                    >
-                      <Plus className="h-4 w-4" />
-                      Buat Quiz Baru
-                    </Button>
+                    {!isFree && (
+                      <Button
+                        disabled={maxQuizzesReached}
+                        className="gap-2"
+                        onClick={openCreateDialog}
+                      >
+                        <Plus className="h-4 w-4" />
+                        Buat Quiz Baru
+                      </Button>
+                    )}
                   </div>
                 </div>
               </CardContent>
