@@ -144,7 +144,7 @@ const ContentVideo = ({
 
       // Invalidate queries to refresh data
       queryClient.invalidateQueries({
-        queryKey: ["chapter", courseId, chapterId],
+        queryKey: ["chapter", chapterId],
       });
       queryClient.invalidateQueries({
         queryKey: ["chapters", courseId],

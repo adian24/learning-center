@@ -77,7 +77,7 @@ const DialogDeleteVideo = () => {
 
       // Invalidate queries to refresh data
       queryClient.invalidateQueries({
-        queryKey: ["chapter", videoToDelete.courseId, videoToDelete.id],
+        queryKey: ["chapter", videoToDelete.id],
       });
       queryClient.invalidateQueries({
         queryKey: ["chapters", videoToDelete.courseId],

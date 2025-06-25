@@ -23,7 +23,7 @@ async function getChapter(
 
 export function useChapterQuery({ courseId, chapterId }: UseChapterQuery) {
   return useQuery({
-    queryKey: ["chapter", courseId, chapterId],
+    queryKey: ["chapter", chapterId],
     queryFn: () => getChapter(courseId, chapterId),
     enabled: !!courseId && !!chapterId,
     staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes

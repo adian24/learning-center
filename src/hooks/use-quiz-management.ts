@@ -256,7 +256,7 @@ export function useCreateQuiz() {
 
       // Invalidate all quizzes
       queryClient.invalidateQueries({
-        queryKey: ["teacher-quizzes"],
+        queryKey: ["chapter", variables.chapterId],
       });
 
       console.log(`Quiz "${data.title}" created successfully`);
