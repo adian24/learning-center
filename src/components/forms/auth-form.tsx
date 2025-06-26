@@ -17,14 +17,18 @@ import ActionButton from "./action-button";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Alert, AlertDescription } from "../ui/alert";
+import { useTranslations } from "next-intl";
 
 export default function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const t = useTranslations();
   const router = useRouter();
-  const [error, setError] = useState("");
+
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+
+  const [error, setError] = useState("");
 
   // Helper function to check what provider an email is registered with
   const checkEmailProvider = async (email: string) => {
@@ -76,7 +80,9 @@ export default function LoginForm({
           setError("Terjadi kesalahan saat proses login. Silakan coba lagi.");
         }
       } else {
-        router.push("/dashboard");
+        const routerCache = localStorage.getItem("routerCache");
+        router.push(routerCache || "/dashboard");
+        localStorage.removeItem("routerCache");
       }
     } catch (error) {
       console.error("Authentication error:", error);
@@ -106,7 +112,9 @@ export default function LoginForm({
           setError("Google sign-in failed. Please try again.");
         }
       } else if (result?.ok) {
-        router.push("/dashboard");
+        const routerCache = localStorage.getItem("routerCache");
+        router.push(routerCache || "/dashboard");
+        localStorage.removeItem("routerCache");
       }
     } catch (error) {
       console.error("Google sign-in error:", error);
@@ -120,8 +128,8 @@ export default function LoginForm({
     <div className={cn("flex flex-col gap-4", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Selamat Datang Kembali</CardTitle>
-          <CardDescription>Login dengan Google akunmu</CardDescription>
+          <CardTitle className="text-xl">{t("title_signin")}</CardTitle>
+          <CardDescription>{t("subtitle_signin")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-6">
@@ -147,7 +155,7 @@ export default function LoginForm({
             </div>
             <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
               <span className="relative z-10 bg-background px-2 text-muted-foreground">
-                Atau
+                {t("or_signin")}
               </span>
             </div>
             {error && (
@@ -158,7 +166,7 @@ export default function LoginForm({
             <form action={handleCredential}>
               <div className="grid gap-6">
                 <div className="grid gap-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">{t("email_signin")}</Label>
                   <Input
                     id="email"
                     name="email"
@@ -169,12 +177,12 @@ export default function LoginForm({
                 </div>
                 <div className="grid gap-2">
                   <div className="flex items-center">
-                    <Label htmlFor="password">Password</Label>
+                    <Label htmlFor="password">{t("password_signin")}</Label>
                     <a
                       href="#"
                       className="ml-auto text-sm underline-offset-4 hover:underline"
                     >
-                      Lupa password?
+                      {t("forgot_password_signin")}
                     </a>
                   </div>
                   <Input
@@ -187,23 +195,23 @@ export default function LoginForm({
                 <ActionButton
                   type="submit"
                   className="w-full"
-                  defaultText="Masuk"
-                  loadingText="Mohon tunggu..."
+                  defaultText={t("submit_signin")}
+                  loadingText={t("loading_signin")}
                 />
               </div>
             </form>
             <div className="text-center text-sm">
-              Tidak memiliki akun?{" "}
+              {t("no_account_signin")}{" "}
               <Link href="/sign-up" className="underline underline-offset-4">
-                Daftar
+                {t("signup")}
               </Link>
             </div>
           </div>
         </CardContent>
       </Card>
       <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary  ">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
+        {t("terms")} <a href="#">{t("terms_link")}</a> {t("and")}{" "}
+        <a href="#">{t("privacy_link")}</a>.
       </div>
     </div>
   );

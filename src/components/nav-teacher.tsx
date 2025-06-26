@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/sidebar";
 
 import { useUserRole } from "@/hooks/use-user-role";
+import { useTranslations } from "next-intl";
 
 export function NavTeacher({
   items,
@@ -23,11 +24,12 @@ export function NavTeacher({
     icon: LucideIcon;
   }[];
 }) {
+  const t = useTranslations();
   const { data: user } = useUserRole();
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Teacher</SidebarGroupLabel>
+      <SidebarGroupLabel>{t("breadcrumb_teacher")}</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <SidebarMenuItem key={item.name}>

@@ -5,7 +5,7 @@ import Footer from "./landing/footer";
 import HeroSection from "./landing/hero-section";
 import PartnershipSection from "./landing/partnership-section";
 import CareerSection from "./landing/career-section";
-import ProgramSection from "./landing/program-section";
+import ProgramsSection from "./landing/programs-section";
 import SimpleLayout from "@/layout/SimpleLayout.tsx";
 
 export default function LandingPage() {
@@ -20,7 +20,7 @@ export default function LandingPage() {
           setSearchCategory(category);
         }}
       />
-      <ProgramSection keyword={searchKeyword} category={searchCategory} />
+      <ProgramsSection keyword={searchKeyword} category={searchCategory} />
       <PartnershipSection />
       <CareerSection />
       <Footer />

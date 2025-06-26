@@ -9,6 +9,7 @@ import jitLogo from "@/assets/companies-logo/jit.png";
 import ptsLogo from "@/assets/companies-logo/pts.png";
 import PartnerShimmer from "./shimmer/partner-shimmer";
 import { useEffect } from "react";
+import { useTranslations } from "next-intl";
 
 const partners = [
   { name: "TSI", logo: tsiLogo },
@@ -18,7 +19,9 @@ const partners = [
 ];
 
 export default function PartnershipSection() {
+  const t = useTranslations();
   const router = useRouter();
+
   const isLoading = false;
 
   const [sliderRef, slider] = useKeenSlider<HTMLDivElement>({
@@ -75,7 +78,7 @@ export default function PartnershipSection() {
   return (
     <section className="bg-gray-50 py-20 px-6">
       <h2 className="text-3xl font-semibold mb-12 text-center text-sky-700">
-        🌟 Perusahaan Mitra Kami
+        {t("landing_partners_title")}
       </h2>
       <div
         ref={sliderRef}

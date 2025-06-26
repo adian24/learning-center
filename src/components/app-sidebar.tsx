@@ -3,7 +3,6 @@
 import * as React from "react";
 import {
   UsersRound,
-  ChartArea,
   Compass,
   LayoutDashboard,
   GraduationCap,
@@ -24,64 +23,66 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { SidebarOption } from "./sidebar-option";
-
-// This is sample data.
-const data = {
-  teams: [
-    {
-      name: "Student",
-      logo: UserRoundCheck,
-      plan: "0 Enrollments",
-    },
-    {
-      name: "Teacher",
-      logo: GraduationCap,
-      plan: "0 Courses",
-    },
-  ],
-  navStudent: [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: LayoutDashboard,
-      isActive: true,
-    },
-    {
-      title: "My Courses",
-      url: "/my-courses",
-      icon: Compass,
-    },
-    {
-      title: "Certificates",
-      url: "/certificates",
-      icon: TicketCheck,
-    },
-    {
-      title: "Shop",
-      url: "/courses",
-      icon: ShoppingCart,
-    },
-  ],
-  navTeacher: [
-    {
-      name: "Dashboard",
-      url: "/teacher/dashboard",
-      icon: LayoutDashboard,
-    },
-    {
-      name: "My Courses",
-      url: "/teacher/courses",
-      icon: Compass,
-    },
-    {
-      name: "Students",
-      url: "/teacher/students",
-      icon: UsersRound,
-    },
-  ],
-};
+import { useTranslations } from "next-intl";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const t = useTranslations();
+
+  const data = {
+    teams: [
+      {
+        name: t("sidebar_team_student"),
+        logo: UserRoundCheck,
+        plan: t("sidebar_team_student_plan"),
+      },
+      {
+        name: t("sidebar_team_teacher"),
+        logo: GraduationCap,
+        plan: t("sidebar_team_teacher_plan"),
+      },
+    ],
+    navStudent: [
+      {
+        title: t("sidebar_dashboard"),
+        url: "/dashboard",
+        icon: LayoutDashboard,
+        isActive: true,
+      },
+      {
+        title: t("sidebar_my_courses"),
+        url: "/my-courses",
+        icon: Compass,
+      },
+      {
+        title: t("sidebar_certificates"),
+        url: "/certificates",
+        icon: TicketCheck,
+      },
+      {
+        title: t("sidebar_shop"),
+        url: "/courses",
+        icon: ShoppingCart,
+      },
+    ],
+    navTeacher: [
+      {
+        name: t("sidebar_dashboard"),
+        url: "/teacher/dashboard",
+        icon: LayoutDashboard,
+      },
+      {
+        name: t("sidebar_my_courses"),
+        url: "/teacher/courses",
+        icon: Compass,
+      },
+      {
+        name: t("sidebar_students"),
+        url: "/teacher/students",
+        icon: UsersRound,
+      },
+    ],
+  };
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>

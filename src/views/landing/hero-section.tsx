@@ -12,20 +12,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import CategoryShimmer from "./shimmer/category-shimmer";
-
-const categoryTranslations: Record<string, string> = {
-  "Business & Management": "Bisnis & Manajemen",
-  "Design & Creative": "Desain & Kreatif",
-  "Personal Development": "Pengembangan Diri",
-  "Professional Certification": "Sertifikasi Profesional",
-  "Technology & Programming": "Teknologi & Pemrograman",
-};
+import { useTranslations } from "next-intl";
 
 interface HeroSectionProps {
   onSearch: (keyword: string, category: string) => void;
 }
 
 export default function HeroSection({ onSearch }: HeroSectionProps) {
+  const t = useTranslations();
+
   const { data, isLoading } = useAllCourses();
   const categories = data?.categories ?? [];
 
@@ -41,8 +36,8 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
   return (
     <section className="bg-gradient-to-r from-sky-50 to-blue-100 py-24 px-6 text-center animate-fade-in">
       <h1 className="text-4xl md:text-5xl font-bold mb-6 max-w-3xl mx-auto leading-tight">
-        Tingkatkan Karier Anda dengan{" "}
-        <span className="text-sky-600">Pelatihan dari Para Ahli</span>
+        {t("landing_hero_title")}{" "}
+        <span className="text-sky-600">{t("landing_hero_subtitle")}</span>
       </h1>
 
       <div className="flex flex-wrap justify-center items-center gap-x-2 text-muted-foreground mb-8 text-sm md:text-base">
@@ -51,7 +46,7 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
           : categories.map((item, index) => (
               <span key={index} className="flex items-center">
                 {index < categories.length && <span className="mx-1">•</span>}
-                {categoryTranslations[item.name] ?? item.name}
+                {t(`landing_categories_${item.name}`) ?? item?.name}
               </span>
             ))}
       </div>
@@ -59,7 +54,7 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
       {/* Form pencarian */}
       <div className="flex flex-col sm:flex-row sm:flex-wrap justify-center gap-4 max-w-5xl mx-auto">
         <Input
-          placeholder="Cari pelatihan..."
+          placeholder={t("landing_hero_searchPlaceholder")}
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
           className="flex-1 min-w-[220px] rounded-xl shadow-sm border-sky-300"
@@ -68,12 +63,14 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
         <div className="min-w-[220px]">
           <Select value={category} onValueChange={setCategory}>
             <SelectTrigger className="rounded-xl shadow-sm bg-white w-full border-sky-300">
-              <SelectValue placeholder="Pilih Kategori" />
+              <SelectValue
+                placeholder={t("landing_hero_categoryPlaceholder")}
+              />
             </SelectTrigger>
             <SelectContent>
               {categories.map((cat, index) => (
                 <SelectItem key={index} value={cat.name}>
-                  {categoryTranslations[cat.name] ?? cat.name}
+                  {t(`landing_categories_${cat.name}`) ?? cat?.name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -85,7 +82,7 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
             className="bg-sky-600 hover:bg-sky-700 text-white px-6 py-2 rounded-xl shadow-lg transition"
             onClick={() => onSearch(keyword, category)}
           >
-            Cari
+            {t("landing_hero_searchButton")}
           </Button>
 
           <Button
@@ -93,7 +90,7 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
             onClick={handleReset}
             className="text-gray-600 border border-sky-300 px-6 py-2 rounded-xl shadow-sm"
           >
-            Reset
+            {t("landing_hero_resetButton")}
           </Button>
         </div>
       </div>

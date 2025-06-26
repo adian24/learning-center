@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import clsx from "clsx";
 import { Button } from "@/components/ui/button";
 import CareersShimmer from "./shimmer/careers-shimmer";
+import { useTranslations } from "next-intl";
 
 const companies = [
   {
@@ -61,9 +62,12 @@ const companies = [
 ];
 
 export default function CareersPage() {
+  const t = useTranslations();
   const router = useRouter();
-  const [selectedTab, setSelectedTab] = useState<string>("all");
+
   const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const [selectedTab, setSelectedTab] = useState<string>("all");
 
   const allJobs = companies.flatMap((company) =>
     company.jobs.map((job, idx) => ({
@@ -88,7 +92,7 @@ export default function CareersPage() {
     <section className="bg-white py-24 px-6">
       <div className="max-w-7xl mx-auto">
         <h2 className="text-3xl font-semibold mb-12 text-center text-sky-700">
-          Semua Lowongan Kerja
+          {t("landing_careers_title")}
         </h2>
 
         <div className="flex justify-center mb-8">
@@ -105,7 +109,7 @@ export default function CareersPage() {
                   "data-[state=active]:bg-sky-600 data-[state=active]:text-white"
                 )}
               >
-                Semua Perusahaan
+                {t("landing_careers_allCompanies")}
               </TabsTrigger>
               {companies.map((company) => (
                 <TabsTrigger
@@ -157,7 +161,7 @@ export default function CareersPage() {
             onClick={() => router.push("/careers")}
             className="px-5 py-2 rounded-full bg-sky-100 text-sky-700 text-sm hover:bg-sky-200 transition border border-sky-200"
           >
-            Lihat Semua Lowongan
+            {t("landing_careers_see_all")}
           </Button>
         </div>
       </div>

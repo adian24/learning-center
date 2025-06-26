@@ -10,9 +10,11 @@ import {
 } from "@/components/ui/breadcrumb";
 import { generateBreadcrumb } from "@/lib/breadcrumb";
 import { Fragment } from "react";
+import { useTranslations } from "next-intl";
 // import { useCourseQuery } from "@/hooks/use-course-query";
 
 export default function NavBreadcrumb() {
+  const t = useTranslations();
   const pathname = usePathname();
 
   // Early return for root path
@@ -45,23 +47,27 @@ export default function NavBreadcrumb() {
   return (
     <Breadcrumb>
       <BreadcrumbList>
-        {/* Home link always visible */}
-        <BreadcrumbItem>Home</BreadcrumbItem>
+        <BreadcrumbItem>{t("breadcrumb_home")}</BreadcrumbItem>
         <BreadcrumbSeparator />
 
-        {/* Dynamic breadcrumbs */}
-        {updatedBreadcrumbs.map((breadcrumb, index) => (
-          <Fragment key={index}>
-            {breadcrumb.isLast ? (
-              <BreadcrumbPage>{breadcrumb.label}</BreadcrumbPage>
-            ) : (
-              <>
-                <BreadcrumbItem>{breadcrumb.label}</BreadcrumbItem>
-                <BreadcrumbSeparator />
-              </>
-            )}
-          </Fragment>
-        ))}
+        {updatedBreadcrumbs.map((breadcrumb, index) => {
+          return (
+            <Fragment key={index}>
+              {breadcrumb.isLast ? (
+                <BreadcrumbPage>
+                  {t(`breadcrumb_${breadcrumb.label.toLowerCase()}`, {
+                    default: breadcrumb.label,
+                  })}
+                </BreadcrumbPage>
+              ) : (
+                <>
+                  <BreadcrumbItem>{t("breadcrumb_bilingual")}</BreadcrumbItem>
+                  <BreadcrumbSeparator />
+                </>
+              )}
+            </Fragment>
+          );
+        })}
       </BreadcrumbList>
     </Breadcrumb>
   );
