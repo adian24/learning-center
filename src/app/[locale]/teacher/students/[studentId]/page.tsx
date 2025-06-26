@@ -4,14 +4,14 @@ import Layout from "@/layout";
 import TeacherStudentDetail from "@/views/teacher/teacher-student-detail";
 
 interface Props {
-  params: {
+  params: Promise<{
     studentId: string;
-  };
+  }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const student = await db.studentProfile.findUnique({
-    where: { id: params.studentId },
+    where: { id: (await params).studentId },
     include: {
       user: true,
     },
