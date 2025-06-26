@@ -5,14 +5,15 @@ import SimpleLayout from "@/layout/SimpleLayout.tsx";
 import ProgramDetailClient from "./program-detail";
 
 interface PageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
   const program = await db.course.findUnique({
-    where: { id: params.slug },
+    where: { id: slug },
   });
 
   if (!program) {
@@ -37,8 +38,9 @@ export async function generateMetadata({
 }
 
 export default async function ProgramDetailPage({ params }: PageProps) {
+  const { slug } = await params;
   const program = await db.course.findUnique({
-    where: { id: params.slug },
+    where: { id: slug },
   });
 
   if (!program) return notFound();
