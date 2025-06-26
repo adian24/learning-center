@@ -18,8 +18,10 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { signOut, useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
 
 export function NavUser() {
+  const t = useTranslations();
   const { isMobile } = useSidebar();
   const { data } = useSession();
   const user = data?.user;
@@ -72,7 +74,7 @@ export function NavUser() {
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => signOut({ redirectTo: "/" })}>
               <LogOut />
-              Log out
+              {t("logout")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

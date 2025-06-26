@@ -10,11 +10,14 @@ import Link from "next/link";
 import { executeAction } from "@/lib/executeAction";
 import { signIn } from "@/lib/auth";
 import ActionButton from "./action-button";
+import { useTranslations } from "next-intl";
 
 export default function RegisterForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const t = useTranslations();
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <div className="flex flex-col gap-6">
@@ -25,13 +28,11 @@ export default function RegisterForm({
             </div>
             <span className="sr-only">Learning Center</span>
           </a>
-          <h1 className="text-xl font-bold">
-            Selamat Datang di Learning Center
-          </h1>
+          <h1 className="text-xl font-bold">{t("title_signup")}</h1>
           <div className="text-center text-sm">
             Sudah memiliki akun?{" "}
             <Link href="/" className="underline underline-offset-4">
-              Masuk
+              {t("signin")}
             </Link>
           </div>
         </div>
@@ -49,32 +50,32 @@ export default function RegisterForm({
           >
             <div className="grid gap-3 space-y-3">
               <div className="grid gap-3">
-                <Label htmlFor="email">Nama</Label>
+                <Label htmlFor="email">{t("name_label_signup")}</Label>
                 <Input
                   id="name"
                   name="name"
                   type="text"
-                  placeholder="Nama lengkap"
+                  placeholder={t("name_placeholder_signup")}
                   required
                 />
               </div>
               <div className="grid gap-3">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t("email_label_signup")}</Label>
                 <Input
                   id="email"
                   name="email"
                   type="email"
-                  placeholder="m@example.com"
+                  placeholder={t("email_placeholder_signup")}
                   required
                 />
               </div>
               <div className="grid gap-3">
                 {" "}
-                <Label htmlFor="email">Password</Label>
+                <Label htmlFor="email">{t("password_label_signup")}</Label>
                 <Input
                   id="password"
                   name="password"
-                  placeholder="Password"
+                  placeholder={t("password_placeholder_signup")}
                   type="password"
                   required
                   autoComplete="password"
@@ -83,15 +84,15 @@ export default function RegisterForm({
               <ActionButton
                 type="submit"
                 className="w-full"
-                defaultText="Daftar"
-                loadingText="Mendaftar..."
+                defaultText={t("submit_signup")}
+                loadingText={t("loading_signup")}
               />
             </div>
           </form>
         </div>
         <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
           <span className="relative z-10 bg-background px-2 text-muted-foreground">
-            Atau
+            {t("or_signup")}
           </span>
         </div>
         <div className="grid gap-4 sm:grid-cols-1">
@@ -113,13 +114,13 @@ export default function RegisterForm({
                 fill="currentColor"
               />
             </svg>
-            Daftar melalui Google
+            {t("google_signup")}
           </Button>
         </div>
       </div>
       <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary  ">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
+        {t("terms")} <a href="#">{t("terms_link")}</a> {t("and")}{" "}
+        <a href="#">{t("privacy_link")}</a>.
       </div>
     </div>
   );

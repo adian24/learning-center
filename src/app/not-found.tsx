@@ -1,6 +1,12 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
+export const metadata = {
+  title: "404 - Halaman Tidak Ditemukan | E-Learning",
+  description: "Halaman yang Anda cari tidak tersedia atau telah dipindahkan.",
+  keywords: ["404", "halaman tidak ditemukan", "error", "e-learning"],
+};
+
 export default function NotFound() {
   return (
     <div className="h-screen w-full flex flex-col items-center justify-center bg-slate-50 px-4">

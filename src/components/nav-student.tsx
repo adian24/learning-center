@@ -11,6 +11,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { useTranslations } from "next-intl";
 
 export function NavStudent({
   items,
@@ -26,9 +27,11 @@ export function NavStudent({
     }[];
   }[];
 }) {
+  const t = useTranslations();
+
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Student</SidebarGroupLabel>
+      <SidebarGroupLabel>{t("breadcrumb_student")}</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item, index) => (
           <SidebarMenuItem key={index}>
