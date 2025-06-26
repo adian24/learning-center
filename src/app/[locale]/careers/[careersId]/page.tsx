@@ -77,8 +77,10 @@ const companies = [
 export async function generateMetadata({
   params,
 }: {
-  params: { careersId: string };
+  params: Promise<{ careersId: string }>;
 }): Promise<Metadata> {
+  const careersId = (await params).careersId;
+
   const allJobs = companies.flatMap((c) =>
     c.jobs.map((job, index) => ({
       ...job,
@@ -88,7 +90,7 @@ export async function generateMetadata({
     }))
   );
 
-  const job = allJobs.find((j) => j.careersId === params.careersId);
+  const job = allJobs.find((j) => j.careersId === careersId);
 
   if (!job) {
     return {
