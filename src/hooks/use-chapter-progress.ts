@@ -160,7 +160,7 @@ export function useUpdateProgress() {
         queryKey: ["can-proceed", variables.chapterId],
       });
 
-      // Invalidate course progress if we know the course
+      // Invalidate all course progress queries
       queryClient.invalidateQueries({
         queryKey: ["course-progress"],
       });

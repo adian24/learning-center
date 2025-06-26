@@ -104,15 +104,21 @@ export async function POST(req: NextRequest) {
     // Set chapter score and completion status based on quiz performance
     updateData.chapterScore = calculation.chapterScore;
 
+    // Debug logging
+    console.log('Progress update - Calculation result:', calculation);
+    console.log('Progress update - isCompleted param:', isCompleted);
+    
     // Only mark as completed if:
     // 1. User explicitly sets isCompleted to true, AND
-    // 2. Chapter score is >= 65 (or no quizzes exist)
+    // 2. Chapter score is >= 65 (or no quizzes exist - calculation.isCompleted handles this)
     if (isCompleted !== undefined) {
       if (isCompleted && calculation.isCompleted) {
         updateData.isCompleted = true;
         updateData.completedAt = new Date();
+        console.log('Setting chapter as completed');
       } else if (isCompleted && !calculation.isCompleted) {
         // User wants to complete but doesn't meet quiz requirements
+        console.log('Blocking completion - insufficient score');
         return NextResponse.json(
           {
             error: "Cannot complete chapter",
@@ -127,6 +133,7 @@ export async function POST(req: NextRequest) {
       } else {
         updateData.isCompleted = false;
         updateData.completedAt = null;
+        console.log('Setting chapter as not completed');
       }
     } else {
       // If isCompleted is not provided, use the calculated value
@@ -134,6 +141,7 @@ export async function POST(req: NextRequest) {
       if (calculation.isCompleted) {
         updateData.completedAt = new Date();
       }
+      console.log('Using calculated completion status:', calculation.isCompleted);
     }
 
     // Update or create progress record
@@ -155,6 +163,40 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    // If chapter is completed, unlock next chapter
+    if (progress.isCompleted && Number(progress?.chapterScore) >= 65) {
+      const nextChapter = await db.chapter.findFirst({
+        where: {
+          courseId: chapter.courseId,
+          position: chapter.position + 1,
+        },
+      });
+
+      if (nextChapter) {
+        // Check if next chapter should be unlocked
+        await db.userProgress.upsert({
+          where: {
+            studentId_chapterId: {
+              studentId: studentProfile.id,
+              chapterId: nextChapter.id,
+            },
+          },
+          update: {
+            // Don't change existing progress, just ensure it exists
+          },
+          create: {
+            studentId: studentProfile.id,
+            chapterId: nextChapter.id,
+            watchedSeconds: 0,
+            isCompleted: false,
+            chapterScore: 0,
+          },
+        });
+      }
+    }
+
+    console.log('Final progress record:', progress);
+    
     return NextResponse.json({
       message: "Progress updated successfully",
       progress,

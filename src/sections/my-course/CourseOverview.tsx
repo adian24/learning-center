@@ -14,6 +14,7 @@ import {
   PlayCircle,
   Video,
   VideoOff,
+  LockKeyhole,
 } from "lucide-react";
 import { CourseImageCard } from "@/components/media/SecureImage";
 
@@ -126,15 +127,14 @@ export default function CourseOverview({
         <CardContent>
           <div className="space-y-2">
             {chapters.map((chapter, index) => {
-              const isCompleted = chapter.userProgress?.[0]?.isCompleted;
-              const watchedSeconds =
-                chapter.userProgress?.[0]?.watchedSeconds || 0;
+              const isCompleted = chapter.canAccess;
+              const watchedSeconds = chapter.userProgress?.watchedSeconds || 0;
               const isStarted = watchedSeconds > 0;
-              const isLocked = !chapter.isFree && !course.isEnrolled;
+              const isLocked = course.isLocked;
 
               return (
                 <div
-                  key={chapter.id}
+                  key={index}
                   className={`p-4 border rounded-lg cursor-pointer transition-colors ${
                     isCompleted
                       ? "bg-green-50 border-green-200"
@@ -142,7 +142,9 @@ export default function CourseOverview({
                       ? "bg-blue-50 border-blue-200"
                       : "hover:bg-gray-50"
                   }`}
-                  onClick={() => !isLocked && onChapterSelect(chapter.id)}
+                  onClick={() =>
+                    !chapter.isLocked && onChapterSelect(chapter.chapterId)
+                  }
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -167,7 +169,8 @@ export default function CourseOverview({
 
                       {/* Chapter Info */}
                       <div className="flex-1">
-                        <h3 className="font-medium">{chapter.title}</h3>
+                        <h3 className="font-medium">{chapter.chapterTitle}</h3>
+                        <h3 className="text-xs">{chapter.id}</h3>
                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
                           <div className="flex items-center gap-1">
                             {chapter.videoUrl ? (
@@ -186,10 +189,11 @@ export default function CourseOverview({
                             </Badge>
                           )}
 
-                          {!chapter.isPublished && (
-                            <Badge variant="secondary" className="text-xs">
-                              Coming Soon
-                            </Badge>
+                          {chapter.quizzes?.length > 0 && (
+                            <div className="flex items-center gap-1">
+                              <BookOpen className="h-3 w-3" />
+                              <span>{chapter.quizzes.length} Quiz</span>
+                            </div>
                           )}
                         </div>
 
@@ -203,25 +207,23 @@ export default function CourseOverview({
 
                     {/* Play Button */}
                     <div className="flex items-center gap-2">
-                      {isStarted && !isCompleted && (
+                      {chapter?.isLocked && (
                         <div className="text-xs text-blue-600 font-medium">
-                          In Progress
+                          {chapter?.lockReason}
                         </div>
                       )}
 
                       <Button
                         variant={isCompleted ? "secondary" : "ghost"}
                         size="sm"
-                        disabled={isLocked || !chapter.isPublished}
+                        disabled={chapter.isLocked}
                         onClick={(e) => {
                           e.stopPropagation();
                           onChapterSelect(chapter.id);
                         }}
                       >
-                        {isCompleted ? (
-                          "Review"
-                        ) : isStarted ? (
-                          "Continue"
+                        {chapter?.isLocked ? (
+                          <LockKeyhole className="h-4 w-4" />
                         ) : (
                           <Play className="h-4 w-4" />
                         )}

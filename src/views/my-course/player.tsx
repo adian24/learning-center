@@ -14,6 +14,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Layout from "@/layout";
 import { useQueryClient } from "@tanstack/react-query";
+import { useCourseProgress } from "@/hooks/use-chapter-progress";
 
 export default function MyCoursePlayerPage() {
   const params = useParams();
@@ -22,7 +23,7 @@ export default function MyCoursePlayerPage() {
   const { data: session } = useSession();
 
   const courseId = params.courseId as string;
-  const playChapterId = searchParams.get("play");
+  const playChapterId = searchParams.get("play") as string;
   const queryClient = useQueryClient();
 
   // Fetch course data
@@ -36,6 +37,8 @@ export default function MyCoursePlayerPage() {
     page: 1,
     limit: 100, // Get all chapters
   });
+
+  const { data: courseProgressData } = useCourseProgress(courseId);
 
   const course = courseData?.course;
   const chapters = chaptersData?.chapters || [];
@@ -163,10 +166,11 @@ export default function MyCoursePlayerPage() {
                 <ChapterPlayer
                   course={course}
                   chapter={currentChapter}
-                  chapters={chapters}
+                  chapters={courseProgressData?.courseProgress || []}
                   onNextChapter={handleNextChapter}
                   onPreviousChapter={handlePreviousChapter}
                   onChapterSelect={handleChapterSelect}
+                  courseId={courseId}
                 />
               </div>
 
@@ -184,7 +188,7 @@ export default function MyCoursePlayerPage() {
             <div className="max-w-7xl mx-auto">
               <CourseOverview
                 course={course}
-                chapters={chapters}
+                chapters={courseProgressData?.courseProgress || []}
                 onChapterSelect={handleChapterSelect}
               />
             </div>

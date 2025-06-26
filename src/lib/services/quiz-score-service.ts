@@ -196,6 +196,21 @@ export async function canAccessChapter(
     include: { course: true },
   });
 
+  // Check if current chapter is already completed by the student
+  const currentProgress = await db.userProgress.findUnique({
+    where: {
+      studentId_chapterId: {
+        studentId,
+        chapterId: targetChapterId,
+      },
+    },
+  });
+
+  // If chapter is already completed, always allow access
+  if (currentProgress?.isCompleted) {
+    return { canAccess: true, reason: "Chapter already completed" };
+  }
+
   // Jika chapter pertama (position 1) atau isFree = true, selalu bisa akses
   if (targetChapter?.position === 1 || targetChapter?.isFree) {
     return { canAccess: true, reason: "First chapter or free chapter" };
