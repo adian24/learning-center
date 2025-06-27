@@ -27,7 +27,9 @@ export default function NavBreadcrumb() {
   // Only fetch course query if a valid course ID exists
   // const { data: course } = courseId !== null ? useCourseQuery(courseId) : { data: null };
 
-  const breadcrumbs = generateBreadcrumb(pathname);
+  const breadcrumbs = generateBreadcrumb(pathname).filter(
+    (breadcrumb) => !['en', 'id'].includes(breadcrumb.label.toLowerCase())
+  );
 
   let updatedBreadcrumbs = breadcrumbs;
 
@@ -51,17 +53,26 @@ export default function NavBreadcrumb() {
         <BreadcrumbSeparator />
 
         {updatedBreadcrumbs.map((breadcrumb, index) => {
+          const isUuidOrCourseId = /^[a-f0-9-]{8,}/.test(breadcrumb.label);
+          const translationKey = `breadcrumb_${breadcrumb.label.toLowerCase()}`;
+          
           return (
             <Fragment key={index}>
               {breadcrumb.isLast ? (
                 <BreadcrumbPage>
-                  {t(`breadcrumb_${breadcrumb.label.toLowerCase()}`, {
-                    default: breadcrumb.label,
-                  })}
+                  {isUuidOrCourseId 
+                    ? breadcrumb.label 
+                    : t(translationKey, { default: breadcrumb.label })
+                  }
                 </BreadcrumbPage>
               ) : (
                 <>
-                  <BreadcrumbItem>{t("breadcrumb_bilingual")}</BreadcrumbItem>
+                  <BreadcrumbItem>
+                    {isUuidOrCourseId 
+                      ? breadcrumb.label 
+                      : t(translationKey, { default: breadcrumb.label })
+                    }
+                  </BreadcrumbItem>
                   <BreadcrumbSeparator />
                 </>
               )}
