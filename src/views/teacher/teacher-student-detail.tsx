@@ -61,8 +61,8 @@ const TeacherStudentDetail = () => {
       <Card className="shadow-md rounded-lg">
         <CardHeader className="flex flex-row items-center gap-4">
           <Image
-            src={student.image}
-            alt={student.name}
+            src={student?.image || ""}
+            alt={student?.name || "Foto Siswa"}
             width={64}
             height={64}
             className="rounded-full border shadow object-cover"
