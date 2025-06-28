@@ -129,6 +129,7 @@ model TeacherProfile {
   bio       String?
   expertise String[]
   courses   Course[]
+  profileUrl String?
   companyId String?
   company   Company? @relation(fields: [companyId], references: [id])
   createdAt DateTime @default(now())
