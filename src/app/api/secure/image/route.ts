@@ -18,6 +18,8 @@ export async function GET(req: NextRequest) {
     const key = searchParams.get("key");
     const courseId = searchParams.get("courseId");
 
+    console.log("[SECURE_IMAGE_GET] key:", key);
+
     if (!key) {
       return NextResponse.json(
         { error: "Missing required parameter: key" },
@@ -27,6 +29,23 @@ export async function GET(req: NextRequest) {
 
     // For public thumbnails, allow access without authentication
     if (key.startsWith("course-thumbnails/")) {
+      const getCommand = new GetObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: key,
+      });
+
+      const signedUrl = await getSignedUrl(s3Client, getCommand, {
+        expiresIn: 3600, // 1 hour for thumbnails
+      });
+
+      return NextResponse.json({
+        url: signedUrl,
+        expiresIn: 3600,
+      });
+    }
+
+    // For public companies, allow access without authentication
+    if (key.startsWith("companies/")) {
       const getCommand = new GetObjectCommand({
         Bucket: BUCKET_NAME,
         Key: key,

@@ -29,6 +29,7 @@ export async function POST(req: Request) {
         userId: session.user.id,
         bio: values.bio,
         expertise: values.expertise,
+        ...(values.companyId && { companyId: values.companyId }),
       },
     });
 

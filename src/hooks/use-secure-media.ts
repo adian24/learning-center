@@ -231,7 +231,7 @@ export const useSecureImages = (
           }
 
           const response = await fetch(
-            `/api/secure-image?${params.toString()}`
+            `/api/secure/image?${params.toString()}`
           );
 
           if (!response.ok) {

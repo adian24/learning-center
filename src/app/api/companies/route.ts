@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth";
 import db from "@/lib/db/db";
 
 // GET /api/companies - List companies
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
