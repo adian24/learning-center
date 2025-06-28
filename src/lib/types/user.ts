@@ -22,6 +22,7 @@ export interface TeacherProfile {
   userId: string;
   user: User;
   bio?: string;
+  profileUrl?: string;
   expertise: string[];
   createdAt: string;
   updatedAt: string;

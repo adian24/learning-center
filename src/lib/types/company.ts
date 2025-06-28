@@ -22,6 +22,7 @@ export interface TeacherProfileWithCompany {
   id: string;
   bio?: string | null;
   expertise: string[];
+  profileUrl?: string | null;
   companyId?: string | null;
   company?: Company | null;
   user: {

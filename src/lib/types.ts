@@ -186,6 +186,7 @@ export interface TeacherProfile {
   userId: string;
   user: User;
   bio?: string | null;
+  profileUrl?: string | null;
   expertise: string[];
   courses?: Course[];
   createdAt: Date;

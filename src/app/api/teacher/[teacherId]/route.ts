@@ -85,6 +85,7 @@ export async function PATCH(
       data: {
         bio: values.bio,
         expertise: values.expertise,
+        profileUrl: values.profileUrl,
         ...(values.companyId && { companyId: values.companyId }),
       },
       include: {
