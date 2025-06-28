@@ -46,26 +46,3 @@ export function useCompanies(page: number = 1, limit: number = 10) {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }
-
-// Hook for getting presigned URL for company logo
-export async function getCompanyLogoPresignedUrl(
-  logoKey: string
-): Promise<string | null> {
-  try {
-    const response = await fetch("/api/secure/image", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ key: logoKey }),
-    });
-
-    if (response.ok) {
-      const { url } = await response.json();
-      return url;
-    }
-  } catch (error) {
-    console.error("Failed to get presigned URL:", error);
-  }
-  return null;
-}
