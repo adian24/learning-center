@@ -62,16 +62,15 @@ export default function ChapterPlayer({
   const queryClient = useQueryClient();
 
   // Find current chapter index and next chapter
-  const currentIndex = chapters.findIndex((ch) => ch.id === chapter.id);
+  const currentIndex = chapters.findIndex((ch) => ch.chapterId === chapter.id);
   const hasNext = currentIndex < chapters.length - 1;
   const hasPrevious = currentIndex > 0;
-  const nextChapter = hasNext ? chapters[currentIndex + 1] : null;
 
   // Determine if Next button should be enabled
   const [isNextEnabled, setIsNextEnabled] = useState<boolean | undefined>(
     false
   );
-  
+
   // Loading state for Next button
   const [isNextLoading, setIsNextLoading] = useState(false);
 
@@ -80,15 +79,16 @@ export default function ChapterPlayer({
 
     // Get current chapter data from chapters array (from useCourseProgress)
     const getCurrentChapterData = () => {
-      return chapters.find(ch => ch.chapterId === chapter.id);
+      return chapters.find((ch) => ch.chapterId === chapter.id);
     };
 
     const currentChapterData = getCurrentChapterData();
-    console.log('Current chapter data:', currentChapterData);
-    console.log('Chapter from props:', chapter);
 
     // For free chapters with no quizzes - Next button is always enabled
-    if (chapter.isFree && (!currentChapterData?.quizzes || currentChapterData.quizzes.length === 0)) {
+    if (
+      chapter.isFree &&
+      (!currentChapterData?.quizzes || currentChapterData.quizzes.length === 0)
+    ) {
       setIsNextEnabled(true);
       return;
     }
@@ -106,39 +106,28 @@ export default function ChapterPlayer({
 
   // Handle Next Chapter with proper progress update
   const handleNextChapterClick = async () => {
-    console.log('Next button clicked:', {
-      isNextEnabled,
-      hasNext,
-      chapterId: chapter.id,
-      isFree: chapter.isFree
-    });
-
     if (!isNextEnabled || !hasNext || isNextLoading) {
-      console.log('Next button disabled, no next chapter, or loading');
+      console.log("Next button disabled, no next chapter, or loading");
       return;
     }
 
     setIsNextLoading(true);
 
     try {
-      const currentChapterData = chapters.find(ch => ch.chapterId === chapter.id);
-      const hasQuizzes = currentChapterData?.quizzes && currentChapterData.quizzes.length > 0;
-      
-      console.log('Current chapter data:', currentChapterData);
-      console.log('Has quizzes:', hasQuizzes);
+      const currentChapterData = chapters.find(
+        (ch) => ch.chapterId === chapter.id
+      );
+      const hasQuizzes =
+        currentChapterData?.quizzes && currentChapterData.quizzes.length > 0;
 
       // For free chapters without quizzes, mark as completed first
       if (chapter.isFree && !hasQuizzes) {
-        console.log('Completing free chapter without quizzes');
-        
         const result = await updateProgressMutation.mutateAsync({
           chapterId: chapter.id,
           isCompleted: true,
           watchedSeconds: Math.round(watchedSeconds),
         });
 
-        console.log('Chapter completion result:', result);
-        
         // Invalidate all related queries
         await Promise.all([
           queryClient.invalidateQueries({
@@ -152,21 +141,20 @@ export default function ChapterPlayer({
           }),
           queryClient.invalidateQueries({
             queryKey: ["progress"],
-          })
+          }),
         ]);
-        
+
         // Refetch to get latest data
-        await refetch();
-        
+        refetch();
+
         // Small delay to ensure UI updates
-        await new Promise(resolve => setTimeout(resolve, 300));
-        
+        await new Promise((resolve) => setTimeout(resolve, 300));
+
         toast.success("Chapter completed!");
       }
 
       // Navigate to next chapter
       onNextChapter();
-
     } catch (error) {
       console.error("Failed to complete chapter:", error);
       toast.error("Failed to complete chapter. Please try again.");
@@ -183,7 +171,7 @@ export default function ChapterPlayer({
     try {
       setWatchedSeconds(watchedSeconds);
 
-      console.log('Updating progress:', {
+      console.log("Updating progress:", {
         chapterId: chapter.id,
         watchedSeconds: Math.round(watchedSeconds),
         isCompleted,
@@ -196,7 +184,7 @@ export default function ChapterPlayer({
         isCompleted,
       });
 
-      console.log('Progress update result:', result);
+      console.log("Progress update result:", result);
 
       // Invalidate course progress immediately
       await queryClient.invalidateQueries({
@@ -243,12 +231,18 @@ export default function ChapterPlayer({
 
         <div className="flex items-center gap-2">
           {(() => {
-            const currentChapterData = chapters.find(ch => ch.chapterId === chapter.id);
-            const chapterCompleted = currentChapterData?.userProgress?.isCompleted || false;
-            
+            const currentChapterData = chapters.find(
+              (ch) => ch.chapterId === chapter.id
+            );
+            const chapterCompleted =
+              currentChapterData?.userProgress?.isCompleted || false;
+
             if (chapterCompleted) {
               return (
-                <Badge variant="secondary" className="bg-green-100 text-green-800">
+                <Badge
+                  variant="secondary"
+                  className="bg-green-100 text-green-800"
+                >
                   <CheckCircle className="h-3 w-3 mr-1" />
                   Completed
                 </Badge>
@@ -261,16 +255,22 @@ export default function ChapterPlayer({
 
           {/* Quiz Status Indicator */}
           {(() => {
-            const currentChapterData = chapters.find(ch => ch.chapterId === chapter.id);
+            const currentChapterData = chapters.find(
+              (ch) => ch.chapterId === chapter.id
+            );
             const quizzesLength = currentChapterData?.quizzes?.length || 0;
-            const passedQuizzesCount = currentChapterData?.calculation?.passedQuizzes || 0;
-            const chapterCompleted = currentChapterData?.calculation?.isCompleted || false;
-            
+            const passedQuizzesCount =
+              currentChapterData?.calculation?.passedQuizzes || 0;
+            const chapterCompleted =
+              currentChapterData?.calculation?.isCompleted || false;
+
             if (quizzesLength > 0) {
               return (
                 <Badge
                   variant={chapterCompleted ? "secondary" : "outline"}
-                  className={chapterCompleted ? "bg-blue-100 text-blue-800" : ""}
+                  className={
+                    chapterCompleted ? "bg-blue-100 text-blue-800" : ""
+                  }
                 >
                   Quiz: {passedQuizzesCount}/{quizzesLength} Passed
                 </Badge>
@@ -285,7 +285,9 @@ export default function ChapterPlayer({
             variant="outline"
             onClick={handleNextChapterClick}
             disabled={!hasNext || !isNextEnabled || isNextLoading}
-            className={(!isNextEnabled && hasNext) || isNextLoading ? "opacity-50" : ""}
+            className={
+              (!isNextEnabled && hasNext) || isNextLoading ? "opacity-50" : ""
+            }
           >
             {isNextLoading ? (
               <>
@@ -304,9 +306,13 @@ export default function ChapterPlayer({
           {hasNext && !isNextEnabled && !isNextLoading && (
             <span className="text-xs text-muted-foreground text-right">
               {(() => {
-                const currentChapterData = chapters.find(ch => ch.chapterId === chapter.id);
-                const hasQuizzes = currentChapterData?.quizzes && currentChapterData.quizzes.length > 0;
-                
+                const currentChapterData = chapters.find(
+                  (ch) => ch.chapterId === chapter.id
+                );
+                const hasQuizzes =
+                  currentChapterData?.quizzes &&
+                  currentChapterData.quizzes.length > 0;
+
                 if (hasQuizzes) {
                   return "Complete all quizzes to proceed";
                 }
@@ -357,7 +363,7 @@ export default function ChapterPlayer({
 
               return (
                 <div
-                  key={ch.id}
+                  key={ch.chapterId}
                   className={`p-3 rounded-lg cursor-pointer transition-colors ${
                     isCurrentChapter
                       ? "bg-blue-50 border border-blue-200"
@@ -365,7 +371,7 @@ export default function ChapterPlayer({
                       ? "bg-green-50 hover:bg-green-100"
                       : "hover:bg-gray-50"
                   }`}
-                  onClick={() => !isLocked && onChapterSelect(ch.id)}
+                  onClick={() => !isLocked && onChapterSelect(ch.chapterId)}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -425,7 +431,7 @@ export default function ChapterPlayer({
                         className="opacity-0 group-hover:opacity-100 transition-opacity"
                         onClick={(e) => {
                           e.stopPropagation();
-                          onChapterSelect(ch.id);
+                          onChapterSelect(ch.chapterId);
                         }}
                       >
                         <Play className="h-3 w-3" />

@@ -26,12 +26,13 @@ import {
 } from "@/hooks/use-quiz-attempts";
 import { QuizAnswer } from "@/lib/types/quiz";
 import { toast } from "sonner";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
+import { useQueryClient } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
+import { useChapterStatus } from "@/hooks/use-chapter-progress";
 
 interface QuizDrawerProps {
   isOpen: boolean;
@@ -40,15 +41,13 @@ interface QuizDrawerProps {
   chapterId: string;
 }
 
-const QuizDrawer: React.FC<QuizDrawerProps> = ({
-  isOpen,
-  onClose,
-  quizId,
-  chapterId,
-}) => {
+const QuizDrawer: React.FC<QuizDrawerProps> = ({ isOpen, onClose, quizId }) => {
   const { data: quizData, isLoading: quizLoading } = useStudentQuiz(quizId);
   const { canRetake, attemptsRemaining, bestScore } = useCanRetakeQuiz(quizId);
   const submitQuizAttempt = useSubmitQuizAttempt();
+  const params = useParams();
+  const courseId = params.courseId as string;
+  const queryClient = useQueryClient();
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, QuizAnswer>>({});
@@ -142,6 +141,13 @@ const QuizDrawer: React.FC<QuizDrawerProps> = ({
       toast.dismiss();
       setQuizResult({ score: result.score, passed: result.passed });
       setShowResults(true);
+
+      // Invalidate course progress to refresh ChapterPlayer
+      if (courseId) {
+        await queryClient.invalidateQueries({
+          queryKey: ["course-progress", courseId],
+        });
+      }
     } catch (error) {
       toast.dismiss();
       toast.error("Gagal mengirim jawaban. Silakan coba lagi.");
