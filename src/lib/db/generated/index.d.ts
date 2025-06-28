@@ -11235,6 +11235,7 @@ export namespace Prisma {
     id: string | null
     userId: string | null
     bio: string | null
+    profileUrl: string | null
     companyId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -11244,6 +11245,7 @@ export namespace Prisma {
     id: string | null
     userId: string | null
     bio: string | null
+    profileUrl: string | null
     companyId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -11254,6 +11256,7 @@ export namespace Prisma {
     userId: number
     bio: number
     expertise: number
+    profileUrl: number
     companyId: number
     createdAt: number
     updatedAt: number
@@ -11265,6 +11268,7 @@ export namespace Prisma {
     id?: true
     userId?: true
     bio?: true
+    profileUrl?: true
     companyId?: true
     createdAt?: true
     updatedAt?: true
@@ -11274,6 +11278,7 @@ export namespace Prisma {
     id?: true
     userId?: true
     bio?: true
+    profileUrl?: true
     companyId?: true
     createdAt?: true
     updatedAt?: true
@@ -11284,6 +11289,7 @@ export namespace Prisma {
     userId?: true
     bio?: true
     expertise?: true
+    profileUrl?: true
     companyId?: true
     createdAt?: true
     updatedAt?: true
@@ -11367,6 +11373,7 @@ export namespace Prisma {
     userId: string
     bio: string | null
     expertise: string[]
+    profileUrl: string | null
     companyId: string | null
     createdAt: Date
     updatedAt: Date
@@ -11394,6 +11401,7 @@ export namespace Prisma {
     userId?: boolean
     bio?: boolean
     expertise?: boolean
+    profileUrl?: boolean
     companyId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -11408,6 +11416,7 @@ export namespace Prisma {
     userId?: boolean
     bio?: boolean
     expertise?: boolean
+    profileUrl?: boolean
     companyId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -11420,6 +11429,7 @@ export namespace Prisma {
     userId?: boolean
     bio?: boolean
     expertise?: boolean
+    profileUrl?: boolean
     companyId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -11432,12 +11442,13 @@ export namespace Prisma {
     userId?: boolean
     bio?: boolean
     expertise?: boolean
+    profileUrl?: boolean
     companyId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type TeacherProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "bio" | "expertise" | "companyId" | "createdAt" | "updatedAt", ExtArgs["result"]["teacherProfile"]>
+  export type TeacherProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "bio" | "expertise" | "profileUrl" | "companyId" | "createdAt" | "updatedAt", ExtArgs["result"]["teacherProfile"]>
   export type TeacherProfileInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     courses?: boolean | TeacherProfile$coursesArgs<ExtArgs>
@@ -11465,6 +11476,7 @@ export namespace Prisma {
       userId: string
       bio: string | null
       expertise: string[]
+      profileUrl: string | null
       companyId: string | null
       createdAt: Date
       updatedAt: Date
@@ -11898,6 +11910,7 @@ export namespace Prisma {
     readonly userId: FieldRef<"TeacherProfile", 'String'>
     readonly bio: FieldRef<"TeacherProfile", 'String'>
     readonly expertise: FieldRef<"TeacherProfile", 'String[]'>
+    readonly profileUrl: FieldRef<"TeacherProfile", 'String'>
     readonly companyId: FieldRef<"TeacherProfile", 'String'>
     readonly createdAt: FieldRef<"TeacherProfile", 'DateTime'>
     readonly updatedAt: FieldRef<"TeacherProfile", 'DateTime'>
@@ -28943,6 +28956,7 @@ export namespace Prisma {
     userId: 'userId',
     bio: 'bio',
     expertise: 'expertise',
+    profileUrl: 'profileUrl',
     companyId: 'companyId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -29816,6 +29830,7 @@ export namespace Prisma {
     userId?: StringFilter<"TeacherProfile"> | string
     bio?: StringNullableFilter<"TeacherProfile"> | string | null
     expertise?: StringNullableListFilter<"TeacherProfile">
+    profileUrl?: StringNullableFilter<"TeacherProfile"> | string | null
     companyId?: StringNullableFilter<"TeacherProfile"> | string | null
     createdAt?: DateTimeFilter<"TeacherProfile"> | Date | string
     updatedAt?: DateTimeFilter<"TeacherProfile"> | Date | string
@@ -29829,6 +29844,7 @@ export namespace Prisma {
     userId?: SortOrder
     bio?: SortOrderInput | SortOrder
     expertise?: SortOrder
+    profileUrl?: SortOrderInput | SortOrder
     companyId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -29845,6 +29861,7 @@ export namespace Prisma {
     NOT?: TeacherProfileWhereInput | TeacherProfileWhereInput[]
     bio?: StringNullableFilter<"TeacherProfile"> | string | null
     expertise?: StringNullableListFilter<"TeacherProfile">
+    profileUrl?: StringNullableFilter<"TeacherProfile"> | string | null
     companyId?: StringNullableFilter<"TeacherProfile"> | string | null
     createdAt?: DateTimeFilter<"TeacherProfile"> | Date | string
     updatedAt?: DateTimeFilter<"TeacherProfile"> | Date | string
@@ -29858,6 +29875,7 @@ export namespace Prisma {
     userId?: SortOrder
     bio?: SortOrderInput | SortOrder
     expertise?: SortOrder
+    profileUrl?: SortOrderInput | SortOrder
     companyId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -29874,6 +29892,7 @@ export namespace Prisma {
     userId?: StringWithAggregatesFilter<"TeacherProfile"> | string
     bio?: StringNullableWithAggregatesFilter<"TeacherProfile"> | string | null
     expertise?: StringNullableListFilter<"TeacherProfile">
+    profileUrl?: StringNullableWithAggregatesFilter<"TeacherProfile"> | string | null
     companyId?: StringNullableWithAggregatesFilter<"TeacherProfile"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"TeacherProfile"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"TeacherProfile"> | Date | string
@@ -31545,6 +31564,7 @@ export namespace Prisma {
     id?: string
     bio?: string | null
     expertise?: TeacherProfileCreateexpertiseInput | string[]
+    profileUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutTeacherProfileInput
@@ -31557,6 +31577,7 @@ export namespace Prisma {
     userId: string
     bio?: string | null
     expertise?: TeacherProfileCreateexpertiseInput | string[]
+    profileUrl?: string | null
     companyId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -31567,6 +31588,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     expertise?: TeacherProfileUpdateexpertiseInput | string[]
+    profileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutTeacherProfileNestedInput
@@ -31579,6 +31601,7 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     expertise?: TeacherProfileUpdateexpertiseInput | string[]
+    profileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -31590,6 +31613,7 @@ export namespace Prisma {
     userId: string
     bio?: string | null
     expertise?: TeacherProfileCreateexpertiseInput | string[]
+    profileUrl?: string | null
     companyId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -31599,6 +31623,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     expertise?: TeacherProfileUpdateexpertiseInput | string[]
+    profileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -31608,6 +31633,7 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     expertise?: TeacherProfileUpdateexpertiseInput | string[]
+    profileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -33382,6 +33408,7 @@ export namespace Prisma {
     userId?: SortOrder
     bio?: SortOrder
     expertise?: SortOrder
+    profileUrl?: SortOrder
     companyId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -33391,6 +33418,7 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     bio?: SortOrder
+    profileUrl?: SortOrder
     companyId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -33400,6 +33428,7 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     bio?: SortOrder
+    profileUrl?: SortOrder
     companyId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -36321,6 +36350,7 @@ export namespace Prisma {
     id?: string
     bio?: string | null
     expertise?: TeacherProfileCreateexpertiseInput | string[]
+    profileUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     courses?: CourseCreateNestedManyWithoutTeacherInput
@@ -36331,6 +36361,7 @@ export namespace Prisma {
     id?: string
     bio?: string | null
     expertise?: TeacherProfileCreateexpertiseInput | string[]
+    profileUrl?: string | null
     companyId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -36484,6 +36515,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     expertise?: TeacherProfileUpdateexpertiseInput | string[]
+    profileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     courses?: CourseUpdateManyWithoutTeacherNestedInput
@@ -36494,6 +36526,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     expertise?: TeacherProfileUpdateexpertiseInput | string[]
+    profileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -37545,6 +37578,7 @@ export namespace Prisma {
     id?: string
     bio?: string | null
     expertise?: TeacherProfileCreateexpertiseInput | string[]
+    profileUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutTeacherProfileInput
@@ -37556,6 +37590,7 @@ export namespace Prisma {
     userId: string
     bio?: string | null
     expertise?: TeacherProfileCreateexpertiseInput | string[]
+    profileUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     courses?: CourseUncheckedCreateNestedManyWithoutTeacherInput
@@ -37595,6 +37630,7 @@ export namespace Prisma {
     userId?: StringFilter<"TeacherProfile"> | string
     bio?: StringNullableFilter<"TeacherProfile"> | string | null
     expertise?: StringNullableListFilter<"TeacherProfile">
+    profileUrl?: StringNullableFilter<"TeacherProfile"> | string | null
     companyId?: StringNullableFilter<"TeacherProfile"> | string | null
     createdAt?: DateTimeFilter<"TeacherProfile"> | Date | string
     updatedAt?: DateTimeFilter<"TeacherProfile"> | Date | string
@@ -37604,6 +37640,7 @@ export namespace Prisma {
     id?: string
     bio?: string | null
     expertise?: TeacherProfileCreateexpertiseInput | string[]
+    profileUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutTeacherProfileInput
@@ -37615,6 +37652,7 @@ export namespace Prisma {
     userId: string
     bio?: string | null
     expertise?: TeacherProfileCreateexpertiseInput | string[]
+    profileUrl?: string | null
     companyId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -37829,6 +37867,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     expertise?: TeacherProfileUpdateexpertiseInput | string[]
+    profileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutTeacherProfileNestedInput
@@ -37840,6 +37879,7 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     expertise?: TeacherProfileUpdateexpertiseInput | string[]
+    profileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -40381,6 +40421,7 @@ export namespace Prisma {
     userId: string
     bio?: string | null
     expertise?: TeacherProfileCreateexpertiseInput | string[]
+    profileUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -40389,6 +40430,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     expertise?: TeacherProfileUpdateexpertiseInput | string[]
+    profileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutTeacherProfileNestedInput
@@ -40400,6 +40442,7 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     expertise?: TeacherProfileUpdateexpertiseInput | string[]
+    profileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     courses?: CourseUncheckedUpdateManyWithoutTeacherNestedInput
@@ -40410,6 +40453,7 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     expertise?: TeacherProfileUpdateexpertiseInput | string[]
+    profileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

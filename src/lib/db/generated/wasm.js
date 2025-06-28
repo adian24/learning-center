@@ -197,6 +197,7 @@ exports.Prisma.TeacherProfileScalarFieldEnum = {
   userId: 'userId',
   bio: 'bio',
   expertise: 'expertise',
+  profileUrl: 'profileUrl',
   companyId: 'companyId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
