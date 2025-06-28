@@ -129,8 +129,31 @@ model TeacherProfile {
   bio       String?
   expertise String[]
   courses   Course[]
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Company {
+  id          String   @id @default(cuid()) @map("_id")
+  name        String
+  description String?
+  logoUrl     String?  // URL untuk logo company (lebih descriptive dari company_url)
+  location    String?
+  
+  // Additional useful fields
+  website     String?  // Website company
+  industry    String?  // Industry/bidang company
+  isVerified  Boolean  @default(true) // Status verifikasi company
+  
+  teachers    TeacherProfile[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([location])
+  @@index([industry])
 }
 
 model Course {

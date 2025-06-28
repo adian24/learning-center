@@ -197,6 +197,20 @@ exports.Prisma.TeacherProfileScalarFieldEnum = {
   userId: 'userId',
   bio: 'bio',
   expertise: 'expertise',
+  companyId: 'companyId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CompanyScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  logoUrl: 'logoUrl',
+  location: 'location',
+  website: 'website',
+  industry: 'industry',
+  isVerified: 'isVerified',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -403,6 +417,7 @@ exports.Prisma.ModelName = {
   Certificate: 'Certificate',
   StudentProfile: 'StudentProfile',
   TeacherProfile: 'TeacherProfile',
+  Company: 'Company',
   Course: 'Course',
   LearningObjective: 'LearningObjective',
   CourseReview: 'CourseReview',
