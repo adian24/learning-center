@@ -87,6 +87,7 @@ export default function TeacherRegistration() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.invalidateQueries({ queryKey: ["user-role"] });
       toast.success("Registration completed successfully!");
       resetStore();
       router.push("/teacher/dashboard");
