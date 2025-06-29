@@ -8,12 +8,20 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { BookOpen, CheckCircle, Clock, Star, Users } from "lucide-react";
+import {
+  BookOpen,
+  CheckCircle,
+  Clock,
+  Star,
+  Users,
+  Building2,
+} from "lucide-react";
 import { formatPrice } from "@/utils/formatPrice";
 import { formatVideoDuration } from "@/utils/formatVideoDuration";
-import { CourseImageCard } from "@/components/media/SecureImage";
+import { AvatarImage, CourseImageCard } from "@/components/media/SecureImage";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
-// Adjust the Course type to include student-specific properties
+// Updated Course type to include company info
 type StudentCourseProps = {
   id: string;
   title: string;
@@ -27,6 +35,14 @@ type StudentCourseProps = {
   reviewCount: number;
   language?: string | null;
   teacherName?: string | null;
+  teacherProfileUrl?: string | null;
+  teacherCompany?: {
+    id: string;
+    name: string;
+    logoUrl?: string | null;
+    location?: string | null;
+    industry?: string | null;
+  } | null;
   enrolledCount: number;
   chapterCount: number;
   isEnrolled?: boolean;
@@ -55,7 +71,7 @@ const CourseCard = ({ course }: { course: StudentCourseProps }) => {
         <div className="flex justify-between items-start">
           <Link
             href={`/courses/${course.id}`}
-            className="hover:underline hover:text-blue-600 transition-colors"
+            className="hover:underline hover:text-sky-600 transition-colors"
           >
             <CardTitle className="text-md">{course.title}</CardTitle>
           </Link>
@@ -99,9 +115,35 @@ const CourseCard = ({ course }: { course: StudentCourseProps }) => {
           )}
         </div>
       </CardContent>
-      <CardFooter className="flex justify-between mt-auto border-t pt-4">
-        <div className="text-xs">By {course.teacherName || "Instructor"}</div>
-        <div className="font-bold text-md">
+      <CardFooter className="mt-auto border-t p-4">
+        <div className="flex items-center gap-2">
+          <div>
+            {course.teacherCompany?.logoUrl ? (
+              <Avatar className="h-6 w-6">
+                <AvatarImage
+                  imageKey={course.teacherCompany.logoUrl}
+                  userName={course.teacherCompany.name}
+                  size={22}
+                />
+              </Avatar>
+            ) : (
+              <AvatarFallback className="text-xs">
+                {course?.teacherCompany?.name.charAt(0)}
+              </AvatarFallback>
+            )}
+          </div>
+          <div className="text-xs">
+            By {course.teacherName || "Instructor"}
+            {course.teacherCompany && (
+              <div className="flex items-center gap-1 mt-1 text-muted-foreground">
+                <span>from {course.teacherCompany.name}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </CardFooter>
+      <CardFooter className="mt-auto border-t p-4 flex justify-center">
+        <div className="font-black text-lg text-sky-600">
           {formatPrice(Number(course.price))}
         </div>
       </CardFooter>

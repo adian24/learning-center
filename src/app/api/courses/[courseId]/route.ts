@@ -3,155 +3,127 @@ import { auth } from "@/lib/auth";
 import db from "@/lib/db/db";
 
 export async function GET(
-  req: Request,
+  request: Request,
   { params }: { params: Promise<{ courseId: string }> }
 ) {
   try {
-    const courseId = (await params).courseId;
     const session = await auth();
     const userId = session?.user?.id;
+    const courseId = (await params).courseId;
 
-    let enrollments: { courseId: string }[] = [];
-
-    // Handle authenticated users with student profile
-    if (session?.user?.id) {
-      const studentProfile = await db.studentProfile.findUnique({
-        where: {
-          userId,
-        },
-      });
-
-      // If user has a student profile, include progress information
-      if (studentProfile) {
-        enrollments = await db.enrolledCourse.findMany({
-          where: {
-            studentId: studentProfile.id,
-            status: "COMPLETED",
-          },
-          select: { courseId: true },
-        });
-
-        const course = await db.course.findUnique({
-          where: {
-            id: courseId,
-          },
-          include: {
-            teacher: {
-              select: {
-                bio: true,
-                expertise: true,
-                user: {
-                  select: {
-                    name: true,
-                    image: true,
-                  },
-                },
-              },
-            },
-            category: true,
-            chapters: {
-              orderBy: {
-                position: "asc",
-              },
-              include: {
-                userProgress: {
-                  where: {
-                    studentId: studentProfile.id,
-                  },
-                },
-                resources: true,
-                quizzes: true,
-              },
-            },
-          },
-        });
-
-        if (!course) {
-          return new NextResponse("Course not found", { status: 404 });
-        }
-
-        const enrolledCourseIds = new Set(enrollments.map((e) => e.courseId));
-
-        // Calculate total duration from chapters
-        const totalDuration = course.chapters.reduce((total, chapter) => {
-          return total + (chapter.duration || 0);
-        }, 0);
-
-        // Update course with calculated duration
-        const courseWithDuration = {
-          ...course,
-          duration: totalDuration,
-          isEnrolled: enrolledCourseIds.has(course.id),
-        };
-
-        // Check for certificate
-        const certificate = await db.certificate.findUnique({
-          where: {
-            studentId_courseId: {
-              studentId: studentProfile.id,
-              courseId: courseId,
-            },
-          },
-        });
-
-        return NextResponse.json({
-          course: courseWithDuration,
-          certificate,
-          studentId: studentProfile.id,
-        });
-      }
-    }
-
-    // For unauthenticated users or users without student profile
     const course = await db.course.findUnique({
       where: {
         id: courseId,
+        isPublished: true,
       },
       include: {
         teacher: {
-          select: {
-            bio: true,
-            expertise: true,
+          include: {
             user: {
               select: {
+                id: true,
                 name: true,
                 image: true,
+              },
+            },
+            company: {
+              select: {
+                id: true,
+                name: true,
+                description: true,
+                logoUrl: true,
+                location: true,
+                website: true,
+                industry: true,
+                isVerified: true,
               },
             },
           },
         },
         category: true,
         chapters: {
-          orderBy: {
-            position: "asc",
+          where: {
+            isPublished: true,
           },
           include: {
-            resources: true,
-            quizzes: true,
+            resources: {
+              select: {
+                id: true,
+                title: true,
+                summary: true,
+                readTime: true,
+              },
+            },
+            quizzes: {
+              select: {
+                id: true,
+                title: true,
+                description: true,
+              },
+            },
+            ...(userId && {
+              userProgress: {
+                where: {
+                  student: {
+                    userId: userId,
+                  },
+                },
+                select: {
+                  id: true,
+                  isCompleted: true,
+                  watchedSeconds: true,
+                  lastWatchedAt: true,
+                },
+              },
+            }),
+          },
+          orderBy: {
+            position: "asc",
           },
         },
       },
     });
 
     if (!course) {
-      return new NextResponse("Course not found", { status: 404 });
+      return NextResponse.json({ error: "Course not found" }, { status: 404 });
     }
 
-    // Calculate total duration from chapters
-    const totalDuration = course.chapters.reduce((total, chapter) => {
-      return total + (chapter.duration || 0);
-    }, 0);
+    // Check for certificate if user is enrolled
+    let certificate = null;
+    let studentId = null;
 
-    // Update course with calculated duration
-    const courseWithDuration = {
-      ...course,
-      duration: totalDuration,
-    };
+    if (userId) {
+      const studentProfile = await db.studentProfile.findUnique({
+        where: { userId },
+      });
 
-    // Return just the course data without student info
-    return NextResponse.json({ course: courseWithDuration });
+      if (studentProfile) {
+        studentId = studentProfile.id;
+        certificate = await db.certificate.findFirst({
+          where: {
+            studentId: studentProfile.id,
+            courseId: course.id,
+          },
+          select: {
+            id: true,
+            certificateNumber: true,
+            pdfUrl: true,
+            issueDate: true,
+          },
+        });
+      }
+    }
+
+    return NextResponse.json({
+      course,
+      certificate,
+      studentId,
+    });
   } catch (error) {
     console.error("[COURSE_GET]", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch course" },
+      { status: 500 }
+    );
   }
 }

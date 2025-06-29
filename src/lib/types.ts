@@ -50,6 +50,7 @@ export interface Course {
   reviewCount: number;
   chapters: Chapter[];
   isEnrolled?: boolean;
+  teacher?: TeacherWithCompany;
 }
 
 export interface Category {
@@ -191,6 +192,34 @@ export interface TeacherProfile {
   courses?: Course[];
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface TeacherWithCompany {
+  id: string;
+  user: {
+    id: string;
+    name: string | null;
+    image: string | null;
+  };
+  bio: string | null;
+  expertise: string[];
+  profileUrl: string | null;
+  company: Company | null;
+}
+
+export interface Company {
+  id: string;
+  name: string;
+  description: string | null;
+  logoUrl: string | null;
+  location: string | null;
+  website: string | null;
+  industry: string | null;
+  isVerified: boolean;
+}
+
+export interface CourseWithTeacher extends Course {
+  teacher: TeacherWithCompany;
 }
 
 export interface EnrolledCourse {

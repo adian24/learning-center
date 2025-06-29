@@ -1,90 +1,100 @@
-// app/api/courses/route.ts
 import { auth } from "@/lib/auth";
 import db from "@/lib/db/db";
 import { NextResponse } from "next/server";
 
 // GET all courses
-export async function GET(req: Request) {
+export async function GET(request: Request) {
   try {
     const session = await auth();
-    const userId = session?.user?.id;
-
-    if (!userId) {
+    if (!session?.user) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    // Get URL parameters
-    const { searchParams } = new URL(req.url);
+    const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
     const perPage = parseInt(searchParams.get("perPage") || "10");
 
-    // Calculate skip
-    const skip = (page - 1) * perPage;
-
     // Get teacher profile
     const teacherProfile = await db.teacherProfile.findUnique({
-      where: {
-        userId: userId,
-      },
+      where: { userId: session.user.id },
     });
 
     if (!teacherProfile) {
       return new NextResponse("Teacher profile not found", { status: 404 });
     }
 
-    // Get total count
-    const total = await db.course.count({
-      where: {
-        teacherId: teacherProfile.id,
-      },
-    });
+    // Get courses with company information
+    const [courses, total] = await Promise.all([
+      db.course.findMany({
+        where: {
+          teacherId: teacherProfile.id,
+        },
+        include: {
+          teacher: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  image: true,
+                },
+              },
+              company: {
+                select: {
+                  id: true,
+                  name: true,
+                  logoUrl: true,
+                  location: true,
+                  industry: true,
+                },
+              },
+            },
+          },
+          chapters: {
+            where: {
+              isPublished: true,
+            },
+          },
+          _count: {
+            select: {
+              enrolledStudents: {
+                where: {
+                  status: "COMPLETED",
+                },
+              },
+            },
+          },
+        },
+        skip: (page - 1) * perPage,
+        take: perPage,
+        orderBy: {
+          createdAt: "desc",
+        },
+      }),
+      db.course.count({
+        where: {
+          teacherId: teacherProfile.id,
+        },
+      }),
+    ]);
 
-    // Get paginated courses
-    const courses = await db.course.findMany({
-      where: {
-        teacherId: teacherProfile.id,
-      },
-      include: {
-        category: true,
-        chapters: true,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-      skip,
-      take: perPage,
-    });
+    // Format courses with enrollment count
+    const formattedCourses = courses.map((course) => ({
+      ...course,
+      enrolledCount: course._count.enrolledStudents,
+    }));
 
-    // Calculate total duration for each course
-    const coursesWithDuration = courses.map((course) => {
-      // Calculate total duration from chapters
-      const totalDuration = course.chapters.reduce((total, chapter) => {
-        return total + (chapter.duration || 0);
-      }, 0);
-
-      return {
-        ...course,
-        duration: totalDuration,
-      };
-    });
-
-    // Calculate total pages
-    const totalPages = Math.ceil(total / perPage);
-
-    // Prepare response
-    const response = {
-      courses: coursesWithDuration ?? [],
+    return NextResponse.json({
+      courses: formattedCourses,
       meta: {
+        totalPages: Math.ceil(total / perPage),
         currentPage: page,
-        totalPages,
-        perPage,
-        total,
+        hasNextPage: page < Math.ceil(total / perPage),
+        hasPreviousPage: page > 1,
       },
-    };
-
-    return NextResponse.json(response);
+    });
   } catch (error) {
-    console.error("[COURSES_GET]", error);
+    console.error("[TEACHER_COURSES_GET]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

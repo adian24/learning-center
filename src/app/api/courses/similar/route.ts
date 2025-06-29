@@ -37,9 +37,35 @@ export async function GET(request: NextRequest) {
         isPublished: true,
       },
       include: {
+        teacher: {
+          select: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                image: true,
+              },
+            },
+            profileUrl: true,
+            company: {
+              select: {
+                id: true,
+                name: true,
+                logoUrl: true,
+                location: true,
+                industry: true,
+              },
+            },
+          },
+        },
         category: {
           select: {
             name: true,
+          },
+        },
+        _count: {
+          select: {
+            enrolledStudents: true,
           },
         },
       },
@@ -55,9 +81,33 @@ export async function GET(request: NextRequest) {
           isPublished: true,
         },
         include: {
+          teacher: {
+            include: {
+              user: {
+                select: {
+                  name: true,
+                  image: true,
+                },
+              },
+              company: {
+                select: {
+                  id: true,
+                  name: true,
+                  logoUrl: true,
+                  location: true,
+                  industry: true,
+                },
+              },
+            },
+          },
           category: {
             select: {
               name: true,
+            },
+          },
+          _count: {
+            select: {
+              enrolledStudents: true,
             },
           },
         },
@@ -76,9 +126,33 @@ export async function GET(request: NextRequest) {
           rating: "desc",
         },
         include: {
+          teacher: {
+            include: {
+              user: {
+                select: {
+                  name: true,
+                  image: true,
+                },
+              },
+              company: {
+                select: {
+                  id: true,
+                  name: true,
+                  logoUrl: true,
+                  location: true,
+                  industry: true,
+                },
+              },
+            },
+          },
           category: {
             select: {
               name: true,
+            },
+          },
+          _count: {
+            select: {
+              enrolledStudents: true,
             },
           },
         },

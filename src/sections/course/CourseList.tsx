@@ -15,10 +15,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { CourseListProps } from "@/lib/types";
+import { CourseWithCompany } from "@/hooks/use-courses-query";
 import { BookOpen, Calendar, Users, ShieldCheck } from "lucide-react";
-import CourseActions from "./CourseActions";
 import { formatPrice } from "@/utils/formatPrice";
+
+interface CourseListProps {
+  courses: CourseWithCompany[];
+}
 
 const CourseList: React.FC<CourseListProps> = ({ courses }) => {
   return (
@@ -33,7 +36,7 @@ const CourseList: React.FC<CourseListProps> = ({ courses }) => {
             <TableHead className="text-center">Chapter</TableHead>
             <TableHead>Harga</TableHead>
             <TableHead>Terakhir Update</TableHead>
-            <TableHead></TableHead>
+            {/* <TableHead></TableHead> */}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -59,15 +62,7 @@ const CourseList: React.FC<CourseListProps> = ({ courses }) => {
                 </div>
               </TableCell>
               <TableCell>
-                <Badge
-                  className={
-                    course.isPublished
-                      ? "bg-green-100 text-green-800"
-                      : "bg-yellow-100 text-yellow-800"
-                  }
-                >
-                  {course.isPublished ? "Published" : "Draft"}
-                </Badge>
+                <Badge className="bg-green-100 text-green-800">Published</Badge>
               </TableCell>
               <TableCell>
                 <Badge variant="secondary">{course.level}</Badge>
@@ -93,29 +88,29 @@ const CourseList: React.FC<CourseListProps> = ({ courses }) => {
                     <TooltipTrigger>
                       <div className="flex items-center justify-center">
                         <BookOpen className="h-4 w-4 mr-1" />
-                        {course.chapters?.length}
+                        {course.chapterCount}
                       </div>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>{course.chapters?.length} chapter</p>
+                      <p>{course.chapterCount} chapter</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </TableCell>
               <TableCell>
                 <div className="flex items-center">
-                  {formatPrice(course.price)}
+                  {formatPrice(course.price || 0)}
                 </div>
               </TableCell>
               <TableCell>
                 <div className="flex items-center">
                   <Calendar className="h-4 w-4 mr-1" />
-                  {new Date(course.updatedAt).toLocaleDateString()}
+                  {new Date().toLocaleDateString()}
                 </div>
               </TableCell>
-              <TableCell>
+              {/* <TableCell>
                 <CourseActions course={course} />
-              </TableCell>
+              </TableCell> */}
             </TableRow>
           ))}
         </TableBody>

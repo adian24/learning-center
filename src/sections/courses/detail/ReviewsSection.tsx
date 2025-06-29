@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useReviews } from "@/hooks/use-course-reviews";
+import { formatDate } from "date-fns";
 import { Star } from "lucide-react";
 
 interface ReviewsSectionProps {
@@ -52,16 +53,15 @@ const ReviewsSection = ({ courseId }: ReviewsSectionProps) => {
                       alt={review.user.name}
                     />
                     <AvatarFallback>
-                      {review.user.name
-                        .split(" ")
-                        .map((n: any) => n[0])
-                        .join("")}
+                      {review.student.user.name?.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
                     <div className="flex justify-between items-start">
                       <div>
-                        <h4 className="font-medium">{review.user.name}</h4>
+                        <h4 className="font-medium">
+                          {review.student.user.name}
+                        </h4>
                         <div className="flex items-center mt-1">
                           {[...Array(5)].map((_, i) => (
                             <Star
@@ -75,8 +75,8 @@ const ReviewsSection = ({ courseId }: ReviewsSectionProps) => {
                           ))}
                         </div>
                       </div>
-                      <span className="text-sm text-gray-500">
-                        {review.date}
+                      <span className="text-xs text-muted-foreground">
+                        {formatDate(review.createdAt, "dd MMM yyyy")}
                       </span>
                     </div>
                     <p className="mt-2 text-gray-700">{review.comment}</p>

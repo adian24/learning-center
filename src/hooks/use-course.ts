@@ -17,6 +17,17 @@ export interface Course {
     };
     bio: string | null;
     expertise: string[] | null;
+    profileUrl: string | null;
+    company: {
+      id: string;
+      name: string;
+      description: string | null;
+      logoUrl: string | null;
+      location: string | null;
+      website: string | null;
+      industry: string | null;
+      isVerified: boolean;
+    } | null;
   };
   categoryId: string | null;
   category: {

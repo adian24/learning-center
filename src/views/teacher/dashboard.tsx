@@ -1,23 +1,35 @@
-// app/(dashboard)/(routes)/teacher/dashboard/page.tsx
 "use client";
 
 import ButtonNavigation from "@/components/button-navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Layout from "@/layout";
-import { BarChart, BookOpen, GraduationCap, Users } from "lucide-react";
+import {
+  BarChart,
+  BookOpen,
+  Building2,
+  GraduationCap,
+  ShieldCheck,
+  Users,
+} from "lucide-react";
 import {
   useTeacherStats,
   useTeacherCourses,
 } from "@/hooks/use-teacher-dashboard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useUserRole } from "@/hooks/use-user-role";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { AvatarImage } from "@/components/media/SecureImage";
 
 // Create a client
 const queryClient = new QueryClient();
 
 function TeacherDashboardContent() {
+  const { profile } = useUserRole();
   const { stats, isLoading: statsLoading } = useTeacherStats();
   const { courses, isLoading: coursesLoading } = useTeacherCourses();
+
+  const company = profile?.company;
 
   // Format currency for display
   const formatCurrency = (amount: number) => {
@@ -32,12 +44,41 @@ function TeacherDashboardContent() {
   return (
     <Layout>
       {/* Top Navigation */}
-      <div className="bg-white shadow-sm">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="h-16">
-            <h1 className="text-lg font-bold sm:text-xl md:text-2xl">
-              Teacher Dashboard
-            </h1>
+      <div className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">
+                Teacher Dashboard
+              </h1>
+              <p className="text-gray-600">
+                Welcome back, {profile?.user?.name}
+              </p>
+
+              {/* Company Badge */}
+              {company && (
+                <div className="flex items-center gap-2 mt-2">
+                  {company.logoUrl && (
+                    <Avatar className="h-6 w-6">
+                      <AvatarImage
+                        imageKey={company.logoUrl}
+                        userName={company.name}
+                      />
+                      <AvatarFallback className="text-xs">
+                        {company.name.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                  )}
+                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                    <Building2 className="h-4 w-4" />
+                    <span>{company.name}</span>
+                    {company.isVerified && (
+                      <ShieldCheck className="h-4 w-4 text-blue-500" />
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
