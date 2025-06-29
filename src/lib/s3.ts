@@ -5,6 +5,7 @@ export const S3_ENDPOINT = process.env.NEXT_PUBLIC_S3_ENDPOINT;
 export const S3_THUMBNAIL = process.env.NEXT_PUBLIC_S3_THUMBNAIL;
 export const S3_VIDEO = process.env.NEXT_PUBLIC_S3_VIDEO;
 export const S3_COMPANIES = process.env.NEXT_PUBLIC_S3_COMPANIES;
+export const S3_PROFILES = process.env.NEXT_PUBLIC_S3_PROFILES;
 
 export const s3Client = new S3Client({
   region: process.env.NEXT_PUBLIC_S3_REGION,

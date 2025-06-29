@@ -61,6 +61,37 @@ export async function GET(req: NextRequest) {
       });
     }
 
+    // For profile images, require authentication and ownership verification
+    if (key.startsWith("profiles/")) {
+      const session = await auth();
+      if (!session?.user?.id) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+
+      // Verify the profile image belongs to the current user
+      // Profile keys should be in format: profiles/{userId}-{uuid}.{ext}
+      if (!key.includes(session.user.id)) {
+        return NextResponse.json(
+          { error: "Access denied to this profile image" },
+          { status: 403 }
+        );
+      }
+
+      const getCommand = new GetObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: key,
+      });
+
+      const signedUrl = await getSignedUrl(s3Client, getCommand, {
+        expiresIn: 1800, // 30 minutes for profile images
+      });
+
+      return NextResponse.json({
+        url: signedUrl,
+        expiresIn: 1800,
+      });
+    }
+
     // For other images, require authentication
     const session = await auth();
     if (!session?.user?.id) {

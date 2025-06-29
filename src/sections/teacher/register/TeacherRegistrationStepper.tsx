@@ -35,6 +35,7 @@ import * as z from "zod";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { EXPERTISE_CATEGORIES } from "@/lib/constants";
 import { useTeacherRegistrationStore } from "@/store/use-teacher-registration-store";
+import { ProfileImageUpload } from "@/components/forms/ProfileImageUpload";
 import {
   ArrowLeft,
   ArrowRight,
@@ -46,19 +47,18 @@ import {
   MapPin,
   ShieldCheck,
   User,
-  Users,
 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { useCompanies } from "@/hooks/use-companies";
 import { useSecureImages } from "@/hooks/use-secure-media";
 
-// Form schemas
 const step1Schema = z.object({
   bio: z.string().min(50, "Bio must be at least 50 characters"),
   expertise: z
     .array(z.string())
     .min(1, "Select at least one area of expertise"),
+  profileUrl: z.string().nullable().optional(),
 });
 
 type Step1FormValues = z.infer<typeof step1Schema>;
@@ -97,12 +97,13 @@ export default function TeacherRegistrationStepper({
 
   const [companySearchOpen, setCompanySearchOpen] = useState(false);
 
-  // Step 1 form
+  // Step 1 form with profileUrl
   const step1Form = useForm<Step1FormValues>({
     resolver: zodResolver(step1Schema),
     defaultValues: {
       bio: teacherData.bio,
       expertise: teacherData.expertise,
+      profileUrl: teacherData.profileUrl || null,
     },
   });
 
@@ -190,6 +191,29 @@ export default function TeacherRegistrationStepper({
                   onSubmit={step1Form.handleSubmit(onStep1Submit)}
                   className="space-y-6"
                 >
+                  {/* Profile Image Upload */}
+                  <FormField
+                    control={step1Form.control}
+                    name="profileUrl"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Profile Photo</FormLabel>
+                        <FormControl>
+                          <ProfileImageUpload
+                            value={field.value}
+                            onChange={field.onChange}
+                            size="lg"
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Upload a professional profile photo (optional)
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Bio Field */}
                   <FormField
                     control={step1Form.control}
                     name="bio"
@@ -212,6 +236,7 @@ export default function TeacherRegistrationStepper({
                     )}
                   />
 
+                  {/* Expertise Field */}
                   <FormField
                     control={step1Form.control}
                     name="expertise"
@@ -299,68 +324,61 @@ export default function TeacherRegistrationStepper({
                       )}
                       {isLoadingCompanies ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <Users className="w-4 h-4" />
-                      )}
+                      ) : null}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-full p-0">
                     <Command>
                       <CommandInput placeholder="Search companies..." />
-                      <CommandEmpty>No companies found.</CommandEmpty>
                       <CommandList>
+                        <CommandEmpty>No companies found.</CommandEmpty>
                         <CommandGroup>
-                          {companies?.map((company: Company) => {
-                            return (
-                              <CommandItem
-                                key={company.id}
-                                value={company.name}
-                                onSelect={() => handleCompanySelect(company)}
-                                className="cursor-pointer"
-                              >
-                                <div className="flex items-center gap-3 w-full">
-                                  <Avatar className="w-8 h-8">
-                                    <AvatarImage
-                                      src={
-                                        company.logoUrl
-                                          ? logoUrls[company.logoUrl] ||
-                                            undefined
-                                          : undefined
-                                      }
-                                      alt={company.name}
-                                    />
-                                    <AvatarFallback>
-                                      {company.name.charAt(0)}
-                                    </AvatarFallback>
-                                  </Avatar>
-                                  <div className="flex-1">
-                                    <div className="flex items-center gap-2">
-                                      <span className="font-medium">
-                                        {company.name}
-                                      </span>
-                                      {company.isVerified && (
-                                        <ShieldCheck className="w-4 h-4 text-blue-600" />
-                                      )}
-                                    </div>
-                                    {company.industry && (
-                                      <p className="text-sm text-muted-foreground">
-                                        {company.industry}
-                                      </p>
-                                    )}
-                                  </div>
+                          {companies.map((company) => (
+                            <CommandItem
+                              key={company.id}
+                              onSelect={() => handleCompanySelect(company)}
+                              className="flex items-center gap-2 p-2"
+                            >
+                              <Avatar className="w-8 h-8">
+                                <AvatarImage
+                                  src={
+                                    company.logoUrl
+                                      ? logoUrls[company.logoUrl] || undefined
+                                      : undefined
+                                  }
+                                  alt={company.name}
+                                />
+                                <AvatarFallback>
+                                  {company.name.charAt(0)}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-medium">
+                                    {company.name}
+                                  </span>
+                                  {company.isVerified && (
+                                    <ShieldCheck className="w-4 h-4 text-blue-600" />
+                                  )}
                                 </div>
-                              </CommandItem>
-                            );
-                          })}
+                                {company.location && (
+                                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                                    <MapPin className="w-3 h-3" />
+                                    {company.location}
+                                  </div>
+                                )}
+                              </div>
+                            </CommandItem>
+                          ))}
                         </CommandGroup>
                       </CommandList>
                     </Command>
                   </PopoverContent>
                 </Popover>
 
-                {/* Selected Company Details */}
+                {/* Selected Company Display */}
                 {selectedCompany && (
-                  <Card className="p-4">
+                  <div className="p-4 border rounded-lg">
                     <div className="flex items-start gap-4">
                       <Avatar className="w-16 h-16">
                         <AvatarImage
@@ -371,46 +389,37 @@ export default function TeacherRegistrationStepper({
                           }
                           alt={selectedCompany.name}
                         />
-                        <AvatarFallback className="text-lg">
+                        <AvatarFallback>
                           {selectedCompany.name.charAt(0)}
                         </AvatarFallback>
                       </Avatar>
-                      <div className="flex-1 space-y-2">
-                        <div className="flex items-center gap-2">
-                          <h3 className="text-lg font-semibold">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h3 className="font-semibold">
                             {selectedCompany.name}
                           </h3>
                           {selectedCompany.isVerified && (
-                            <Badge
-                              variant="secondary"
-                              className="bg-blue-100 text-blue-800"
-                            >
+                            <Badge variant="secondary" className="text-xs">
                               <ShieldCheck className="w-3 h-3 mr-1" />
                               Verified
                             </Badge>
                           )}
                         </div>
                         {selectedCompany.description && (
-                          <p className="text-muted-foreground">
+                          <p className="text-sm text-muted-foreground mb-2">
                             {selectedCompany.description}
                           </p>
                         )}
                         <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                          {selectedCompany.industry && (
-                            <div className="flex items-center gap-1">
-                              <Building2 className="w-4 h-4" />
-                              {selectedCompany.industry}
-                            </div>
-                          )}
                           {selectedCompany.location && (
                             <div className="flex items-center gap-1">
-                              <MapPin className="w-4 h-4" />
+                              <MapPin className="w-3 h-3" />
                               {selectedCompany.location}
                             </div>
                           )}
                           {selectedCompany.website && (
                             <div className="flex items-center gap-1">
-                              <Globe className="w-4 h-4" />
+                              <Globe className="w-3 h-3" />
                               <a
                                 href={selectedCompany.website}
                                 target="_blank"
@@ -421,27 +430,43 @@ export default function TeacherRegistrationStepper({
                               </a>
                             </div>
                           )}
+                          {selectedCompany.industry && (
+                            <div className="flex items-center gap-1">
+                              <Building2 className="w-3 h-3" />
+                              {selectedCompany.industry}
+                            </div>
+                          )}
                         </div>
                       </div>
                       <Button
-                        variant="ghost"
+                        variant="outline"
                         size="sm"
                         onClick={() => setSelectedCompany(null)}
                       >
                         Remove
                       </Button>
                     </div>
-                  </Card>
+                  </div>
                 )}
               </div>
 
+              {/* Navigation */}
               <div className="flex justify-between">
-                <Button variant="outline" onClick={prevStep}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={prevStep}
+                  className="min-w-[120px]"
+                >
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Back
                 </Button>
-                <Button onClick={nextStep}>
-                  Skip / Next <ArrowRight className="w-4 h-4 ml-2" />
+                <Button
+                  type="button"
+                  onClick={nextStep}
+                  className="min-w-[120px]"
+                >
+                  Next <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </div>
             </CardContent>
@@ -453,124 +478,116 @@ export default function TeacherRegistrationStepper({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5" />
-                Review & Complete Registration
+                Review & Submit
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Teacher Profile Preview */}
+              {/* Profile Summary */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Teacher Profile</h3>
-                <Card className="p-4">
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">
-                        Bio
-                      </label>
-                      <p className="mt-1">{teacherData.bio}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">
-                        Expertise
-                      </label>
-                      <div className="flex flex-wrap gap-2 mt-1">
-                        {teacherData.expertise.map((skill) => (
-                          <Badge key={skill} variant="secondary">
-                            {skill}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              </div>
+                <h3 className="text-lg font-semibold">Profile Summary</h3>
 
-              {/* Company Preview */}
-              {selectedCompany && (
-                <>
-                  <Separator />
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold">
-                      Associated Company
-                    </h3>
-                    <Card className="p-4">
-                      <div className="flex items-start gap-4">
-                        <Avatar className="w-12 h-12">
-                          <AvatarImage
-                            src={
-                              selectedCompany.logoUrl
-                                ? logoUrls[selectedCompany.logoUrl] ||
-                                  undefined
-                                : undefined
-                            }
-                            alt={selectedCompany.name}
-                          />
-                          <AvatarFallback>
-                            {selectedCompany.name.charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h4 className="font-semibold">
-                              {selectedCompany.name}
-                            </h4>
-                            {selectedCompany.isVerified && (
-                              <Badge
-                                variant="secondary"
-                                className="bg-blue-100 text-blue-800"
-                              >
-                                <ShieldCheck className="w-3 h-3 mr-1" />
-                                Verified
-                              </Badge>
-                            )}
-                          </div>
-                          {selectedCompany.description && (
-                            <p className="text-sm text-muted-foreground mb-2">
-                              {selectedCompany.description}
-                            </p>
-                          )}
-                          <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
-                            {selectedCompany.industry && (
-                              <span>
-                                Industry: {selectedCompany.industry}
-                              </span>
-                            )}
-                            {selectedCompany.location && (
-                              <span>
-                                Location: {selectedCompany.location}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </Card>
+                {/* Profile Image Preview */}
+                {teacherData.profileUrl && (
+                  <div className="flex items-center justify-center gap-4">
+                    <ProfileImageUpload
+                      value={teacherData.profileUrl}
+                      onChange={() => {}} // Read-only in preview
+                      disabled={true}
+                      size="md"
+                    />
                   </div>
-                </>
-              )}
+                )}
+
+                <div className="space-y-2">
+                  <div>
+                    <span className="font-medium">Bio: </span>
+                    <span className="text-muted-foreground">
+                      {teacherData.bio}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="font-medium">Expertise: </span>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {teacherData.expertise.map((skill) => (
+                        <Badge key={skill} variant="secondary">
+                          {skill}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
 
               <Separator />
 
-              <div className="flex justify-between">
+              {/* Company Summary */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Company Association</h3>
+                {selectedCompany ? (
+                  <div className="p-4 border rounded-lg">
+                    <div className="flex items-center gap-4">
+                      <Avatar className="w-12 h-12">
+                        <AvatarImage
+                          src={
+                            selectedCompany.logoUrl
+                              ? logoUrls[selectedCompany.logoUrl] || undefined
+                              : undefined
+                          }
+                          alt={selectedCompany.name}
+                        />
+                        <AvatarFallback>
+                          {selectedCompany.name.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">
+                            {selectedCompany.name}
+                          </span>
+                          {selectedCompany.isVerified && (
+                            <ShieldCheck className="w-4 h-4 text-blue-600" />
+                          )}
+                        </div>
+                        {selectedCompany.location && (
+                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                            <MapPin className="w-3 h-3" />
+                            {selectedCompany.location}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-muted-foreground">
+                    No company selected (you can add this later)
+                  </p>
+                )}
+              </div>
+
+              {/* Final Actions */}
+              <div className="flex justify-between pt-4">
                 <Button
+                  type="button"
                   variant="outline"
                   onClick={prevStep}
                   disabled={isSubmitting}
+                  className="min-w-[120px]"
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Back
                 </Button>
                 <Button
+                  type="button"
                   onClick={onFinalSubmit}
                   disabled={isSubmitting}
-                  className="min-w-[150px]"
+                  className="min-w-[120px]"
                 >
                   {isSubmitting ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                   ) : (
-                    <>
-                      Complete Registration
-                      <CheckCircle2 className="w-4 h-4 ml-2" />
-                    </>
+                    <CheckCircle2 className="w-4 h-4 mr-2" />
                   )}
+                  Complete Registration
                 </Button>
               </div>
             </CardContent>

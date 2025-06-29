@@ -1,12 +1,12 @@
 import { create } from "zustand";
-import { devtools } from "zustand/middleware";
 
-export interface TeacherFormData {
+export interface TeacherData {
   bio: string;
   expertise: string[];
+  profileUrl?: string | null;
 }
 
-export interface SelectedCompany {
+interface Company {
   id: string;
   name: string;
   description?: string | null;
@@ -18,36 +18,22 @@ export interface SelectedCompany {
 }
 
 interface TeacherRegistrationState {
-  // Current step (1, 2, or 3)
+  // Current state
   currentStep: number;
-
-  // Form data
-  teacherData: TeacherFormData;
-  selectedCompany: SelectedCompany | null;
-
-  // Loading states
-  isCreatingProfile: boolean;
-  isUpdatingProfile: boolean;
+  teacherData: TeacherData;
+  selectedCompany: Company | null;
   isSubmitting: boolean;
-
-  // Teacher profile ID (for updates)
   teacherProfileId: string | null;
 
   // Actions
-  setCurrentStep: (step: number) => void;
   nextStep: () => void;
   prevStep: () => void;
-
-  setTeacherData: (data: TeacherFormData) => void;
-  setSelectedCompany: (company: SelectedCompany | null) => void;
-
-  setIsCreatingProfile: (loading: boolean) => void;
-  setIsUpdatingProfile: (loading: boolean) => void;
-  setIsSubmitting: (loading: boolean) => void;
-
+  setCurrentStep: (step: number) => void;
+  setTeacherData: (data: TeacherData) => void;
+  updateTeacherData: (data: Partial<TeacherData>) => void;
+  setSelectedCompany: (company: Company | null) => void;
+  setIsSubmitting: (isSubmitting: boolean) => void;
   setTeacherProfileId: (id: string | null) => void;
-
-  // Reset store
   resetStore: () => void;
 }
 
@@ -56,69 +42,61 @@ const initialState = {
   teacherData: {
     bio: "",
     expertise: [],
+    profileUrl: null,
   },
   selectedCompany: null,
-  isCreatingProfile: false,
-  isUpdatingProfile: false,
   isSubmitting: false,
   teacherProfileId: null,
 };
 
-export const useTeacherRegistrationStore = create<TeacherRegistrationState>()(
-  devtools(
-    (set, get) => ({
-      ...initialState,
+export const useTeacherRegistrationStore = create<TeacherRegistrationState>(
+  (set, get) => ({
+    ...initialState,
 
-      setCurrentStep: (step: number) => {
-        if (step >= 1 && step <= 3) {
-          set({ currentStep: step });
-        }
-      },
+    nextStep: () => {
+      const { currentStep } = get();
+      if (currentStep < 3) {
+        set({ currentStep: currentStep + 1 });
+      }
+    },
 
-      nextStep: () => {
-        const { currentStep } = get();
-        if (currentStep < 3) {
-          set({ currentStep: currentStep + 1 });
-        }
-      },
+    prevStep: () => {
+      const { currentStep } = get();
+      if (currentStep > 1) {
+        set({ currentStep: currentStep - 1 });
+      }
+    },
 
-      prevStep: () => {
-        const { currentStep } = get();
-        if (currentStep > 1) {
-          set({ currentStep: currentStep - 1 });
-        }
-      },
+    setCurrentStep: (step: number) => {
+      if (step >= 1 && step <= 3) {
+        set({ currentStep: step });
+      }
+    },
 
-      setTeacherData: (data: TeacherFormData) => {
-        set({ teacherData: data });
-      },
+    setTeacherData: (data: TeacherData) => {
+      set({ teacherData: data });
+    },
 
-      setSelectedCompany: (company: SelectedCompany | null) => {
-        set({ selectedCompany: company });
-      },
+    updateTeacherData: (data: Partial<TeacherData>) => {
+      set((state) => ({
+        teacherData: { ...state.teacherData, ...data },
+      }));
+    },
 
-      setIsCreatingProfile: (loading: boolean) => {
-        set({ isCreatingProfile: loading });
-      },
+    setSelectedCompany: (company: Company | null) => {
+      set({ selectedCompany: company });
+    },
 
-      setIsUpdatingProfile: (loading: boolean) => {
-        set({ isUpdatingProfile: loading });
-      },
+    setIsSubmitting: (isSubmitting: boolean) => {
+      set({ isSubmitting });
+    },
 
-      setIsSubmitting: (loading: boolean) => {
-        set({ isSubmitting: loading });
-      },
+    setTeacherProfileId: (id: string | null) => {
+      set({ teacherProfileId: id });
+    },
 
-      setTeacherProfileId: (id: string | null) => {
-        set({ teacherProfileId: id });
-      },
-
-      resetStore: () => {
-        set(initialState);
-      },
-    }),
-    {
-      name: "teacher-registration-store",
-    }
-  )
+    resetStore: () => {
+      set(initialState);
+    },
+  })
 );
