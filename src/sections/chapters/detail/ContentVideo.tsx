@@ -66,9 +66,10 @@ const ContentVideo = ({
       return;
     }
 
-    if (file.size > 100 * 1024 * 1024) {
-      // 100MB limit
-      setError("Video must be less than 100MB");
+    if (file.size > 500 * 1024 * 1024) {
+      // 500MB limit
+      setError("Video must be less than 500MB");
+      toast.error("Video must be less than 500MB");
       return;
     }
 
@@ -168,37 +169,39 @@ const ContentVideo = ({
     return (
       <Card className="border-2 border-dashed">
         <CardContent className="p-6">
-          <div className="flex flex-col items-center justify-center space-y-4">
-            <div className="p-4 rounded-full bg-gray-100">
-              <Video className="w-8 h-8 text-gray-500" />
+          <>
+            <div className="flex flex-col items-center justify-center space-y-4">
+              <div className="p-4 rounded-full bg-gray-100">
+                <Video className="w-8 h-8 text-gray-500" />
+              </div>
+              <div className="text-center space-y-2">
+                <h3 className="font-semibold">Tidak ada video yang diunggah</h3>
+                <p className="text-sm text-gray-500">
+                  Unggah video untuk mulai mengajarkan Chapter ini
+                </p>
+              </div>
+              <div>
+                <label className="cursor-pointer">
+                  <Button
+                    className="text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+                    onClick={() => {
+                      document.getElementById("video-upload")?.click();
+                    }}
+                  >
+                    <Upload className="w-4 h-4 mr-2" />
+                    Upload Video
+                  </Button>
+                  <input
+                    id="video-upload"
+                    type="file"
+                    accept="video/*"
+                    className="hidden"
+                    onChange={handleUpload}
+                  />
+                </label>
+              </div>
             </div>
-            <div className="text-center space-y-2">
-              <h3 className="font-semibold">Tidak ada video yang diunggah</h3>
-              <p className="text-sm text-gray-500">
-                Unggah video untuk mulai mengajarkan Chapter ini
-              </p>
-            </div>
-            <div>
-              <label className="cursor-pointer">
-                <Button
-                  className="text-white bg-blue-600 rounded-lg hover:bg-blue-700"
-                  onClick={() => {
-                    document.getElementById("video-upload")?.click();
-                  }}
-                >
-                  <Upload className="w-4 h-4 mr-2" />
-                  Upload Video
-                </Button>
-                <input
-                  id="video-upload"
-                  type="file"
-                  accept="video/*"
-                  className="hidden"
-                  onChange={handleUpload}
-                />
-              </label>
-            </div>
-          </div>
+          </>
         </CardContent>
       </Card>
     );
