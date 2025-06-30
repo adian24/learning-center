@@ -1,7 +1,7 @@
 "use client";
 
 import ButtonNvigation from "@/components/button-navigation";
-import { useCoursesQuery } from "@/hooks/use-courses-query";
+import { useTeacherCoursesQuery } from "@/hooks/use-teacher-courses-query";
 import Layout from "@/layout";
 import CourseCard from "@/sections/course/CourseCard";
 import CourseFilter from "@/sections/course/CourseFilter";
@@ -18,10 +18,12 @@ export default function TeacherCourses() {
   const [page, setPage] = useState(1);
   const perPage = 10;
 
-  const { data, isLoading, error } = useCoursesQuery({
+  const { data, isLoading, error } = useTeacherCoursesQuery({
     page,
     perPage,
   });
+
+  console.log("COUSRE : ", data);
 
   const totalPages = data?.meta.totalPages || 1;
   const paginationItems = generatePaginationItems(page, totalPages);

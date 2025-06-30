@@ -15,12 +15,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { CourseWithCompany } from "@/hooks/use-courses-query";
 import { BookOpen, Calendar, Users, ShieldCheck } from "lucide-react";
 import { formatPrice } from "@/utils/formatPrice";
+import { TeacherCourse } from "@/hooks/use-teacher-courses-query";
 
 interface CourseListProps {
-  courses: CourseWithCompany[];
+  courses: TeacherCourse[];
 }
 
 const CourseList: React.FC<CourseListProps> = ({ courses }) => {
@@ -43,14 +43,6 @@ const CourseList: React.FC<CourseListProps> = ({ courses }) => {
           {courses?.map((course) => (
             <TableRow key={course.id}>
               <TableCell>
-                <div className="flex items-center mb-0.5">
-                  {course?.isEnrolled && (
-                    <div className="text-green-800 flex items-center gap-1">
-                      <ShieldCheck className="h-3.5 w-3.5" />
-                      <span className="text-xs">Enrolled</span>
-                    </div>
-                  )}
-                </div>
                 <Link
                   href={`/teacher/courses/${course.id}`}
                   className="font-medium hover:text-blue-600 hover:underline transition-colors flex items-center gap-2"
@@ -88,11 +80,11 @@ const CourseList: React.FC<CourseListProps> = ({ courses }) => {
                     <TooltipTrigger>
                       <div className="flex items-center justify-center">
                         <BookOpen className="h-4 w-4 mr-1" />
-                        {course.chapterCount}
+                        {course.chapters.length}
                       </div>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>{course.chapterCount} chapter</p>
+                      <p>{course.chapters.length} chapter</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>

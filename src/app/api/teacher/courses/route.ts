@@ -50,11 +50,7 @@ export async function GET(request: Request) {
               },
             },
           },
-          chapters: {
-            where: {
-              isPublished: true,
-            },
-          },
+          chapters: true,
           _count: {
             select: {
               enrolledStudents: {
@@ -62,6 +58,7 @@ export async function GET(request: Request) {
                   status: "COMPLETED",
                 },
               },
+              chapters: true,
             },
           },
         },
@@ -78,10 +75,11 @@ export async function GET(request: Request) {
       }),
     ]);
 
-    // Format courses with enrollment count
+    // Format courses with enrollment count and chapter count
     const formattedCourses = courses.map((course) => ({
       ...course,
       enrolledCount: course._count.enrolledStudents,
+      chapterCount: course._count.chapters,
     }));
 
     return NextResponse.json({
