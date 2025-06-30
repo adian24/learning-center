@@ -9,6 +9,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Loader2, Trash2, Upload, Video } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import axios from "axios";
 import SecureVideo from "@/components/media/SecureVideo";
 import { ChapterWithProgress } from "@/lib/types/chapter";
 
@@ -76,11 +77,10 @@ const ContentVideo = ({
     try {
       setIsUploading(true);
       setError("");
-
-      // Start progress indicator
-      setUploadProgress(10);
+      setUploadProgress(0);
 
       // 1. Get the presigned URL from our API
+      setUploadProgress(5);
       const presignedUrlResponse = await fetch("/api/upload/video", {
         method: "POST",
         headers: {
@@ -97,28 +97,29 @@ const ContentVideo = ({
       }
 
       const { presignedUrl, key } = await presignedUrlResponse.json();
+      setUploadProgress(10);
 
-      setUploadProgress(20);
-
-      // 2. Upload the file directly to S3 using the presigned URL
-      const uploadResponse = await fetch(presignedUrl, {
-        method: "PUT",
-        body: file,
+      // 2. Upload the file directly to S3 using axios with progress tracking
+      await axios.put(presignedUrl, file, {
         headers: {
           "Content-Type": file.type,
         },
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            // Calculate percentage and map to 10-80% range (leaving room for other steps)
+            const percentage = Math.round(
+              (progressEvent.loaded / progressEvent.total) * 70
+            );
+            setUploadProgress(10 + percentage); // 10% to 80%
+          }
+        },
       });
 
-      if (!uploadResponse.ok) {
-        throw new Error("Failed to upload to storage");
-      }
-
-      setUploadProgress(70);
+      setUploadProgress(85);
 
       // 3. Get video duration
       const duration = await getVideoDuration(file);
-
-      setUploadProgress(80);
+      setUploadProgress(90);
 
       // 4. Update chapter in database with the new video key and duration
       const updateResponse = await fetch(
@@ -218,12 +219,14 @@ const ContentVideo = ({
             </div>
             <Progress value={uploadProgress} className="w-full" />
             <p className="text-center text-sm text-gray-500">
-              {uploadProgress < 70
+              {uploadProgress < 10
+                ? "Mempersiapkan upload..."
+                : uploadProgress < 80
                 ? "Mengunggah video..."
-                : uploadProgress < 90
+                : uploadProgress < 95
                 ? "Memproses video..."
                 : "Menyelesaikan..."}{" "}
-              {uploadProgress}%
+              {Math.round(uploadProgress)}%
             </p>
           </div>
         </CardContent>
