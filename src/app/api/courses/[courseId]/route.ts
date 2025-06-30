@@ -91,6 +91,7 @@ export async function GET(
     // Check for certificate if user is enrolled
     let certificate = null;
     let studentId = null;
+    let isEnrolled = false;
 
     if (userId) {
       const studentProfile = await db.studentProfile.findUnique({
@@ -99,6 +100,17 @@ export async function GET(
 
       if (studentProfile) {
         studentId = studentProfile.id;
+
+        // Check if user is enrolled in this course
+        const enrollment = await db.enrolledCourse.findFirst({
+          where: {
+            studentId: studentProfile.id,
+            courseId: course.id,
+          },
+        });
+
+        isEnrolled = !!enrollment;
+
         certificate = await db.certificate.findFirst({
           where: {
             studentId: studentProfile.id,
@@ -115,7 +127,10 @@ export async function GET(
     }
 
     return NextResponse.json({
-      course,
+      course: {
+        ...course,
+        isEnrolled,
+      },
       certificate,
       studentId,
     });

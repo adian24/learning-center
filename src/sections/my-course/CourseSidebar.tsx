@@ -21,6 +21,7 @@ import { useState } from "react";
 import ResourceDrawer from "./ResourceDrawer";
 import { useStudentResources } from "@/hooks/use-resources";
 import { useSearchParams } from "next/navigation";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface CourseSidebarProps {
   course: any;
@@ -223,12 +224,20 @@ export default function CourseSidebar({
         </CardHeader>
         <CardContent className="pt-0">
           <div className="flex items-center gap-3">
-            <AvatarImage
-              imageKey={course.teacher?.user?.image}
-              userName={course.teacher?.user?.name || "Instruktur"}
-              size={40}
-              className="flex-shrink-0"
-            />
+            <Avatar>
+              {course?.teacher?.profileUrl ? (
+                <AvatarImage
+                  imageKey={course.teacher?.profileUrl}
+                  userName={course.teacher?.user?.name || "Instruktur"}
+                  size={40}
+                  className="flex-shrink-0"
+                />
+              ) : (
+                <AvatarFallback className="rounded-lg">
+                  {course.teacher?.user?.name?.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              )}
+            </Avatar>
             <div>
               <p className="text-sm font-medium">
                 {course.teacher?.user?.name || "Instruktur"}
@@ -236,6 +245,29 @@ export default function CourseSidebar({
               <p className="text-xs text-muted-foreground">Instruktur Kursus</p>
             </div>
           </div>
+
+          {/* Company Info */}
+          {course.teacher?.company && (
+            <div className="flex items-center gap-3 mt-3 p-2 rounded-lg bg-gray-100">
+              <Avatar className="h-6 w-6">
+                {course.teacher.company.logoUrl ? (
+                  <AvatarImage
+                    imageKey={course.teacher.company.logoUrl}
+                    userName={course.teacher.company.name}
+                    size={24}
+                    className="rounded-sm"
+                  />
+                ) : (
+                  <AvatarFallback className="text-xs rounded-sm">
+                    {course.teacher.company.name?.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                )}
+              </Avatar>
+              <p className="text-xs text-muted-foreground">
+                {course.teacher.company.name}
+              </p>
+            </div>
+          )}
 
           {course.teacher?.bio && (
             <p className="text-xs text-muted-foreground mt-3 line-clamp-3">
