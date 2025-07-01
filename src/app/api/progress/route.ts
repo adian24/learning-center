@@ -5,6 +5,7 @@ import { z } from "zod";
 import {
   updateUserProgressScore,
   calculateChapterScore,
+  checkAndHandleCourseCompletion,
 } from "@/lib/services/quiz-score-service";
 
 const updateProgressSchema = z.object({
@@ -105,9 +106,9 @@ export async function POST(req: NextRequest) {
     updateData.chapterScore = calculation.chapterScore;
 
     // Debug logging
-    console.log('Progress update - Calculation result:', calculation);
-    console.log('Progress update - isCompleted param:', isCompleted);
-    
+    console.log("Progress update - Calculation result:", calculation);
+    console.log("Progress update - isCompleted param:", isCompleted);
+
     // Only mark as completed if:
     // 1. User explicitly sets isCompleted to true, AND
     // 2. Chapter score is >= 65 (or no quizzes exist - calculation.isCompleted handles this)
@@ -115,10 +116,10 @@ export async function POST(req: NextRequest) {
       if (isCompleted && calculation.isCompleted) {
         updateData.isCompleted = true;
         updateData.completedAt = new Date();
-        console.log('Setting chapter as completed');
+        console.log("Setting chapter as completed");
       } else if (isCompleted && !calculation.isCompleted) {
         // User wants to complete but doesn't meet quiz requirements
-        console.log('Blocking completion - insufficient score');
+        console.log("Blocking completion - insufficient score");
         return NextResponse.json(
           {
             error: "Cannot complete chapter",
@@ -133,7 +134,7 @@ export async function POST(req: NextRequest) {
       } else {
         updateData.isCompleted = false;
         updateData.completedAt = null;
-        console.log('Setting chapter as not completed');
+        console.log("Setting chapter as not completed");
       }
     } else {
       // If isCompleted is not provided, use the calculated value
@@ -141,7 +142,10 @@ export async function POST(req: NextRequest) {
       if (calculation.isCompleted) {
         updateData.completedAt = new Date();
       }
-      console.log('Using calculated completion status:', calculation.isCompleted);
+      console.log(
+        "Using calculated completion status:",
+        calculation.isCompleted
+      );
     }
 
     // Update or create progress record
@@ -192,11 +196,15 @@ export async function POST(req: NextRequest) {
             chapterScore: 0,
           },
         });
+      } else {
+        // This is the last chapter - check if course is completed
+        await checkAndHandleCourseCompletion(
+          studentProfile.id,
+          chapter.courseId
+        );
       }
     }
 
-    console.log('Final progress record:', progress);
-    
     return NextResponse.json({
       message: "Progress updated successfully",
       progress,

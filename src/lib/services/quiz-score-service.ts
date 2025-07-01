@@ -1,4 +1,5 @@
 import db from "@/lib/db/db";
+import { generateCertificatePDF } from "./certificate-service";
 
 export interface ChapterScoreCalculation {
   chapterId: string;
@@ -251,4 +252,188 @@ export async function canAccessChapter(
       : "Must complete previous chapter first",
     requiredChapter: isPreviousCompleted ? undefined : previousChapter.id,
   };
+}
+
+// New function to handle course completion
+export async function checkAndHandleCourseCompletion(
+  studentId: string,
+  courseId: string
+) {
+  try {
+    // Get all published chapters for this course
+    const publishedChapters = await db.chapter.findMany({
+      where: {
+        courseId: courseId,
+        isPublished: true,
+      },
+      select: {
+        id: true,
+        title: true,
+        position: true,
+      },
+      orderBy: {
+        position: "asc",
+      },
+    });
+
+    if (publishedChapters.length === 0) {
+      console.log("No published chapters found for course:", courseId);
+      return;
+    }
+
+    // Get progress for all chapters
+    const chapterProgress = await db.userProgress.findMany({
+      where: {
+        studentId: studentId,
+        chapterId: {
+          in: publishedChapters.map((ch) => ch.id),
+        },
+      },
+      select: {
+        chapterId: true,
+        isCompleted: true,
+        chapterScore: true,
+      },
+    });
+
+    // Check if all chapters are completed with passing score
+    const completedChapters = chapterProgress.filter(
+      (p) => p.isCompleted && (p.chapterScore || 0) >= 65
+    );
+
+    const isAllChaptersCompleted =
+      completedChapters.length === publishedChapters.length;
+
+    if (isAllChaptersCompleted) {
+      console.log(`🎉 Course ${courseId} completed by student ${studentId}`);
+
+      // Check if certificate already exists
+      const existingCertificate = await db.certificate.findUnique({
+        where: {
+          studentId_courseId: {
+            studentId: studentId,
+            courseId: courseId,
+          },
+        },
+      });
+
+      if (!existingCertificate) {
+        // Generate certificate
+        await generateCourseCompletionCertificate(studentId, courseId);
+
+        // Update enrollment status to completed
+        await db.enrolledCourse.updateMany({
+          where: {
+            studentId: studentId,
+            courseId: courseId,
+          },
+          data: {
+            status: "COMPLETED",
+            updatedAt: new Date(),
+          },
+        });
+
+        console.log(
+          `✅ Certificate generated for student ${studentId}, course ${courseId}`
+        );
+      } else {
+        console.log(
+          `📜 Certificate already exists for student ${studentId}, course ${courseId}`
+        );
+      }
+    } else {
+      console.log(
+        `❌ Course not yet completed: ${completedChapters.length}/${publishedChapters.length} chapters`
+      );
+    }
+  } catch (error) {
+    console.error("Error checking course completion:", error);
+    // Don't throw error to avoid breaking chapter completion
+  }
+}
+
+async function generateCourseCompletionCertificate(
+  studentId: string,
+  courseId: string
+) {
+  try {
+    // Get course and student data
+    const [course, student] = await Promise.all([
+      db.course.findUnique({
+        where: { id: courseId },
+        include: {
+          teacher: {
+            include: {
+              user: true,
+              company: true,
+            },
+          },
+          category: true,
+        },
+      }),
+      db.studentProfile.findUnique({
+        where: { id: studentId },
+        include: {
+          user: true,
+        },
+      }),
+    ]);
+
+    if (!course || !student) {
+      throw new Error("Course or student not found");
+    }
+
+    // Generate unique certificate number
+    const certificateNumber = await generateCertificateNumber();
+
+    // Create certificate record
+    const certificate = await db.certificate.create({
+      data: {
+        studentId: studentId,
+        courseId: courseId,
+        certificateNumber: certificateNumber,
+        issueDate: new Date(),
+        // pdfUrl will be set after PDF generation
+      },
+    });
+
+    // Generate PDF certificate (implement this separately)
+    const pdfUrl = await generateCertificatePDF({
+      certificate,
+      student,
+      course,
+    });
+
+    // Update certificate with PDF URL
+    await db.certificate.update({
+      where: { id: certificate.id },
+      data: { pdfUrl },
+    });
+
+    return certificate;
+  } catch (error) {
+    console.error("Error generating certificate:", error);
+    throw error;
+  }
+}
+
+async function generateCertificateNumber(): Promise<string> {
+  const year = new Date().getFullYear();
+  const month = String(new Date().getMonth() + 1).padStart(2, "0");
+
+  // Count certificates this month for sequence
+  const startOfMonth = new Date(year, new Date().getMonth(), 1);
+  const endOfMonth = new Date(year, new Date().getMonth() + 1, 0);
+
+  const certificateCount = await db.certificate.count({
+    where: {
+      createdAt: {
+        gte: startOfMonth,
+        lte: endOfMonth,
+      },
+    },
+  });
+
+  const sequence = String(certificateCount + 1).padStart(4, "0");
+  return `CERT-${year}${month}-${sequence}`;
 }
