@@ -20,9 +20,14 @@ import { toast } from "sonner";
 import { ChapterVideoPlayer } from "@/components/media/SecureVideo";
 import {
   useChapterStatus,
+  useCourseOverview,
   useUpdateProgress,
 } from "@/hooks/use-chapter-progress";
 import { useQueryClient } from "@tanstack/react-query";
+import {
+  CourseCompletionModal,
+  useCourseCompletionDetection,
+} from "@/components/course-completion-modal";
 
 interface ChapterPlayerProps {
   course: any;
@@ -47,6 +52,8 @@ export default function ChapterPlayer({
     chapter?.userProgress?.[0]?.watchedSeconds || 0
   );
 
+  const queryClient = useQueryClient();
+
   // Use chapter status hook for progress tracking
   const {
     progress,
@@ -57,9 +64,17 @@ export default function ChapterPlayer({
     passedQuizzes,
     refetch,
   } = useChapterStatus(chapter?.id);
-
+  const { courseProgress } = useCourseOverview(course.id);
   const updateProgressMutation = useUpdateProgress();
-  const queryClient = useQueryClient();
+  const {
+    showModal,
+    completionData,
+    handleCourseCompletion,
+    handleDownloadCertificate,
+    handleShareAchievement,
+    handleViewCertificate,
+    closeModal,
+  } = useCourseCompletionDetection(course.id);
 
   // Find current chapter index and next chapter
   const currentIndex = chapters.findIndex((ch) => ch.chapterId === chapter.id);
@@ -119,6 +134,10 @@ export default function ChapterPlayer({
       );
       const hasQuizzes =
         currentChapterData?.quizzes && currentChapterData.quizzes.length > 0;
+      const currentChapterIndex = chapters.findIndex(
+        (ch) => ch.chapterId === chapter.id
+      );
+      const isLastChapter = currentChapterIndex === chapters.length - 1;
 
       // For free chapters without quizzes, mark as completed first
       if (chapter.isFree && !hasQuizzes) {
@@ -150,6 +169,13 @@ export default function ChapterPlayer({
         // Small delay to ensure UI updates
         await new Promise((resolve) => setTimeout(resolve, 300));
 
+        if (isLastChapter) {
+          // Check course completion after a short delay
+          setTimeout(async () => {
+            await checkCourseCompletion();
+          }, 1000);
+        }
+
         toast.success("Chapter completed!");
       }
 
@@ -160,6 +186,31 @@ export default function ChapterPlayer({
       toast.error("Failed to complete chapter. Please try again.");
     } finally {
       setIsNextLoading(false);
+    }
+  };
+
+  // Function to check course completion
+  const checkCourseCompletion = async () => {
+    try {
+      const response = await fetch(
+        `/api/courses/${course.id}/completion-status`
+      );
+      const data = await response.json();
+
+      if (data.isCompleted && data.certificate) {
+        handleCourseCompletion({
+          id: course.id,
+          title: course.title,
+          instructor: data.instructor || "Unknown Instructor",
+          category: data.category || "General",
+          level: course.level || "Beginner",
+          completionDate: data.completionDate,
+          certificateUrl: data.certificate.pdfUrl,
+          certificateNumber: data.certificate.certificateNumber,
+        });
+      }
+    } catch (error) {
+      console.error("Error checking course completion:", error);
     }
   };
 
@@ -444,6 +495,18 @@ export default function ChapterPlayer({
           </div>
         </CardContent>
       </Card>
+
+      {/* Course Completion Modal */}
+      {completionData && (
+        <CourseCompletionModal
+          isOpen={showModal}
+          onClose={closeModal}
+          courseData={completionData}
+          onViewCertificate={handleViewCertificate}
+          onShareAchievement={handleShareAchievement}
+          onDownloadCertificate={handleDownloadCertificate}
+        />
+      )}
     </div>
   );
 }

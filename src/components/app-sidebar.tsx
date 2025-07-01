@@ -9,6 +9,7 @@ import {
   UserRoundCheck,
   ShoppingCart,
   TicketCheck,
+  Award,
 } from "lucide-react";
 
 import { NavStudent } from "@/components/nav-student";
@@ -62,6 +63,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         title: t("sidebar_shop"),
         url: "/courses",
         icon: ShoppingCart,
+      },
+      {
+        title: "Certificates",
+        url: "/certificates",
+        icon: Award,
       },
     ],
     navTeacher: [
