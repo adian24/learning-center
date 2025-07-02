@@ -618,7 +618,7 @@ const EnhancedCourseCard = ({
   const totalChapters = courseProgressData?.courseProgress?.length || 0;
   const completedChapters =
     courseProgressData?.courseProgress?.filter(
-      (ch) => ch.calculation?.isCompleted
+      (ch) => ch.userProgress?.isCompleted
     ).length || 0;
   const progress =
     totalChapters > 0
@@ -939,7 +939,7 @@ const InProgressCourseCard = ({
   const totalChapters = courseProgressData?.courseProgress?.length || 0;
   const completedChapters =
     courseProgressData?.courseProgress?.filter(
-      (ch) => ch.calculation?.isCompleted
+      (ch) => ch.userProgress?.isCompleted
     ).length || 0;
   const progress =
     totalChapters > 0

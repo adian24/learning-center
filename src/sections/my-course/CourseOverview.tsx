@@ -32,7 +32,7 @@ export default function CourseOverview({
   // Calculate progress
   const totalChapters = chapters.length;
   const completedChapters = chapters.filter(
-    (ch) => ch.userProgress?.[0]?.isCompleted
+    (ch) => ch.userProgress?.isCompleted
   ).length;
   const progressPercentage =
     totalChapters > 0
@@ -40,13 +40,13 @@ export default function CourseOverview({
       : 0;
 
   // Get next chapter to continue
-  const nextChapter = chapters.find((ch) => !ch.userProgress?.[0]?.isCompleted);
+  const nextChapter = chapters.find((ch) => !ch.userProgress?.isCompleted);
   const lastWatchedChapter = chapters
-    .filter((ch) => ch.userProgress?.[0]?.watchedSeconds > 0)
+    .filter((ch) => ch.userProgress?.watchedSeconds > 0)
     .sort(
       (a, b) =>
-        new Date(b.userProgress[0].updatedAt).getTime() -
-        new Date(a.userProgress[0].updatedAt).getTime()
+        new Date(b.userProgress.updatedAt).getTime() -
+        new Date(a.userProgress.updatedAt).getTime()
     )[0];
 
   const continueChapter = lastWatchedChapter || nextChapter || chapters[0];
@@ -127,7 +127,8 @@ export default function CourseOverview({
         <CardContent>
           <div className="space-y-2">
             {chapters.map((chapter, index) => {
-              const isCompleted = chapter.canAccess;
+              const canAccess = chapter.canAccess;
+              const isCompleted = chapter.userProgress?.isCompleted;
               const watchedSeconds = chapter.userProgress?.watchedSeconds || 0;
               const isStarted = watchedSeconds > 0;
               const isLocked = course.isLocked;

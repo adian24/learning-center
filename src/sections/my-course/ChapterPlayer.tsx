@@ -49,7 +49,7 @@ export default function ChapterPlayer({
   courseId,
 }: ChapterPlayerProps) {
   const [watchedSeconds, setWatchedSeconds] = useState(
-    chapter?.userProgress?.[0]?.watchedSeconds || 0
+    chapter?.userProgress?.watchedSeconds || 0
   );
 
   const queryClient = useQueryClient();
@@ -99,11 +99,8 @@ export default function ChapterPlayer({
 
     const currentChapterData = getCurrentChapterData();
 
-    // For free chapters with no quizzes - Next button is always enabled
-    if (
-      chapter.isFree &&
-      (!currentChapterData?.quizzes || currentChapterData.quizzes.length === 0)
-    ) {
+    // For chapters with no quizzes - Next button is always enabled (free or paid)
+    if (!currentChapterData?.quizzes || currentChapterData.quizzes.length === 0) {
       setIsNextEnabled(true);
       return;
     }
@@ -139,8 +136,8 @@ export default function ChapterPlayer({
       );
       const isLastChapter = currentChapterIndex === chapters.length - 1;
 
-      // For free chapters without quizzes, mark as completed first
-      if (chapter.isFree && !hasQuizzes) {
+      // For chapters without quizzes, mark as completed first
+      if (!hasQuizzes) {
         const result = await updateProgressMutation.mutateAsync({
           chapterId: chapter.id,
           isCompleted: true,
