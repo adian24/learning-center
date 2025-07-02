@@ -108,7 +108,9 @@ export function CourseCompletionModal({
                 <CheckCircle className="h-10 w-10 text-white" />
               </div>
               <h2 className="text-3xl font-bold mb-2">🎉 Congratulations!</h2>
-              <p className="text-lg opacity-90">You've completed the course</p>
+              <p className="text-lg opacity-90">
+                You&apos;ve completed the course
+              </p>
             </div>
           </div>
         </div>
@@ -231,7 +233,9 @@ export function CourseCompletionModal({
 
           {/* Next Steps */}
           <div className="border-t pt-4">
-            <h4 className="font-medium text-gray-900 mb-3">What's Next?</h4>
+            <h4 className="font-medium text-gray-900 mb-3">
+              What&apos;s Next?
+            </h4>
             <div className="space-y-2 text-sm text-gray-600">
               <div className="flex items-center gap-2">
                 <ExternalLink className="h-4 w-4" />
@@ -265,8 +269,11 @@ interface UseCourseCompletionDetectionReturn {
 }
 
 // Hook for course completion detection
-export function useCourseCompletionDetection(courseId: string): UseCourseCompletionDetectionReturn {
-  const [completionData, setCompletionData] = useState<CourseCompletionData | null>(null);
+export function useCourseCompletionDetection(
+  courseId: string
+): UseCourseCompletionDetectionReturn {
+  const [completionData, setCompletionData] =
+    useState<CourseCompletionData | null>(null);
   const [showModal, setShowModal] = useState(false);
 
   // This would be called from your progress tracking hook
