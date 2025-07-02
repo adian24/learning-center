@@ -15,6 +15,7 @@ import { useChaptersQuery } from "@/hooks/use-chapters-query";
 import { formatVideoDuration } from "@/utils/formatVideoDuration";
 import { BadgeCheck, Check, Clock, Play } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
@@ -23,6 +24,8 @@ interface ContentTabsProps {
 }
 
 const ContentTabs = ({ courseId }: ContentTabsProps) => {
+  const t = useTranslations("courses");
+
   const { data: session } = useSession();
   const router = useRouter();
 
@@ -47,8 +50,10 @@ const ContentTabs = ({ courseId }: ContentTabsProps) => {
       onValueChange={setActiveTab}
     >
       <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="courseModules">Modul</TabsTrigger>
-        <TabsTrigger value="aboutCertificates">Sertifikat</TabsTrigger>
+        <TabsTrigger value="courseModules">{t("tab_modules")}</TabsTrigger>
+        <TabsTrigger value="aboutCertificates">
+          {t("tab_certificates")}
+        </TabsTrigger>
       </TabsList>
 
       <TabsContent value="courseModules" className="space-y-4 mt-6">
@@ -77,7 +82,7 @@ const ContentTabs = ({ courseId }: ContentTabsProps) => {
                                 variant="outline"
                                 className="text-green-600"
                               >
-                                Gratis
+                                {t("free")}
                               </Badge>
                             )}
                           </div>
@@ -92,7 +97,9 @@ const ContentTabs = ({ courseId }: ContentTabsProps) => {
                       className="flex items-center gap-2"
                     >
                       <Play className="h-4 w-4" />
-                      {chapter.isFree ? "Watch Preview" : "Enroll to Watch"}
+                      {chapter.isFree
+                        ? t("watch_preview")
+                        : t("enroll_to_watch")}
                     </Button>
                   </AccordionContent>
                 </AccordionItem>
@@ -102,7 +109,7 @@ const ContentTabs = ({ courseId }: ContentTabsProps) => {
               className="w-full mt-4 text-blue-600 bg-transparent hover:bg-transparent hover:underline"
               onClick={handleCourseStart}
             >
-              Mulai Kursus Sekarang
+              {t("start_course")}
             </Button>
           </>
         )}
@@ -111,7 +118,7 @@ const ContentTabs = ({ courseId }: ContentTabsProps) => {
       <TabsContent value="aboutCertificates" className="mt-6">
         <Card>
           <CardHeader>
-            <CardTitle>Sertifikasi Kursus</CardTitle>
+            <CardTitle>{t("certificate_title")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex flex-col md:flex-row gap-6 items-center">
@@ -120,7 +127,7 @@ const ContentTabs = ({ courseId }: ContentTabsProps) => {
               </div>
               <div className="md:w-2/3 space-y-4">
                 <h3 className="text-lg font-medium">
-                  Selesaikan Kursus ini & Dapatkan Sertifikat Anda!
+                  {t("certificate_heading")}
                 </h3>
 
                 <div className="flex items-start gap-3">
@@ -128,10 +135,11 @@ const ContentTabs = ({ courseId }: ContentTabsProps) => {
                     <Check className="h-4 w-4" />
                   </div>
                   <div>
-                    <p className="font-medium">Dapatkan Sertifikat</p>
+                    <p className="font-medium">
+                      {t("certificate_point_1_title")}
+                    </p>
                     <p className="text-sm text-gray-600">
-                      Sertifikat penyelesaian kursus untuk menunjukkan
-                      keterampilan Anda.
+                      {t("certificate_point_1_desc")}
                     </p>
                   </div>
                 </div>
@@ -142,11 +150,10 @@ const ContentTabs = ({ courseId }: ContentTabsProps) => {
                   </div>
                   <div>
                     <p className="font-medium">
-                      Kredensial Digital yang Dapat Dibagikan
+                      {t("certificate_point_2_title")}
                     </p>
                     <p className="text-sm text-gray-600">
-                      Anda akan menerima sertifikat digital yang dapat Anda
-                      bagikan di resume dan media sosial Anda.
+                      {t("certificate_point_2_desc")}
                     </p>
                   </div>
                 </div>
@@ -156,16 +163,17 @@ const ContentTabs = ({ courseId }: ContentTabsProps) => {
                     <Check className="h-4 w-4" />
                   </div>
                   <div>
-                    <p className="font-medium">Maju dalam Karier Anda</p>
+                    <p className="font-medium">
+                      {t("certificate_point_3_title")}
+                    </p>
                     <p className="text-sm text-gray-600">
-                      Tambahkan keterampilan ini ke profil LinkedIn Anda untuk
-                      menunjukkan kemampuan Anda.
+                      {t("certificate_point_3_desc")}
                     </p>
                   </div>
                 </div>
 
                 <Button className="bg-blue-600 hover:bg-blue-700">
-                  Mulai Belajar
+                  {t("start_learning")}
                 </Button>
               </div>
             </div>

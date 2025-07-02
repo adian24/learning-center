@@ -14,7 +14,7 @@ import { useTranslations } from "next-intl";
 // import { useCourseQuery } from "@/hooks/use-course-query";
 
 export default function NavBreadcrumb() {
-  const t = useTranslations();
+  const t = useTranslations("common");
   const pathname = usePathname();
 
   // Early return for root path
@@ -44,24 +44,35 @@ export default function NavBreadcrumb() {
     });
   }
 
+  const tWithFallback = (key: string) => {
+    if (t.has(key)) {
+      return t(key);
+    }
+
+    return key;
+  };
+
   return (
     <Breadcrumb>
       <BreadcrumbList>
-        <BreadcrumbItem>{t("breadcrumb_home")}</BreadcrumbItem>
+        <BreadcrumbItem>{t("home")}</BreadcrumbItem>
         <BreadcrumbSeparator />
-
         {updatedBreadcrumbs.map((breadcrumb, index) => {
           return (
             <Fragment key={index}>
               {breadcrumb.isLast ? (
                 <BreadcrumbPage>
-                  {t(`breadcrumb_${breadcrumb.label.toLowerCase()}`, {
-                    default: breadcrumb.label,
-                  })}
+                  {tWithFallback(
+                    `${breadcrumb.label.toLowerCase().replaceAll(/\s/g, "_")}`
+                  )}
                 </BreadcrumbPage>
               ) : (
                 <>
-                  <BreadcrumbItem>{t("breadcrumb_bilingual")}</BreadcrumbItem>
+                  <BreadcrumbItem>
+                    {tWithFallback(
+                      `${breadcrumb.label.toLowerCase().replaceAll(/\s/g, "_")}`
+                    )}
+                  </BreadcrumbItem>
                   <BreadcrumbSeparator />
                 </>
               )}

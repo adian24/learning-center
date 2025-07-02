@@ -12,6 +12,7 @@ import { BookOpen, CheckCircle, Clock, Star, Users } from "lucide-react";
 import { formatPrice } from "@/utils/formatPrice";
 import { formatVideoDuration } from "@/utils/formatVideoDuration";
 import { CourseImageCard } from "@/components/media/SecureImage";
+import { useTranslations } from "next-intl";
 
 // Adjust the Course type to include student-specific properties
 type StudentCourseProps = {
@@ -33,6 +34,8 @@ type StudentCourseProps = {
 };
 
 const CourseCard = ({ course }: { course: StudentCourseProps }) => {
+  const t = useTranslations("courses");
+
   return (
     <Card key={course.id} className="flex flex-col h-full">
       <div className="relative">
@@ -68,11 +71,11 @@ const CourseCard = ({ course }: { course: StudentCourseProps }) => {
         <div className="flex justify-between text-xs text-gray-500 mb-3">
           <div className="flex items-center">
             <Users className="h-4 w-4 mr-1" />
-            {course.enrolledCount} students
+            {course.enrolledCount} {t("students")}
           </div>
           <div className="flex items-center">
             <BookOpen className="h-4 w-4 mr-1" />
-            {course.chapterCount} chapters
+            {course.chapterCount} {t("chapters")}
           </div>
         </div>
 

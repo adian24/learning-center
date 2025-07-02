@@ -49,6 +49,7 @@ import {
   Loader2,
 } from "lucide-react";
 import Layout from "@/layout";
+import { useTranslations } from "next-intl";
 
 // Stats card interface
 interface StatsCardProps {
@@ -82,6 +83,8 @@ const StatsCard = ({ icon, title, count, className = "" }: StatsCardProps) => (
 );
 
 const MyCourses = () => {
+  const t = useTranslations("courses");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState<string>("all-courses");
   const [viewType, setViewType] = useState<"grid" | "list">("grid");
@@ -197,38 +200,40 @@ const MyCourses = () => {
   // Loading states
   if (isLoading || statsLoading) {
     return (
-      <div className="container mx-auto py-8 px-4">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-2xl font-bold">Kursus Saya</h1>
-            <p className="text-muted-foreground">
-              Lacak dan lanjutkan perjalanan belajar Anda
-            </p>
+      <Layout>
+        <div className="container mx-auto py-8 px-4">
+          <div className="flex justify-between items-center mb-8">
+            <div>
+              <h1 className="text-2xl font-bold">{tCommon("my_courses")}</h1>
+              <p className="text-muted-foreground">
+                {t("track_and_continue_learning")}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex justify-between mb-6">
+            <Skeleton className="h-10 w-full max-w-md" />
+            <div className="flex gap-2">
+              <Skeleton className="h-10 w-32" />
+              <Skeleton className="h-10 w-20" />
+            </div>
+          </div>
+
+          <Skeleton className="h-10 w-full mb-6" />
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <Skeleton className="h-24" />
+            <Skeleton className="h-24" />
+            <Skeleton className="h-24" />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <Skeleton key={i} className="h-80" />
+            ))}
           </div>
         </div>
-
-        <div className="flex justify-between mb-6">
-          <Skeleton className="h-10 w-full max-w-md" />
-          <div className="flex gap-2">
-            <Skeleton className="h-10 w-32" />
-            <Skeleton className="h-10 w-20" />
-          </div>
-        </div>
-
-        <Skeleton className="h-10 w-full mb-6" />
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Skeleton className="h-24" />
-          <Skeleton className="h-24" />
-          <Skeleton className="h-24" />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <Skeleton key={i} className="h-80" />
-          ))}
-        </div>
-      </div>
+      </Layout>
     );
   }
 
@@ -239,11 +244,11 @@ const MyCourses = () => {
         <div className="container mx-auto py-8 px-4">
           <div className="flex flex-col items-center justify-center py-12">
             <AlertCircle className="h-16 w-16 text-red-500 mb-4" />
-            <h2 className="text-2xl font-bold mb-2">Terjadi kesalahan</h2>
-            <p className="text-gray-600 mb-4">
-              Kami tidak dapat memuat kursus Anda. Silakan coba lagi nanti.
-            </p>
-            <Button onClick={() => window.location.reload()}>Segarkan</Button>
+            <h2 className="text-2xl font-bold mb-2">{t("error_loading")}</h2>
+            <p className="text-gray-600 mb-4">{t("error_loading_desc")}</p>
+            <Button onClick={() => window.location.reload()}>
+              {t("refresh")}
+            </Button>
           </div>
         </div>
       </Layout>
@@ -257,43 +262,42 @@ const MyCourses = () => {
         <div className="container mx-auto max-w-7xl py-8 px-4">
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-2xl font-bold">Kursus Saya</h1>
+              <h1 className="text-2xl font-bold">{tCommon("my_courses")}</h1>
               <p className="text-muted-foreground">
-                Lacak dan lanjutkan perjalanan belajar Anda
+                {t("track_and_continue_learning")}
               </p>
             </div>
             <Button onClick={() => router.push("/courses")}>
-              Jelajahi Kursus
+              {t("explore_courses")}
             </Button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <StatsCard
               icon={<BookOpen className="h-6 w-6 text-blue-500" />}
-              title="Total Kursus"
+              title={t("total_courses")}
               count={0}
             />
             <StatsCard
               icon={<Clock className="h-6 w-6 text-amber-500" />}
-              title="Sedang Berlangsung"
+              title={t("in_progress")}
               count={0}
             />
             <StatsCard
               icon={<CheckCircle className="h-6 w-6 text-green-500" />}
-              title="Selesai"
+              title={t("completed")}
               count={0}
             />
           </div>
 
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <BookOpen className="h-16 w-16 text-gray-400 mb-4" />
-            <h2 className="text-2xl font-bold mb-2">Belum ada kursus</h2>
+            <h2 className="text-2xl font-bold mb-2">{t("no_courses_yet")}</h2>
             <p className="text-gray-600 mb-4 max-w-md">
-              Anda belum mendaftar di kursus manapun. Jelajahi katalog kami
-              untuk menemukan sesuatu untuk dipelajari!
+              {t("no_courses_yet_description")}
             </p>
             <Button onClick={() => router.push("/courses")}>
-              Jelajahi Kursus
+              {t("explore_courses")}
             </Button>
           </div>
         </div>
@@ -306,13 +310,13 @@ const MyCourses = () => {
       <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-2xl font-bold">Kursus Saya</h1>
+            <h1 className="text-2xl font-bold">{tCommon("my_courses")}</h1>
             <p className="text-muted-foreground">
-              Lacak dan lanjutkan perjalanan belajar Anda
+              {t("track_and_continue_learning")}
             </p>
           </div>
           <Button onClick={() => router.push("/courses")}>
-            Jelajahi Kursus
+            {t("explore_courses")}
           </Button>
         </div>
 
@@ -332,14 +336,12 @@ const MyCourses = () => {
               <SelectValue placeholder="Urutkan berdasarkan" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="last-updated">Terakhir Diperbarui</SelectItem>
-              <SelectItem value="title-asc">Judul (A-Z)</SelectItem>
-              <SelectItem value="title-desc">Judul (Z-A)</SelectItem>
-              <SelectItem value="progress-asc">
-                Progres (Rendah-Tinggi)
-              </SelectItem>
+              <SelectItem value="last-updated">{t("last_updated")}</SelectItem>
+              <SelectItem value="title-asc">{t("title_asc")}</SelectItem>
+              <SelectItem value="title-desc">{t("title_desc")}</SelectItem>
+              <SelectItem value="progress-asc">{t("progress_asc")}</SelectItem>
               <SelectItem value="progress-desc">
-                Progres (Tinggi-Rendah)
+                {t("progress_desc")}
               </SelectItem>
             </SelectContent>
           </Select>
@@ -365,17 +367,17 @@ const MyCourses = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <StatsCard
             icon={<BookOpen className="h-6 w-6 text-blue-500" />}
-            title="Total Kursus"
+            title={t("total_courses")}
             count={enrollmentStats.total}
           />
           <StatsCard
             icon={<Clock className="h-6 w-6 text-amber-500" />}
-            title="Sedang Berlangsung"
+            title={t("in_progress")}
             count={enrollmentStats.inProgress}
           />
           <StatsCard
             icon={<CheckCircle className="h-6 w-6 text-green-500" />}
-            title="Selesai"
+            title={t("completed")}
             count={enrollmentStats.completed}
           />
         </div>
@@ -387,10 +389,10 @@ const MyCourses = () => {
           className="w-full"
         >
           <TabsList className="mb-8">
-            <TabsTrigger value="all-courses">Semua Kursus</TabsTrigger>
-            <TabsTrigger value="in-progress">Sedang Berlangsung</TabsTrigger>
+            <TabsTrigger value="all-courses">{t("all_courses")}</TabsTrigger>
+            <TabsTrigger value="in-progress">{t("in_progress")}</TabsTrigger>
             <TabsTrigger value="pending-payment">
-              Menunggu Pembayaran
+              {t("pending_payment")}
               {enrollments.pending.length > 0 && (
                 <Badge className="ml-2 bg-amber-100 text-amber-900">
                   {enrollments.pending.length}
@@ -398,7 +400,7 @@ const MyCourses = () => {
               )}
             </TabsTrigger>
             <TabsTrigger value="failed">
-              Gagal
+              {t("failed")}
               {enrollments.failed.length > 0 && (
                 <Badge className="ml-2 bg-red-100 text-red-900">
                   {enrollments.failed.length}
@@ -438,11 +440,9 @@ const MyCourses = () => {
             ) : (
               <div className="flex flex-col items-center justify-center py-12">
                 <BookOpen className="h-16 w-16 text-gray-400 mb-4" />
-                <h3 className="text-xl font-medium mb-2">
-                  Tidak ada kursus ditemukan
-                </h3>
+                <h3 className="text-xl font-medium mb-2">{t("not_found")}</h3>
                 <p className="text-gray-600 mb-4">
-                  Tidak ada kursus yang sesuai dengan kriteria pencarian Anda.
+                  {t("not_found_description")}
                 </p>
               </div>
             )}
@@ -480,11 +480,10 @@ const MyCourses = () => {
               <div className="flex flex-col items-center justify-center py-12">
                 <Clock className="h-16 w-16 text-gray-400 mb-4" />
                 <h3 className="text-xl font-medium mb-2">
-                  Tidak ada kursus yang sedang berlangsung
+                  {t("no_in_progress")}
                 </h3>
                 <p className="text-gray-600 mb-4">
-                  Anda belum memulai kursus apapun atau masih menunggu
-                  pembayaran.
+                  {t("no_in_progress_description")}
                 </p>
                 {enrollments.pending.length > 0 ? (
                   <Button onClick={() => setSelectedTab("pending-payment")}>
@@ -492,7 +491,7 @@ const MyCourses = () => {
                   </Button>
                 ) : (
                   <Button onClick={() => router.push("/courses")}>
-                    Jelajahi Kursus
+                    {t("explore_courses")}
                   </Button>
                 )}
               </div>
@@ -530,14 +529,12 @@ const MyCourses = () => {
             ) : (
               <div className="flex flex-col items-center justify-center py-12">
                 <CreditCard className="h-16 w-16 text-gray-400 mb-4" />
-                <h3 className="text-xl font-medium mb-2">
-                  Tidak ada pembayaran tertunda
-                </h3>
+                <h3 className="text-xl font-medium mb-2">{t("no_pending")}</h3>
                 <p className="text-gray-600 mb-4">
-                  Anda tidak memiliki kursus dengan pembayaran tertunda.
+                  {t("no_pending_description")}
                 </p>
                 <Button onClick={() => router.push("/courses")}>
-                  Jelajahi Kursus
+                  {t("explore_courses")}
                 </Button>
               </div>
             )}
@@ -574,15 +571,12 @@ const MyCourses = () => {
             ) : (
               <div className="flex flex-col items-center justify-center py-12">
                 <CheckCircle className="h-16 w-16 text-gray-400 mb-4" />
-                <h3 className="text-xl font-medium mb-2">
-                  Tidak ada pembayaran gagal
-                </h3>
+                <h3 className="text-xl font-medium mb-2">{t("no_failed")}</h3>
                 <p className="text-gray-600 mb-4">
-                  Bagus! Anda tidak memiliki kursus dengan pembayaran yang
-                  gagal.
+                  {t("no_failed_description")}
                 </p>
                 <Button onClick={() => setSelectedTab("all-courses")}>
-                  Lihat Semua Kursus
+                  {t("see_all_courses")}
                 </Button>
               </div>
             )}
@@ -596,14 +590,13 @@ const MyCourses = () => {
         >
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Batalkan Pendaftaran?</AlertDialogTitle>
+              <AlertDialogTitle>{t("cancel_enrollment")}</AlertDialogTitle>
               <AlertDialogDescription>
-                Apakah Anda yakin ingin membatalkan pendaftaran ini? Tindakan
-                ini tidak dapat dibatalkan.
+                {t("cancel_enrollment_description")}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Pertahankan Pendaftaran</AlertDialogCancel>
+              <AlertDialogCancel>{t("keep_enrollment")}</AlertDialogCancel>
               <AlertDialogAction
                 onClick={handleCancelEnrollment}
                 className="bg-red-600 hover:bg-red-700"
@@ -612,10 +605,10 @@ const MyCourses = () => {
                 {cancelEnrollment.isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Membatalkan...
+                    {t("cancelling")}
                   </>
                 ) : (
-                  "Ya, Batalkan"
+                  <>{t("confirm_cancel")}</>
                 )}
               </AlertDialogAction>
             </AlertDialogFooter>

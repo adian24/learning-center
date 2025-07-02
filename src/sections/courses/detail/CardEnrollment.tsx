@@ -28,12 +28,15 @@ import { formatVideoDuration } from "@/utils/formatVideoDuration";
 import { CheckCircle, Clock, FileText, Play, User } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 interface CardEnrollmentProps {
   courseId: string;
 }
 
 const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
+  const t = useTranslations("courses");
+
   const { data: session } = useSession();
   const router = useRouter();
   const { data, isLoading } = useCourse(courseId);
@@ -74,7 +77,7 @@ const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
           {isEnrolled ? (
             <div className="bg-green-50 p-3 rounded-md text-green-700 flex items-center gap-2">
               <CheckCircle className="h-5 w-5 text-green-600" />
-              <span>Anda sudah terdaftar dalam kursus ini</span>
+              <span>{t("already_enrolled")}</span>
             </div>
           ) : (
             <CardTitle className="text-2xl font-bold">
@@ -87,16 +90,20 @@ const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
             <div className="flex items-center gap-2">
               <Clock className="h-5 w-5 text-gray-500" />
               <span>
-                Durasi: {formatVideoDuration(course?.duration as number) ?? 0}
+                {t("duration", {
+                  duration: formatVideoDuration(course?.duration || 0),
+                })}
               </span>
             </div>
             <div className="flex items-center gap-2">
               <FileText className="h-5 w-5 text-gray-500" />
-              <span>{course?.chapters?.length ?? 0} module</span>
+              <span>
+                {t("modules_count", { count: course?.chapters?.length ?? 0 })}
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <User className="h-5 w-5 text-gray-500" />
-              <span>Akses: Akses Penuh Seumur Hidup</span>
+              <span>{t("access_lifetime")}</span>
             </div>
           </div>
 
@@ -108,7 +115,7 @@ const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
                 className="w-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center gap-2"
               >
                 <Play className="h-4 w-4" />
-                Lanjutkan Belajar
+                {t("resume_learning")}
               </Button>
               {hasCertificate && (
                 <Button
@@ -118,7 +125,7 @@ const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
                     window.open(data?.certificate?.pdfUrl || "", "_blank")
                   }
                 >
-                  Lihat Sertifikat
+                  {t("view_certificate")}
                 </Button>
               )}
             </div>
@@ -127,22 +134,24 @@ const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                  Enroll Course Sekarang
+                  {t("enroll_now")}
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Enroll Course?</AlertDialogTitle>
+                  <AlertDialogTitle>{t("dialog_title")}</AlertDialogTitle>
                   <AlertDialogDescription>
                     {session?.user
-                      ? "Course ini dapat Anda akses selamanya"
-                      : "Anda harus masuk terlebih dahulu"}
+                      ? t("dialog_description_logged_in")
+                      : t("dialog_description_guest")}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Batal</AlertDialogCancel>
+                  <AlertDialogCancel>{t("dialog_cancel")}</AlertDialogCancel>
                   <AlertDialogAction onClick={handleEnrollCourse}>
-                    {session?.user ? "Enroll" : "Masuk"}
+                    {session?.user
+                      ? t("dialog_action_enroll")
+                      : t("dialog_action_login")}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -150,12 +159,12 @@ const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
           )}
         </CardContent>
         <CardFooter className="flex flex-col items-start space-y-2">
-          <p className="text-sm text-gray-500">30-Hari Jaminan Uang Kembali</p>
+          <p className="text-sm text-gray-500">{t("money_back")}</p>
           <div className="w-full">
-            <p className="text-xs font-medium mb-1">Bagikan Course ini:</p>
+            <p className="text-xs font-medium mb-1">{t("share_label")}</p>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-                <span className="sr-only">Bagikan ke X</span>
+                <span className="sr-only">{t("share_to_x")}</span>
                 <svg
                   className="h-4 w-4"
                   fill="currentColor"
@@ -165,7 +174,7 @@ const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
                 </svg>
               </Button>
               <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-                <span className="sr-only">Bagikan ke Facebook</span>
+                <span className="sr-only">{t("share_to_facebook")}</span>
                 <svg
                   className="h-4 w-4"
                   fill="currentColor"
@@ -175,7 +184,7 @@ const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
                 </svg>
               </Button>
               <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-                <span className="sr-only">Bagikan ke LinkedIn</span>
+                <span className="sr-only">{t("share_to_linkedin")}</span>
                 <svg
                   className="h-4 w-4"
                   fill="currentColor"

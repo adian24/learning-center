@@ -21,7 +21,7 @@ import { signOut, useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 
 export function NavUser() {
-  const t = useTranslations();
+  const t = useTranslations("common");
   const { isMobile } = useSidebar();
   const { data } = useSession();
   const user = data?.user;

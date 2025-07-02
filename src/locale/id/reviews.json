@@ -1,0 +1,9 @@
+{
+  "reviews": {
+    "section_title": "Ulasan",
+    "view_all": "Lihat Semua Ulasan",
+    "no_reviews": "Belum ada ulasan",
+    "loading": "Memuat ulasan...",
+    "error": "Gagal memuat ulasan"
+  }
+}

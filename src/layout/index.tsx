@@ -1,3 +1,5 @@
+"use client";
+
 import { ReactNode } from "react";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Separator } from "@/components/ui/separator";
@@ -18,7 +20,6 @@ import NavBreadcrumb from "@/components/nav-breadcrumb";
 import { Button } from "@/components/ui/button";
 
 function Layout({ children }: { children: ReactNode }) {
-  const t = useTranslations();
   const pathname = usePathname();
   const currentLocale = useLocale();
 

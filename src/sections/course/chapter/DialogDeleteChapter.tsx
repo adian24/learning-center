@@ -15,8 +15,11 @@ import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { useDeleteChapterStore } from "@/store/use-store-delete-chapter";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export function DialogDeleteChapter() {
+  const t = useTranslations("chapters");
+
   const queryClient = useQueryClient();
   const router = useRouter();
 
@@ -35,10 +38,10 @@ export function DialogDeleteChapter() {
       );
 
       if (!response.ok) {
-        throw new Error("Failed to delete chapter");
+        throw new Error(t("toast_delete_error"));
       }
 
-      toast.success("Chapter deleted successfully");
+      toast.success(t("toast_delete_success"));
 
       // Revalidate chapters data
       queryClient.invalidateQueries({
@@ -50,7 +53,7 @@ export function DialogDeleteChapter() {
       reset();
     } catch (error) {
       console.error("[DELETE_CHAPTER_ERROR]", error);
-      toast.error("Failed to delete chapter");
+      toast.error(t("toast_delete_error"));
     } finally {
       setIsDeleting(false);
     }
@@ -60,10 +63,10 @@ export function DialogDeleteChapter() {
     <AlertDialog open={isOpen} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Hapus Chapter?</AlertDialogTitle>
+          <AlertDialogTitle>{t("delete_chapter_title")}</AlertDialogTitle>
           <AlertDialogDescription className="space-y-2">
             <span>
-              Kamu akan menghapus chapter{" "}
+              {t("delete_chapter_confirm")}{" "}
               <span className="font-bold text-black">
                 {chapterToDelete?.title}
               </span>{" "}
@@ -71,14 +74,13 @@ export function DialogDeleteChapter() {
             </span>
             <br />
             <br />
-            <span className="text-red-500">
-              Tindakan ini tidak dapat dibatalkan. Semua data dan progres
-              Student untuk chapter ini akan dihapus secara permanen.
-            </span>
+            <span className="text-red-500">{t("delete_chapter_warning")}</span>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isDeleting}>Batal</AlertDialogCancel>
+          <AlertDialogCancel disabled={isDeleting}>
+            {t("cancel")}
+          </AlertDialogCancel>
           <AlertDialogAction
             onClick={(e) => {
               e.preventDefault();
@@ -90,10 +92,10 @@ export function DialogDeleteChapter() {
             {isDeleting ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Menghapus...
+                {t("deleting")}
               </>
             ) : (
-              <>Hapus Chapter</>
+              <>{t("delete")}</>
             )}
           </AlertDialogAction>
         </AlertDialogFooter>

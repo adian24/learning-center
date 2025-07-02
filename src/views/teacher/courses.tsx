@@ -11,9 +11,12 @@ import CoursePagination, {
 } from "@/sections/course/CoursePagination";
 import TeacherEmptyCourse from "@/sections/teacher/TeacherEmptyCourse";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { Fragment, useState } from "react";
 
 export default function TeacherCourses() {
+  const t = useTranslations("teacher_courses");
+
   const [viewType, setViewType] = useState<"grid" | "list">("list");
   const [page, setPage] = useState(1);
   const perPage = 10;
@@ -23,17 +26,18 @@ export default function TeacherCourses() {
     perPage,
   });
 
+  const courses = data?.courses ?? [];
   const totalPages = data?.meta.totalPages || 1;
   const paginationItems = generatePaginationItems(page, totalPages);
+
+  const hasCourses = courses.length > 0;
 
   // Error state
   if (error) {
     return (
       <Layout>
         <div className="h-full flex items-center justify-center min-h-[200px]">
-          <p className="text-red-500">
-            Something went wrong. Please try again later.
-          </p>
+          <p className="text-red-500">{t("error_loading")}</p>
         </div>
       </Layout>
     );
@@ -46,16 +50,16 @@ export default function TeacherCourses() {
         <div className="flex justify-between items-center mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="h-16">
             <h1 className="text-lg font-bold sm:text-xl md:text-2xl">
-              Courses
+              {t("my_courses")}
             </h1>
             <p className="text-muted-foreground text-sm sm:text-base">
-              Kelola dan buat kursus Anda
+              {t("course_subtitle")}
             </p>
           </div>
 
-          {(data?.courses?.length ?? 0) > 0 && (
+          {hasCourses && (
             <ButtonNvigation
-              text="Buat Course Baru"
+              text={t("button_create_course")}
               url="/teacher/courses/create"
               className="text-white bg-blue-600 rounded-lg hover:bg-blue-700"
             />
@@ -65,45 +69,47 @@ export default function TeacherCourses() {
 
       {/* Main Content */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-        {/* Empty State Card */}
-        {(data?.courses?.length ?? 0) === 0 && <TeacherEmptyCourse />}
-
-        {/* Filters */}
-        {!isLoading && (data?.courses?.length ?? 0) > 0 && (
-          <CourseFilter viewType={viewType} setViewType={setViewType} />
-        )}
-
-        {isLoading && (
+        {isLoading ? (
           <div className="h-full flex items-center justify-center min-h-[200px]">
             <div className="flex items-center gap-2">
               <Loader2 className="h-6 w-6 animate-spin" />
-              <p>Loading courses...</p>
+              <p>{t("loading")}</p>
             </div>
           </div>
-        )}
-
-        {/* Course Content */}
-        {!isLoading && (data?.courses?.length ?? 0) > 0 && (
+        ) : hasCourses ? (
           <>
-            <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {viewType === "grid" &&
-                data?.courses?.map((course) => (
-                  <CourseCard course={course} key={course.id} />
-                ))}
-            </div>
+            <CourseFilter viewType={viewType} setViewType={setViewType} />
 
-            {viewType === "list" && (
-              <CourseList courses={data?.courses ?? []} />
-            )}
+            {/* Course Content */}
+            <Fragment>
+              <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {viewType === "grid" &&
+                  data?.courses?.map((course) => (
+                    <CourseCard course={course} key={course.id} />
+                  ))}
+              </div>
 
-            {/* Pagination */}
-            <CoursePagination
-              page={page}
-              setPage={setPage}
-              totalPages={totalPages}
-              paginationItems={paginationItems}
-            />
+              {viewType === "list" && (
+                <CourseList courses={data?.courses ?? []} />
+              )}
+
+              {/* Pagination */}
+              <CoursePagination
+                page={page}
+                setPage={setPage}
+                totalPages={totalPages}
+                paginationItems={paginationItems}
+              />
+            </Fragment>
           </>
+        ) : (
+          hasCourses && (
+            <>
+              {/* Empty State Card */}
+              {/* <TeacherEmptyCourse /> */}
+              <TeacherEmptyCourse />
+            </>
+          )
         )}
       </div>
     </Layout>

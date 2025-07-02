@@ -5,40 +5,39 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useReviews } from "@/hooks/use-course-reviews";
 import { Star } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface ReviewsSectionProps {
   courseId: string;
 }
 
 const ReviewsSection = ({ courseId }: ReviewsSectionProps) => {
+  const t = useTranslations("reviews");
+
   const { data, isLoading, isError } = useReviews(courseId, 2);
 
   const reviews = data?.items;
 
   if (isLoading) {
-    return <div className="flex justify-center p-6">Loading reviews...</div>;
+    return <div className="flex justify-center p-6">{t("loading")}</div>;
   }
 
   if (isError) {
-    return (
-      <div className="text-center text-destructive p-6">
-        Failed to load reviews
-      </div>
-    );
+    return <div className="text-center text-destructive p-6">{t("error")}</div>;
   }
 
   return (
     <div className="mb-8">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold">Ulasan</h2>
+        <h2 className="text-xl font-bold">{t("section_title")}</h2>
         <Button variant="link" className="text-blue-600">
-          Lihat Semua Ulasan
+          {t("view_all")}
         </Button>
       </div>
 
       {reviews?.length === 0 ? (
         <div className="flex justify-center items-center p-6">
-          Belum ada ulasan
+          {t("no_reviews")}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

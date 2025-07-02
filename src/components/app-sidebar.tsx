@@ -26,57 +26,57 @@ import { SidebarOption } from "./sidebar-option";
 import { useTranslations } from "next-intl";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const t = useTranslations();
+  const t = useTranslations("common");
 
   const data = {
     teams: [
       {
-        name: t("sidebar_team_student"),
+        name: t("team_student"),
         logo: UserRoundCheck,
-        plan: t("sidebar_team_student_plan"),
+        plan: t("team_student_plan"),
       },
       {
-        name: t("sidebar_team_teacher"),
+        name: t("team_teacher"),
         logo: GraduationCap,
-        plan: t("sidebar_team_teacher_plan"),
+        plan: t("team_teacher_plan"),
       },
     ],
     navStudent: [
       {
-        title: t("sidebar_dashboard"),
+        title: t("dashboard"),
         url: "/dashboard",
         icon: LayoutDashboard,
         isActive: true,
       },
       {
-        title: t("sidebar_my_courses"),
+        title: t("my_courses"),
         url: "/my-courses",
         icon: Compass,
       },
       {
-        title: t("sidebar_certificates"),
+        title: t("certificates"),
         url: "/certificates",
         icon: TicketCheck,
       },
       {
-        title: t("sidebar_shop"),
+        title: t("shop"),
         url: "/courses",
         icon: ShoppingCart,
       },
     ],
     navTeacher: [
       {
-        name: t("sidebar_dashboard"),
+        name: t("dashboard"),
         url: "/teacher/dashboard",
         icon: LayoutDashboard,
       },
       {
-        name: t("sidebar_my_courses"),
+        name: t("my_courses"),
         url: "/teacher/courses",
         icon: Compass,
       },
       {
-        name: t("sidebar_students"),
+        name: t("students"),
         url: "/teacher/students",
         icon: UsersRound,
       },

@@ -7,9 +7,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { BookOpen, FileText, LayoutGrid, UsersRound } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React from "react";
 
 const TeacherEmptyCourse = () => {
+  const t = useTranslations("teacher_empty_course");
+
   return (
     <>
       <Card className="border-dashed">
@@ -22,16 +25,15 @@ const TeacherEmptyCourse = () => {
 
             {/* Text Content */}
             <div className="space-y-2">
-              <h3 className="text-xl font-semibold">Belum Ada Course</h3>
+              <h3 className="text-xl font-semibold">{t("title")}</h3>
               <p className="text-sm text-gray-500 max-w-sm">
-                Anda belum memiliki course. Mulai dengan membuat course pertama
-                Anda untuk berbagi pengetahuan dengan Students.
+                {t("description")}
               </p>
             </div>
 
             {/* Primary Action */}
             <ButtonNvigation
-              text={`Buat Course Baru`}
+              text={t("button_create")}
               url="/teacher/courses/create"
               className="mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-700"
             />
@@ -44,31 +46,28 @@ const TeacherEmptyCourse = () => {
         <Card>
           <CardHeader>
             <LayoutGrid className="h-8 w-8 text-primary mb-2" />
-            <CardTitle className="text-lg">Course Structure</CardTitle>
-            <CardDescription>
-              Buat struktur course yang terorganisir dengan chapter dan materi
-              pembelajaran
-            </CardDescription>
+            <CardTitle className="text-lg">
+              {t("feature_structure_title")}
+            </CardTitle>
+            <CardDescription>{t("feature_structure_desc")}</CardDescription>
           </CardHeader>
         </Card>
 
         <Card>
           <CardHeader>
             <FileText className="h-8 w-8 text-primary mb-2" />
-            <CardTitle className="text-lg">Quiz & Assessments</CardTitle>
-            <CardDescription>
-              Evaluasi pemahaman siswa dengan quiz dan tugas interaktif
-            </CardDescription>
+            <CardTitle className="text-lg">{t("feature_quiz_title")}</CardTitle>
+            <CardDescription>{t("feature_quiz_desc")}</CardDescription>
           </CardHeader>
         </Card>
 
         <Card>
           <CardHeader>
             <UsersRound className="h-8 w-8 text-primary mb-2" />
-            <CardTitle className="text-lg">Student Management</CardTitle>
-            <CardDescription>
-              Kelola dan pantau progress siswa yang mengikuti course Anda
-            </CardDescription>
+            <CardTitle className="text-lg">
+              {t("feature_students_title")}
+            </CardTitle>
+            <CardDescription>{t("feature_students_desc")}</CardDescription>
           </CardHeader>
         </Card>
       </div>
@@ -76,10 +75,8 @@ const TeacherEmptyCourse = () => {
       {/* Getting Started Guide */}
       <Card className="mt-8">
         <CardHeader>
-          <CardTitle>Panduan Memulai</CardTitle>
-          <CardDescription>
-            Ikuti langkah-langkah berikut untuk membuat course pertama Anda
-          </CardDescription>
+          <CardTitle>{t("guide_title")}</CardTitle>
+          <CardDescription>{t("guide_description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -88,10 +85,8 @@ const TeacherEmptyCourse = () => {
                 1
               </div>
               <div>
-                <h4 className="font-medium">Buat Course Baru</h4>
-                <p className="text-sm text-gray-500">
-                  Tentukan judul, deskripsi, dan level course Anda
-                </p>
+                <h4 className="font-medium">{t("step_1_title")}</h4>
+                <p className="text-sm text-gray-500">{t("step_1_desc")}</p>
               </div>
             </div>
 
@@ -100,10 +95,8 @@ const TeacherEmptyCourse = () => {
                 2
               </div>
               <div>
-                <h4 className="font-medium">Tambahkan Chapter</h4>
-                <p className="text-sm text-gray-500">
-                  Susun materi pembelajaran dalam chapter yang terstruktur
-                </p>
+                <h4 className="font-medium">{t("step_2_title")}</h4>
+                <p className="text-sm text-gray-500">{t("step_2_desc")}</p>
               </div>
             </div>
 
@@ -112,10 +105,8 @@ const TeacherEmptyCourse = () => {
                 3
               </div>
               <div>
-                <h4 className="font-medium">Upload Konten</h4>
-                <p className="text-sm text-gray-500">
-                  Upload video, dokumen, dan materi pembelajaran lainnya
-                </p>
+                <h4 className="font-medium">{t("step_3_title")}</h4>
+                <p className="text-sm text-gray-500">{t("step_3_desc")}</p>
               </div>
             </div>
 
@@ -124,11 +115,8 @@ const TeacherEmptyCourse = () => {
                 4
               </div>
               <div>
-                <h4 className="font-medium">Publish Course</h4>
-                <p className="text-sm text-gray-500">
-                  Review dan publikasikan course Anda agar dapat diakses oleh
-                  siswa
-                </p>
+                <h4 className="font-medium">{t("step_4_title")}</h4>
+                <p className="text-sm text-gray-500">{t("step_4_desc")}</p>
               </div>
             </div>
           </div>

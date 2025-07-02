@@ -8,12 +8,15 @@ import { formatPrice } from "@/utils/formatPrice";
 import { Star } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { CourseImageCard } from "@/components/media/SecureImage";
+import { useTranslations } from "next-intl";
 
 interface SimilarCourseProps {
   courseId: string;
 }
 
 const SimilarCourse = ({ courseId }: SimilarCourseProps) => {
+  const t = useTranslations("courses");
+
   const router = useRouter();
   const { data, isLoading } = useSimilarCourses(courseId, 3, true);
   const similarCourses = data?.similarCourses;
@@ -22,13 +25,13 @@ const SimilarCourse = ({ courseId }: SimilarCourseProps) => {
   const getSectionTitle = () => {
     switch (recommendationType) {
       case "SAME_TEACHER":
-        return "Kursus Lainnya dari Instruktur Ini";
+        return t("section_same_teacher");
       case "SAME_CATEGORY":
-        return `Kurus Lainya di ${
-          similarCourses?.[0]?.category?.name || "This Category"
-        }`;
+        return t("section_same_category", {
+          category: similarCourses?.[0]?.category?.name || "-",
+        });
       default:
-        return "Mungkin Anda Suka";
+        return t("section_default");
     }
   };
 
@@ -110,7 +113,7 @@ const SimilarCourse = ({ courseId }: SimilarCourseProps) => {
                 className="w-full"
                 onClick={() => handleNavigateCourse(course.id)}
               >
-                Lihat Detail
+                {t("view_details")}
               </Button>
             </CardContent>
           </Card>

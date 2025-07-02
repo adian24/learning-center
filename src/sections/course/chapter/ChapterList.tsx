@@ -17,12 +17,15 @@ import { Chapter } from "@/lib/types";
 import { useChaptersQuery } from "@/hooks/use-chapters-query";
 import { useRouter } from "next/navigation";
 import { formatVideoDuration } from "@/utils/formatVideoDuration";
+import { useTranslations } from "next-intl";
 
 interface ChapterListProps {
   courseId: string;
 }
 
 export function ChapterList({ courseId }: ChapterListProps) {
+  const t = useTranslations("chapters");
+
   const router = useRouter();
 
   const { data: chapters, isLoading } = useChaptersQuery({
@@ -32,7 +35,7 @@ export function ChapterList({ courseId }: ChapterListProps) {
   });
 
   if (isLoading) {
-    return <div>Loading chapters...</div>;
+    return <div>{t("loading")}</div>;
   }
 
   return (
@@ -49,12 +52,12 @@ export function ChapterList({ courseId }: ChapterListProps) {
                 <span className="text-left line-clamp-2">{chapter.title}</span>
                 {chapter.isFree && (
                   <Badge variant="outline" className="bg-green-300">
-                    Free
+                    {t("badge_free")}
                   </Badge>
                 )}
                 {!chapter.isPublished && (
                   <Badge variant="default" className="bg-orange-400">
-                    Draft
+                    {t("badge_draft")}
                   </Badge>
                 )}
               </div>
@@ -78,7 +81,7 @@ export function ChapterList({ courseId }: ChapterListProps) {
                   ) : (
                     <>
                       <VideoOff className="h-4 w-4 text-red-600" />
-                      No Video
+                      {t("badge_no_video")}
                     </>
                   )}
                 </Badge>
@@ -86,13 +89,15 @@ export function ChapterList({ courseId }: ChapterListProps) {
                 {/* Quiz Section */}
                 <Badge variant="outline" className="gap-2">
                   <GraduationCap className="h-4 w-4" />
-                  {chapter?.quizzes?.length} Quiz
+                  {t("quizzes_count", { count: chapter?.quizzes?.length || 0 })}
                 </Badge>
 
                 {/* Resources Section */}
                 <Badge variant="outline" className="gap-2">
                   <BookText className="h-4 w-4" />
-                  {chapter?.resources?.length} Resources
+                  {t("resources_count", {
+                    count: chapter?.resources?.length || 0,
+                  })}
                 </Badge>
               </div>
             </AccordionContent>
@@ -108,7 +113,9 @@ export function ChapterList({ courseId }: ChapterListProps) {
           className="underline text-blue-600 hover:text-blue-900"
           onClick={() => router.push(`/teacher/courses/${courseId}/chapters`)}
         >
-          Lihat semua Chapters ({chapters?.metadata.totalChapters}){" "}
+          {t("see_all_chapters", {
+            count: chapters?.metadata.totalChapters ?? 0,
+          })}
           <MoveUpRight />
         </Button>
       </div>

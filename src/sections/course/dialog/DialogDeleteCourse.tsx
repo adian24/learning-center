@@ -15,8 +15,11 @@ import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { useDeleteCourseStore } from "@/store/use-store-delete-course";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export function DialogDeleteCourse() {
+  const t = useTranslations("teacher_delete_course");
+
   const queryClient = useQueryClient();
   const router = useRouter();
 
@@ -32,11 +35,11 @@ export function DialogDeleteCourse() {
       });
 
       if (!response.ok) {
-        toast.error("Failed to delete course");
+        toast.error(t("toast_error"));
       }
 
       // Show success message
-      toast.success("Course deleted successfully");
+      toast.success(t("toast_success"));
 
       // Revalidate courses data
       queryClient.invalidateQueries({
@@ -47,7 +50,7 @@ export function DialogDeleteCourse() {
       router.push("/teacher/courses");
     } catch (error) {
       console.error("[DELETE_COURSE_ERROR]", error);
-      toast.error("Failed to delete course");
+      toast.error(t("toast_error"));
     } finally {
       setIsDeleting(false);
     }
@@ -57,23 +60,24 @@ export function DialogDeleteCourse() {
     <AlertDialog open={isOpen} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Hapus Course?</AlertDialogTitle>
+          <AlertDialogTitle>{t("button_delete")}</AlertDialogTitle>
           <AlertDialogDescription className="space-y-2">
             <span>
-              Kamu akan menghapus{" "}
-              <span className="font-bold text-black">
-                {courseToDelete?.title}
-              </span>{" "}
+              {t.rich("dialog_description_1", {
+                title: courseToDelete?.title || "",
+                strong: (chunks) => (
+                  <span className="font-bold text-black">{chunks}</span>
+                ),
+              })}
             </span>
             <br />
-            <span className="text-red-500">
-              Tindakan ini tidak dapat dibatalkan. Semua Chapter, data, dan
-              progres Student akan dihapus secara permanen.
-            </span>
+            <span className="text-red-500">{t("dialog_description_2")}</span>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isDeleting}>Batal</AlertDialogCancel>
+          <AlertDialogCancel disabled={isDeleting}>
+            {t("button_cancel")}
+          </AlertDialogCancel>
           <AlertDialogAction
             onClick={(e) => {
               e.preventDefault();
@@ -85,10 +89,10 @@ export function DialogDeleteCourse() {
             {isDeleting ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Menghapus...
+                {t("button_deleting")}
               </>
             ) : (
-              <>Hapus Course</>
+              <>{t("back")}</>
             )}
           </AlertDialogAction>
         </AlertDialogFooter>

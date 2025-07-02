@@ -1,9 +1,9 @@
-import { useTranslations } from "next-intl";
 import AuthForm from "./forms/auth-form";
+import { useTranslations } from "next-intl";
 import { CircleUser } from "lucide-react";
 
 export default function HeroFormSignUpForm() {
-  const t = useTranslations();
+  const t = useTranslations("signin");
 
   return (
     <>
@@ -18,10 +18,10 @@ export default function HeroFormSignUpForm() {
             {/* Title */}
             <div className="mt-4 md:mb-12 max-w-2xl">
               <h1 className="mb-4 scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
-                {t("hero_signin_title")}
+                {t("hero_title")}
               </h1>
               <p className="text-xl text-muted-foreground">
-                {t("hero_signin_subtitle")}
+                {t("hero_subtitle")}
               </p>
             </div>
             {/* End Title */}
@@ -42,7 +42,7 @@ export default function HeroFormSignUpForm() {
                 />
               </svg>
               <div className="relative z-10">
-                <p className="text-xl italic">{t("quote_text_signin")}</p>
+                <p className="text-xl italic">{t("quote_text")}</p>
               </div>
               <footer className="mt-3">
                 <div className="flex items-center">
@@ -50,11 +50,9 @@ export default function HeroFormSignUpForm() {
                     <CircleUser className="h-10 w-10 text-gray-500" />
                   </div>
                   <div className="grow ms-4">
-                    <div className="font-semibold">
-                      {t("quote_author_signin")}
-                    </div>
+                    <div className="font-semibold">{t("quote_author")}</div>
                     <div className="text-xs text-muted-foreground">
-                      {t("quote_desc_signin")}
+                      {t("quote_desc")}
                     </div>
                   </div>
                 </div>
@@ -74,9 +72,9 @@ export default function HeroFormSignUpForm() {
         {/* Clients Section */}
         <div className="mt-6 md:mt-12 py-3 flex items-center text-muted-foreground text-sm gap-x-1.5 after:flex-[1_1_0%] after:border-t after:ms-6 after:border-t-muted-foreground/50">
           <span className="font-semibold bg-clip-text bg-gradient-to-l from-blue-600 to-violet-500 text-transparent dark:from-blue-400 dark:to-violet-400">
-            {t("clients_number_signin")}
+            {t("clients_number")}
           </span>
-          {t("clients_text_signin")}
+          {t("clients_text")}
         </div>
         {/* Clients */}
         {/* <div className="flex flex-wrap gap-x-6 sm:gap-x-12 lg:gap-x-24">

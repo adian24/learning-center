@@ -42,6 +42,7 @@ import { useQuizDialogStore } from "@/store/use-store-quiz-dialog";
 import QuestionItem from "./questions/QuestionItem";
 import EditQuestionDialog from "./questions/EditQuestionDialog";
 import DeleteQuestionDialog from "./questions/DeleteQuestionDialog";
+import { useTranslations } from "next-intl";
 
 interface TeacherQuizManagerProps {
   chapterId: string;
@@ -50,6 +51,8 @@ interface TeacherQuizManagerProps {
 const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
   chapterId,
 }) => {
+  const t = useTranslations("teacher_quiz");
+
   const { quizzes, isLoading, error, quizCount, maxQuizzesReached, refetch } =
     useQuizBuilder(chapterId);
 
@@ -79,7 +82,7 @@ const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
             <div className="text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
               <p className="mt-2 text-sm text-muted-foreground">
-                Memuat quiz...
+                {t("loading_quiz")}
               </p>
             </div>
           </div>

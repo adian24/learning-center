@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { UseFormReturn } from "react-hook-form";
 import { CourseFormValues } from "@/lib/validations/courses";
+import { useTranslations } from "next-intl";
 
 interface BasicInfoFieldsProps {
   form: UseFormReturn<CourseFormValues>;
@@ -29,6 +30,9 @@ export const BasicInfoFieldsCreate = ({
   isSubmitting,
   categories,
 }: BasicInfoFieldsProps) => {
+  const t = useTranslations("courses");
+  const tCommon = useTranslations("common");
+
   return (
     <>
       <FormField
@@ -36,17 +40,15 @@ export const BasicInfoFieldsCreate = ({
         name="title"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Judul Course</FormLabel>
+            <FormLabel>{t("form_title_label")}</FormLabel>
             <FormControl>
               <Input
                 {...field}
-                placeholder="e.g. Web Development Fundamentals"
+                placeholder={t("form_title_placeholder")}
                 disabled={isSubmitting}
               />
             </FormControl>
-            <FormDescription>
-              Buat judul yang menarik dan deskriptif
-            </FormDescription>
+            <FormDescription>{t("form_title_description")}</FormDescription>
             <FormMessage />
           </FormItem>
         )}
@@ -57,11 +59,11 @@ export const BasicInfoFieldsCreate = ({
         name="description"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Deskripsi</FormLabel>
+            <FormLabel>{t("form_description_label")}</FormLabel>
             <FormControl>
               <Textarea
                 {...field}
-                placeholder="Jelaskan apa yang akan dipelajari dalam course ini..."
+                placeholder={t("form_description_placeholder")}
                 rows={5}
                 disabled={isSubmitting}
               />
@@ -77,7 +79,7 @@ export const BasicInfoFieldsCreate = ({
           name="level"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Level</FormLabel>
+              <FormLabel>{t("form_level_label")}</FormLabel>
               <Select
                 onValueChange={field.onChange}
                 defaultValue={field.value}
@@ -85,13 +87,19 @@ export const BasicInfoFieldsCreate = ({
               >
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Pilih level" />
+                    <SelectValue placeholder={t("form_level_placeholder")} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="BEGINNER">Beginner</SelectItem>
-                  <SelectItem value="INTERMEDIATE">Intermediate</SelectItem>
-                  <SelectItem value="ADVANCED">Advanced</SelectItem>
+                  <SelectItem value="BEGINNER">
+                    {tCommon("level_beginner")}
+                  </SelectItem>
+                  <SelectItem value="INTERMEDIATE">
+                    {tCommon("level_intermediate")}
+                  </SelectItem>
+                  <SelectItem value="ADVANCED">
+                    {tCommon("level_advanced")}
+                  </SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -104,7 +112,7 @@ export const BasicInfoFieldsCreate = ({
           name="categoryId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Kategori</FormLabel>
+              <FormLabel>{t("form_category_label")}</FormLabel>
               <Select
                 onValueChange={field.onChange}
                 defaultValue={field.value}
@@ -112,7 +120,7 @@ export const BasicInfoFieldsCreate = ({
               >
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Pilih kategori" />
+                    <SelectValue placeholder={t("form_category_placeholder")} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -134,14 +142,14 @@ export const BasicInfoFieldsCreate = ({
         name="price"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Harga (IDR)</FormLabel>
+            <FormLabel>{t("form_price_label")}</FormLabel>
             <FormControl>
               <Input
                 {...field}
                 type="number"
                 min="0"
                 step="0.01"
-                placeholder="e.g. 49.99"
+                placeholder={t("form_price_placeholder")}
                 disabled={isSubmitting}
               />
             </FormControl>

@@ -16,7 +16,8 @@ export default function RegisterForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  const t = useTranslations();
+  const t = useTranslations("signup");
+  const tCommon = useTranslations("common");
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -28,11 +29,11 @@ export default function RegisterForm({
             </div>
             <span className="sr-only">Learning Center</span>
           </a>
-          <h1 className="text-xl font-bold">{t("title_signup")}</h1>
+          <h1 className="text-xl font-bold">{t("title")}</h1>
           <div className="text-center text-sm">
-            Sudah memiliki akun?{" "}
-            <Link href="/" className="underline underline-offset-4">
-              {t("signin")}
+            {t("have_account")}{" "}
+            <Link href="/sign-in" className="underline underline-offset-4">
+              {tCommon("signin")}
             </Link>
           </div>
         </div>
@@ -50,32 +51,32 @@ export default function RegisterForm({
           >
             <div className="grid gap-3 space-y-3">
               <div className="grid gap-3">
-                <Label htmlFor="email">{t("name_label_signup")}</Label>
+                <Label htmlFor="email">{t("name_label")}</Label>
                 <Input
                   id="name"
                   name="name"
                   type="text"
-                  placeholder={t("name_placeholder_signup")}
+                  placeholder={t("name_placeholder")}
                   required
                 />
               </div>
               <div className="grid gap-3">
-                <Label htmlFor="email">{t("email_label_signup")}</Label>
+                <Label htmlFor="email">{t("email_label")}</Label>
                 <Input
                   id="email"
                   name="email"
                   type="email"
-                  placeholder={t("email_placeholder_signup")}
+                  placeholder={t("email_placeholder")}
                   required
                 />
               </div>
               <div className="grid gap-3">
                 {" "}
-                <Label htmlFor="email">{t("password_label_signup")}</Label>
+                <Label htmlFor="email">{t("password_label")}</Label>
                 <Input
                   id="password"
                   name="password"
-                  placeholder={t("password_placeholder_signup")}
+                  placeholder={t("password_placeholder")}
                   type="password"
                   required
                   autoComplete="password"
@@ -84,15 +85,15 @@ export default function RegisterForm({
               <ActionButton
                 type="submit"
                 className="w-full"
-                defaultText={t("submit_signup")}
-                loadingText={t("loading_signup")}
+                defaultText={t("submit")}
+                loadingText={t("loading")}
               />
             </div>
           </form>
         </div>
         <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
           <span className="relative z-10 bg-background px-2 text-muted-foreground">
-            {t("or_signup")}
+            {tCommon("or")}
           </span>
         </div>
         <div className="grid gap-4 sm:grid-cols-1">
@@ -114,13 +115,13 @@ export default function RegisterForm({
                 fill="currentColor"
               />
             </svg>
-            {t("google_signup")}
+            {t("google")}
           </Button>
         </div>
       </div>
       <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary  ">
-        {t("terms")} <a href="#">{t("terms_link")}</a> {t("and")}{" "}
-        <a href="#">{t("privacy_link")}</a>.
+        {tCommon("terms")} <a href="#">{tCommon("terms_link")}</a>{" "}
+        {tCommon("and")} <a href="#">{tCommon("privacy_link")}</a>.
       </div>
     </div>
   );

@@ -27,11 +27,11 @@ export function NavStudent({
     }[];
   }[];
 }) {
-  const t = useTranslations();
+  const t = useTranslations("common");
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>{t("breadcrumb_student")}</SidebarGroupLabel>
+      <SidebarGroupLabel>{t("student")}</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item, index) => (
           <SidebarMenuItem key={index}>

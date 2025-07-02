@@ -9,8 +9,10 @@ import CourseList from "./CourseList";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { FilterIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function CoursesClient() {
+  const t = useTranslations("courses");
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -70,10 +72,8 @@ export default function CoursesClient() {
   return (
     <div className="p-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Explore Courses</h1>
-        <p className="text-gray-500">
-          Discover courses to enhance your skills and knowledge
-        </p>
+        <h1 className="text-3xl font-bold mb-2">{t("explore_courses")}</h1>
+        <p className="text-gray-500">{t("explore_description")}</p>
       </div>
 
       {/* Main content layout with sidebar */}
@@ -86,7 +86,7 @@ export default function CoursesClient() {
                 variant="outline"
                 className="flex items-center w-full justify-between"
               >
-                <span>Filters</span>
+                <span>{t("filters")}</span>
                 <FilterIcon className="h-4 w-4 ml-2" />
               </Button>
             </SheetTrigger>
@@ -106,7 +106,7 @@ export default function CoursesClient() {
         {/* Desktop sidebar filters */}
         <div className="hidden lg:block shrink-0">
           <div className="bg-white dark:bg-gray-950 rounded-lg border p-4 sticky top-20">
-            <h3 className="font-medium text-lg mb-4">Filters</h3>
+            <h3 className="font-medium text-lg mb-4">{t("filters_title")}</h3>
             {isLoading ? (
               <FiltersSkeleton />
             ) : (
@@ -125,9 +125,7 @@ export default function CoursesClient() {
           {/* Error state */}
           {error && (
             <div className="text-center py-10">
-              <p className="text-red-500">
-                An error occurred while loading courses. Please try again.
-              </p>
+              <p className="text-red-500">{t("error_loading")}</p>
             </div>
           )}
 
@@ -172,13 +170,8 @@ export default function CoursesClient() {
                       />
                     </svg>
                   </div>
-                  <h3 className="text-xl font-bold mb-2">
-                    Tidak ada kursus yang ditemukan
-                  </h3>
-                  <p className="text-gray-500 mb-4">
-                    Maaf, kami tidak dapat menemukan kursus yang sesuai dengan
-                    kriteria pencarian Anda.
-                  </p>
+                  <h3 className="text-xl font-bold mb-2">{t("empty_title")}</h3>
+                  <p className="text-gray-500 mb-4">{t("empty_description")}</p>
                 </div>
               </div>
             ))}

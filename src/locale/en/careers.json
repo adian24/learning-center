@@ -1,0 +1,22 @@
+{
+  "careers": {
+    "careers_filter_title": "Search Filter",
+    "careers_open_filter": "Open Filter",
+    "careers_close_filter": "Close Filter",
+    "careers_filter_company": "Company",
+    "careers_filter_category": "Category",
+    "careers_filter_level": "Level",
+    "careers_filter_location": "Location",
+    "careers_reset_filter": "Reset Filter",
+    "careers_not_found": "No jobs match the current filters.",
+    "detail_not_found": "Job not found.",
+    "back_to_all": "Back to All Careers",
+    "detail_description": "📋 Job Description",
+    "detail_additional_info": "📌 Additional Information",
+    "company": "Company",
+    "location": "Location",
+    "level": "Level",
+    "salary": "Salary",
+    "apply_now": "Apply Now"
+  }
+}

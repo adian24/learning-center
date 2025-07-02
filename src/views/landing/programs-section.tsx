@@ -22,7 +22,8 @@ export default function ProgramsSection({
   keyword,
   category,
 }: ProgramsSectionProps) {
-  const t = useTranslations();
+  const t = useTranslations("landing");
+  const tCommon = useTranslations("common");
   const router = useRouter();
 
   const { data, isLoading } = useAllCourses();
@@ -43,7 +44,7 @@ export default function ProgramsSection({
   return (
     <section className="py-20 bg-white">
       <h2 className="text-3xl font-semibold mb-10 text-center text-sky-700">
-        {t("landing_programs_title")}
+        {t("programs_title")}
       </h2>
 
       {isLoading ? (
@@ -77,11 +78,11 @@ export default function ProgramsSection({
                     </div>
 
                     <h3 className="font-semibold text-lg mb-1 text-gray-800 line-clamp-2">
-                      {items.title ?? "Judul tidak tersedia"}
+                      {items.title ?? t("programs_noTitle")}
                     </h3>
 
                     <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                      {items.description ?? "Deskripsi belum tersedia."}
+                      {items.description ?? t("programs_noDescription")}
                     </p>
 
                     <div className="flex flex-wrap items-center gap-2 mb-2">
@@ -89,18 +90,19 @@ export default function ProgramsSection({
                         variant="secondary"
                         className="text-xs bg-sky-50 text-sky-700 border-sky-200"
                       >
-                        {items.categoryName ?? "Tidak Berkategori"}
+                        {items.categoryName ?? t("programs_noCategory")}
                       </Badge>
                       <Badge
                         variant="outline"
                         className="text-xs bg-teal-50 text-teal-600 border-teal-200"
                       >
-                        {items.level ?? "Level Tidak Diketahui"}
+                        {items.level ?? t("programs_noLevel")}
                       </Badge>
                     </div>
 
                     <p className="text-xs text-gray-500 italic">
-                      oleh {items.teacherName ?? "Instruktur tidak diketahui"}
+                      {tCommon("by")}{" "}
+                      {items.teacherName ?? t("programs_noTeacher")}
                     </p>
                   </div>
 
@@ -108,7 +110,7 @@ export default function ProgramsSection({
                     onClick={() => router.push(`/program-detail/${items.id}`)}
                     className="w-full mt-4 bg-sky-600 text-white hover:bg-black rounded-xl shadow-md transition"
                   >
-                    {t("landing_programs_register")}
+                    {t("programs_register")}
                   </Button>
                 </CardContent>
               </Card>
@@ -125,7 +127,7 @@ export default function ProgramsSection({
               }}
               className="rounded-xl px-6 py-3 bg-sky-700 hover:bg-black text-white text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-300 ease-in-out inline-flex items-center gap-2"
             >
-              <span> {t("landing_programs_more")}</span>
+              <span> {t("programs_more")}</span>
               <ArrowUpRightFromCircleIcon />
             </Button>
           </div>
@@ -150,11 +152,9 @@ export default function ProgramsSection({
               </svg>
             </div>
             <h3 className="text-xl font-bold mb-2">
-              {t("landing_programs_notFoundTitle")}
+              {t("programs_notFoundTitle")}
             </h3>
-            <p className="text-gray-500 mb-4">
-              {t("landing_programs_notFoundDesc")}
-            </p>
+            <p className="text-gray-500 mb-4">{t("programs_notFoundDesc")}</p>
           </div>
         </div>
       )}

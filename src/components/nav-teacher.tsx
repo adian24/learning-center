@@ -24,12 +24,12 @@ export function NavTeacher({
     icon: LucideIcon;
   }[];
 }) {
-  const t = useTranslations();
+  const t = useTranslations("common");
   const { data: user } = useUserRole();
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>{t("breadcrumb_teacher")}</SidebarGroupLabel>
+      <SidebarGroupLabel>{t("teacher")}</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <SidebarMenuItem key={item.name}>

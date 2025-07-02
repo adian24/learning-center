@@ -1,0 +1,25 @@
+{
+  "signin": {
+    "hero_title": "Buka Potensi Anda dengan Pembelajaran Online",
+    "hero_subtitle": "Jelajahi kursus yang dirancang untuk membantu Anda berkembang, meraih tujuan, dan mengubah masa depan!",
+    "quote_text": "Pendidikan adalah senjata paling ampuh yang dapat Anda gunakan untuk mengubah dunia.",
+    "quote_author": "Nelson Mandela",
+    "quote_desc": "Mantan Presiden Afrika Selatan",
+    "clients_text": "peserta dan instruktur telah bergabung. Sekarang giliran Anda!",
+    "clients_number": "5000",
+    "welcome_title": "Selamat Datang Kembali",
+    "subtitle": "Masuk dengan akun Google Anda",
+    "google": "Masuk dengan Google",
+    "email": "Email",
+    "password": "Kata Sandi",
+    "forgot_password": "Lupa kata sandi?",
+    "submit": "Masuk",
+    "loading": "Harap tunggu...",
+    "no_account": "Belum punya akun?",
+    "error_wrong_credentials": "Email atau kata sandi salah",
+    "error_generic": "Terjadi kesalahan saat masuk. Silakan coba lagi.",
+    "error_google_linked": "Email ini sudah terdaftar melalui Google. Silakan masuk dengan Google.",
+    "error_email_linked": "Email ini sudah terdaftar dengan email/sandi. Silakan masuk menggunakan email dan kata sandi Anda.",
+    "error_google_failed": "Login Google gagal. Silakan coba lagi."
+  }
+}

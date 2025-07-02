@@ -4,12 +4,12 @@ import db from "@/lib/db/db";
 import { formatPrice } from "@/utils/formatPrice";
 import { CheckCircle, Loader2 } from "lucide-react";
 import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export async function generateMetadata({
   params,
-  searchParams,
 }: SuccessPageProps): Promise<Metadata> {
   const courseId = (await params).coursesId;
 
@@ -39,6 +39,7 @@ export default async function SuccessPage({
   params,
   searchParams,
 }: SuccessPageProps) {
+  const t = await getTranslations("courses");
   const session = await auth();
 
   if (!session?.user) {
@@ -142,10 +143,10 @@ export default async function SuccessPage({
 
         <h1 className="text-3xl font-bold mb-2">
           {enrollment.status === "COMPLETED"
-            ? "Pendaftaran Berhasil!"
+            ? t("enrollment_success")
             : enrollment.status === "PENDING"
-            ? "Pendaftaran Tertunda"
-            : "Pendaftaran Gagal"}
+            ? t("enrollment_pending")
+            : t("enrollment_failed")}
         </h1>
 
         <p className={`mb-6 ${statusColor}`}>{statusMessage}</p>
@@ -179,31 +180,26 @@ export default async function SuccessPage({
       <div className="flex flex-col md:flex-row gap-4">
         {firstChapter && enrollment.status === "COMPLETED" && (
           <Link href={`/courses/${courseId}/chapters/${firstChapter.id}`}>
-            <Button size="lg">Mulai Belajar</Button>
+            <Button size="lg">{t("start_learning")}</Button>
           </Link>
         )}
 
         {enrollment.status === "PENDING" && (
           <div className="text-center text-sm text-gray-600 mb-6">
-            <p>
-              Setelah pembayaran Anda dikonfirmasi, Anda akan dapat mengakses
-              kursus.
-              <br />
-              Proses ini mungkin memakan waktu beberapa saat.
-            </p>
+            <p>{t("pending_note")}</p>
           </div>
         )}
 
         {enrollment.status === "FAILED" && (
           <Link href={`/checkout/${courseId}/checkout`}>
-            <Button size="lg">Coba Lagi</Button>
+            <Button size="lg">{t("try_again")}</Button>
           </Link>
         )}
 
         {enrollment.status === "PENDING" && (
           <Link href="/courses">
             <Button variant="outline" size="lg">
-              Lihat Semua Kursus
+              {t("see_all_courses")}
             </Button>
           </Link>
         )}
@@ -211,7 +207,7 @@ export default async function SuccessPage({
         {enrollment.status === "COMPLETED" && (
           <Link href={`/courses/${courseId}`}>
             <Button variant="outline" size="lg">
-              Lihat Kursus Saya
+              {t("see_my_course")}
             </Button>
           </Link>
         )}

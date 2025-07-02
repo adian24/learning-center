@@ -11,6 +11,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useTranslations } from "next-intl";
 
 type FilterValues = {
   search: string;
@@ -35,6 +36,7 @@ const CourseFilters: React.FC<FilterProps> = ({
   onFilterChange,
   variant = "inline",
 }) => {
+  const t = useTranslations("courses");
   const [searchInput, setSearchInput] = useState(filters.search);
   const [tempFilters, setTempFilters] = useState<FilterValues>(filters);
 
@@ -90,7 +92,7 @@ const CourseFilters: React.FC<FilterProps> = ({
         <div className="relative flex-grow">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
           <Input
-            placeholder="Cari courses..."
+            placeholder={t("search_placeholder")}
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             className="pl-10"
@@ -113,7 +115,7 @@ const CourseFilters: React.FC<FilterProps> = ({
         defaultValue={["category", "level", "price", "language", "rating"]}
       >
         <AccordionItem value="category">
-          <AccordionTrigger>Kategori</AccordionTrigger>
+          <AccordionTrigger>{t("filter_category")}</AccordionTrigger>
           <AccordionContent>
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
@@ -123,7 +125,7 @@ const CourseFilters: React.FC<FilterProps> = ({
                   onCheckedChange={() => handleFilterChange("category", "")}
                 />
                 <label htmlFor="all-categories" className="text-sm">
-                  All categories
+                  {t("filter_category_all")}
                 </label>
               </div>
               {categories.map((category) => (
@@ -148,7 +150,7 @@ const CourseFilters: React.FC<FilterProps> = ({
         </AccordionItem>
 
         <AccordionItem value="level">
-          <AccordionTrigger>Level</AccordionTrigger>
+          <AccordionTrigger>{t("filter_level")}</AccordionTrigger>
           <AccordionContent>
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
@@ -158,7 +160,7 @@ const CourseFilters: React.FC<FilterProps> = ({
                   onCheckedChange={() => handleFilterChange("level", "")}
                 />
                 <label htmlFor="all-levels" className="text-sm">
-                  Semua level
+                  {t("filter_level_all")}
                 </label>
               </div>
               {levels.map((level) => (
@@ -178,15 +180,18 @@ const CourseFilters: React.FC<FilterProps> = ({
         </AccordionItem>
 
         <AccordionItem value="price">
-          <AccordionTrigger>Rentang Harga</AccordionTrigger>
+          <AccordionTrigger>{t("filter_price")}</AccordionTrigger>
           <AccordionContent>
             <div className="space-y-4">
               <div className="flex justify-between">
                 <span className="text-sm text-gray-500">
-                  Rp{tempFilters.minPrice} - Rp
-                  {tempFilters.maxPrice === 1000000
-                    ? "1.000.000+"
-                    : tempFilters.maxPrice}
+                  {t("filter_price_display", {
+                    min: tempFilters.minPrice,
+                    max:
+                      tempFilters.maxPrice === 1000000
+                        ? "1.0000.000"
+                        : `${tempFilters.maxPrice}`,
+                  })}
                 </span>
               </div>
               <Slider
@@ -211,12 +216,14 @@ const CourseFilters: React.FC<FilterProps> = ({
         </AccordionItem>
 
         <AccordionItem value="rating">
-          <AccordionTrigger>Penilaian</AccordionTrigger>
+          <AccordionTrigger>{t("filter_rating")}</AccordionTrigger>
           <AccordionContent>
             <div className="space-y-4">
               <div className="flex justify-between">
                 <span className="text-sm text-gray-500">
-                  {tempFilters.minRating}+ stars
+                  {t("filter_rating_display", {
+                    rating: tempFilters.minRating,
+                  })}
                 </span>
               </div>
               <Slider
@@ -247,7 +254,7 @@ const CourseFilters: React.FC<FilterProps> = ({
           onClick={resetFilters}
         >
           <X className="h-4 w-4 mr-1" />
-          Reset All Filters
+          {t("reset_filters")}
         </Button>
       )}
     </div>
@@ -273,7 +280,9 @@ const CourseFilters: React.FC<FilterProps> = ({
           )}
           {filters.level && (
             <Badge variant="outline" className="flex items-center gap-1">
-              Level: {filters.level}
+              {t("badge_level", {
+                level: t(`level_${filters.level.toLowerCase()}`),
+              })}
               <X
                 className="h-3 w-3 cursor-pointer"
                 onClick={() => onFilterChange({ ...filters, level: "" })}
@@ -282,8 +291,13 @@ const CourseFilters: React.FC<FilterProps> = ({
           )}
           {(filters.minPrice > 0 || filters.maxPrice < 1000000) && (
             <Badge variant="outline" className="flex items-center gap-1">
-              Harga: ${filters.minPrice} - $
-              {filters.maxPrice === 1000000 ? "1.000.000+" : filters.maxPrice}
+              {t("badge_price", {
+                min: filters.minPrice,
+                max:
+                  filters.maxPrice === 1000000
+                    ? "1.000.000+"
+                    : `Rp${filters.maxPrice}`,
+              })}
               <X
                 className="h-3 w-3 cursor-pointer"
                 onClick={() =>
@@ -294,7 +308,7 @@ const CourseFilters: React.FC<FilterProps> = ({
           )}
           {filters.minRating > 0 && (
             <Badge variant="outline" className="flex items-center gap-1">
-              Rating: {filters.minRating}+ stars
+              {t("badge_rating", { rating: filters.minRating })}
               <X
                 className="h-3 w-3 cursor-pointer"
                 onClick={() => onFilterChange({ ...filters, minRating: 0 })}

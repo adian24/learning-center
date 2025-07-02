@@ -12,6 +12,7 @@ import { useDeleteCourseStore } from "@/store/use-store-delete-course";
 import { ArrowLeft, Loader2, Save, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Course } from "@/lib/types";
+import { useTranslations } from "next-intl";
 
 interface DetailInfoHeaderProps {
   course: Course | undefined;
@@ -19,6 +20,8 @@ interface DetailInfoHeaderProps {
 }
 
 const DetailInfoHeader = ({ course, isUpdating }: DetailInfoHeaderProps) => {
+  const t = useTranslations("teacher_detail_header");
+
   const router = useRouter();
   const onOpenDeleteDialog = useDeleteCourseStore((state) => state.onOpen);
 
@@ -32,7 +35,7 @@ const DetailInfoHeader = ({ course, isUpdating }: DetailInfoHeaderProps) => {
           type="button"
         >
           <ArrowLeft className="h-4 w-4" />
-          Kembali
+          {t("back")}
         </Button>
         <h1 className="text-2xl font-bold line-clamp-3">{course?.title}</h1>
       </div>
@@ -55,7 +58,7 @@ const DetailInfoHeader = ({ course, isUpdating }: DetailInfoHeaderProps) => {
               </Button>
             </TooltipTrigger>
             <TooltipContent className="bg-black text-white">
-              <p>Hapus Course</p>
+              <p>{t("button_delete_tooltip")}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -68,12 +71,12 @@ const DetailInfoHeader = ({ course, isUpdating }: DetailInfoHeaderProps) => {
           {isUpdating ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Membuat Course...
+              {t("button_saving")}
             </>
           ) : (
             <>
               <Save />
-              Simpan
+              {t("button_save")}
             </>
           )}
         </Button>
