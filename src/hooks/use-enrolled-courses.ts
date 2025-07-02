@@ -34,9 +34,30 @@ export interface EnrolledCourseWithProgress extends EnrolledCourseBase {
       id: string;
       title: string;
       position: number;
-      userProgress: Array<{
+      userProgress?: {
         id: string;
         isCompleted: boolean;
+        chapterScore: number | null;
+        watchedSeconds: number;
+        completedAt: Date | null;
+      };
+      calculation: {
+        chapterId: string;
+        studentId: string;
+        totalQuizzes: number;
+        passedQuizzes: number;
+        chapterScore: number;
+        isCompleted: boolean;
+      };
+      quizzes: Array<{
+        id: string;
+        title: string;
+        passingScore: number;
+        latestAttempt: {
+          score: number;
+          completedAt: Date;
+        } | null;
+        isPassed: boolean;
       }>;
     }>;
   };

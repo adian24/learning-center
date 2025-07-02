@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import db from "@/lib/db/db";
 import { z } from "zod";
+import { calculateChapterScore } from "@/lib/services/quiz-score-service";
 
 const createEnrollmentSchema = z.object({
   courseId: z.string(),
@@ -77,6 +78,33 @@ export async function GET(req: NextRequest) {
                   where: {
                     studentId: studentProfile.id,
                   },
+                  select: {
+                    id: true,
+                    isCompleted: true,
+                    chapterScore: true,
+                    watchedSeconds: true,
+                    completedAt: true,
+                  },
+                },
+                quizzes: {
+                  select: {
+                    id: true,
+                    title: true,
+                    passingScore: true,
+                    attempts: {
+                      where: {
+                        studentId: studentProfile.id,
+                      },
+                      select: {
+                        score: true,
+                        completedAt: true,
+                      },
+                      orderBy: {
+                        completedAt: "desc",
+                      },
+                      take: 1,
+                    },
+                  },
                 },
               },
               orderBy: {
@@ -91,25 +119,54 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    // Process enrollments to add progress info
-    const processedEnrollments = enrollments.map((enrollment) => {
-      const totalChapters = enrollment.course.chapters.length;
-      const completedChapters = enrollment.course.chapters.filter(
-        (chapter) => chapter.userProgress?.[0]?.isCompleted
-      ).length;
+    // Process enrollments to add enhanced progress info
+    const processedEnrollments = await Promise.all(
+      enrollments.map(async (enrollment) => {
+        const totalChapters = enrollment.course.chapters.length;
+        
+        console.log(`Processing enrollment ${enrollment.id}: ${totalChapters} chapters found`);
+        
+        if (totalChapters === 0) {
+          console.warn(`No published chapters found for course ${enrollment.courseId}`);
+          return {
+            ...enrollment,
+            progress: 0,
+            completedChapters: 0,
+            totalChapters: 0,
+          };
+        }
+        
+        // Use simplified calculation - check existing userProgress instead of recalculating
+        const completedChapters = enrollment.course.chapters.filter(chapter => {
+          const userProgress = chapter.userProgress?.[0];
+          // Consider completed if explicitly marked as completed in userProgress
+          // OR if chapter has no quizzes (video-only chapters)
+          if (!userProgress) return false;
+          
+          if (chapter.quizzes.length === 0) {
+            // Video-only chapter - completed if watched
+            return userProgress.isCompleted;
+          } else {
+            // Chapter with quizzes - completed if score >= 65
+            return userProgress.isCompleted && (userProgress.chapterScore || 0) >= 65;
+          }
+        }).length;
 
-      const progress =
-        totalChapters > 0
-          ? Math.round((completedChapters / totalChapters) * 100)
-          : 0;
+        const progress =
+          totalChapters > 0
+            ? Math.round((completedChapters / totalChapters) * 100)
+            : 0;
 
-      return {
-        ...enrollment,
-        progress,
-        completedChapters,
-        totalChapters,
-      };
-    });
+        console.log(`Course ${enrollment.courseId}: ${completedChapters}/${totalChapters} chapters completed (${progress}%)`);
+
+        return {
+          ...enrollment,
+          progress,
+          completedChapters,
+          totalChapters,
+        };
+      })
+    );
 
     return NextResponse.json(processedEnrollments);
   } catch (error) {

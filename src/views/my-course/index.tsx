@@ -7,6 +7,7 @@ import {
   useCancelEnrollment,
 } from "@/hooks/use-enrolled-courses";
 import { useEnrollmentStats } from "@/hooks/use-student-stats";
+import { useCourseProgress } from "@/hooks/use-chapter-progress";
 
 import {
   AlertDialog,
@@ -177,13 +178,9 @@ const MyCourses = () => {
     ])
   );
 
-  // Filter and sort in-progress courses
+  // Filter and sort in-progress courses - we'll filter based on actual progress in the component
   const inProgressCoursesFiltered = sortCourses(
-    filterCourses(
-      enrollments.completed.filter(
-        (course) => course.progress > 0 && course.progress < 100
-      )
-    )
+    filterCourses(enrollments.completed)
   );
 
   // Filter and sort pending courses
@@ -413,7 +410,7 @@ const MyCourses = () => {
               viewType === "grid" ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {allCoursesFiltered.map((enrollment) => (
-                    <CourseCard
+                    <EnhancedCourseCard
                       key={enrollment.id}
                       enrollment={enrollment}
                       viewType={viewType}
@@ -425,7 +422,7 @@ const MyCourses = () => {
               ) : (
                 <div className="space-y-4">
                   {allCoursesFiltered.map((enrollment) => (
-                    <CourseCard
+                    <EnhancedCourseCard
                       key={enrollment.id}
                       enrollment={enrollment}
                       viewType={viewType}
@@ -450,53 +447,12 @@ const MyCourses = () => {
 
           {/* In Progress */}
           <TabsContent value="in-progress" className="space-y-8">
-            {inProgressCoursesFiltered.length > 0 ? (
-              viewType === "grid" ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {inProgressCoursesFiltered.map((enrollment) => (
-                    <CourseCard
-                      key={enrollment.id}
-                      enrollment={enrollment}
-                      viewType={viewType}
-                      onContinuePayment={handleContinuePayment}
-                      onCancelClick={setCancellingEnrollmentId}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {inProgressCoursesFiltered.map((enrollment) => (
-                    <CourseCard
-                      key={enrollment.id}
-                      enrollment={enrollment}
-                      viewType={viewType}
-                      onContinuePayment={handleContinuePayment}
-                      onCancelClick={setCancellingEnrollmentId}
-                    />
-                  ))}
-                </div>
-              )
-            ) : (
-              <div className="flex flex-col items-center justify-center py-12">
-                <Clock className="h-16 w-16 text-gray-400 mb-4" />
-                <h3 className="text-xl font-medium mb-2">
-                  Tidak ada kursus yang sedang berlangsung
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  Anda belum memulai kursus apapun atau masih menunggu
-                  pembayaran.
-                </p>
-                {enrollments.pending.length > 0 ? (
-                  <Button onClick={() => setSelectedTab("pending-payment")}>
-                    Lihat Kursus Tertunda
-                  </Button>
-                ) : (
-                  <Button onClick={() => router.push("/courses")}>
-                    Jelajahi Kursus
-                  </Button>
-                )}
-              </div>
-            )}
+            <InProgressCourseList
+              enrollments={inProgressCoursesFiltered}
+              viewType={viewType}
+              onContinuePayment={handleContinuePayment}
+              onCancelClick={setCancellingEnrollmentId}
+            />
           </TabsContent>
 
           {/* Pending Payment */}
@@ -505,7 +461,7 @@ const MyCourses = () => {
               viewType === "grid" ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {pendingCoursesFiltered.map((enrollment) => (
-                    <CourseCard
+                    <EnhancedCourseCard
                       key={enrollment.id}
                       enrollment={enrollment}
                       viewType={viewType}
@@ -517,7 +473,7 @@ const MyCourses = () => {
               ) : (
                 <div className="space-y-4">
                   {pendingCoursesFiltered.map((enrollment) => (
-                    <CourseCard
+                    <EnhancedCourseCard
                       key={enrollment.id}
                       enrollment={enrollment}
                       viewType={viewType}
@@ -549,7 +505,7 @@ const MyCourses = () => {
               viewType === "grid" ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {failedCoursesFiltered.map((enrollment) => (
-                    <CourseCard
+                    <EnhancedCourseCard
                       key={enrollment.id}
                       enrollment={enrollment}
                       viewType={viewType}
@@ -561,7 +517,7 @@ const MyCourses = () => {
               ) : (
                 <div className="space-y-4">
                   {failedCoursesFiltered.map((enrollment) => (
-                    <CourseCard
+                    <EnhancedCourseCard
                       key={enrollment.id}
                       enrollment={enrollment}
                       viewType={viewType}
@@ -633,13 +589,41 @@ interface CourseCardProps {
   onCancelClick: (enrollmentId: string) => void;
 }
 
-const CourseCard = ({
+interface EnhancedCourseCardProps {
+  enrollment: any;
+  viewType: "grid" | "list";
+  onContinuePayment: (enrollmentId: string, courseId: string) => void;
+  onCancelClick: (enrollmentId: string) => void;
+}
+
+interface InProgressFilterProps {
+  enrollments: any[];
+  viewType: "grid" | "list";
+  onContinuePayment: (enrollmentId: string, courseId: string) => void;
+  onCancelClick: (enrollmentId: string) => void;
+}
+
+const EnhancedCourseCard = ({
   enrollment,
   viewType,
   onContinuePayment,
   onCancelClick,
-}: CourseCardProps) => {
+}: EnhancedCourseCardProps) => {
   const router = useRouter();
+
+  // Get course progress data for completed enrollments only
+  const { data: courseProgressData } = useCourseProgress(enrollment.courseId);
+
+  // Calculate progress from course progress data
+  const totalChapters = courseProgressData?.courseProgress?.length || 0;
+  const completedChapters =
+    courseProgressData?.courseProgress?.filter(
+      (ch) => ch.calculation?.isCompleted
+    ).length || 0;
+  const progress =
+    totalChapters > 0
+      ? Math.round((completedChapters / totalChapters) * 100)
+      : 0;
 
   // Helper to determine card styles based on status
   const getStatusConfig = () => {
@@ -648,9 +632,9 @@ const CourseCard = ({
         return {
           badge: {
             element:
-              enrollment.progress === 100 ? (
+              progress === 100 ? (
                 <Badge className="bg-green-100 text-green-800">Selesai</Badge>
-              ) : enrollment.progress > 0 && enrollment.progress < 100 ? (
+              ) : progress > 0 && progress < 100 ? (
                 <Badge className="bg-blue-100 text-blue-800">
                   Sedang Berlangsung
                 </Badge>
@@ -661,10 +645,7 @@ const CourseCard = ({
               ),
           },
           actionButton: {
-            text:
-              enrollment.progress === 100
-                ? "Tinjau Kursus"
-                : "Lanjutkan Belajar",
+            text: progress === 100 ? "Tinjau Kursus" : "Lanjutkan Belajar",
             onClick: () => router.push(`/my-courses/${enrollment.courseId}`),
             icon: <ArrowRight className="ml-2 h-4 w-4" />,
             variant: "default" as const,
@@ -752,27 +733,24 @@ const CourseCard = ({
                 </h3>
                 <div className="flex items-center text-sm text-muted-foreground gap-2 mb-3">
                   <span>Level: {enrollment.course.level.toLowerCase()}</span>
-                  {enrollment.totalChapters > 0 && (
+                  {totalChapters > 0 && (
                     <>
                       <span>•</span>
-                      <span>{enrollment.totalChapters} bab</span>
+                      <span>{totalChapters} bab</span>
                     </>
                   )}
                 </div>
 
                 {/* Progress bar for active courses */}
-                {enrollment.status === "COMPLETED" && (
+                {enrollment.status === "COMPLETED" && totalChapters > 0 && (
                   <div className="mb-3">
                     <div className="flex justify-between text-sm mb-1">
                       <span>Progres</span>
-                      <span className="font-medium">
-                        {enrollment.progress}%
-                      </span>
+                      <span className="font-medium">{progress}%</span>
                     </div>
-                    <Progress value={enrollment.progress} className="h-2" />
+                    <Progress value={progress} className="h-2" />
                     <div className="text-xs text-muted-foreground mt-1">
-                      {enrollment.completedChapters}/{enrollment.totalChapters}{" "}
-                      bab selesai
+                      {completedChapters}/{totalChapters} bab selesai
                     </div>
                   </div>
                 )}
@@ -829,27 +807,24 @@ const CourseCard = ({
           <span className="capitalize">
             {enrollment.course.level.toLowerCase()}
           </span>
-          {enrollment.totalChapters > 0 && (
+          {totalChapters > 0 && (
             <>
               <span>•</span>
-              <span>{enrollment.totalChapters} bab</span>
+              <span>{totalChapters} bab</span>
             </>
           )}
         </div>
 
         {/* Only show progress bar for completed (active) enrollments */}
-        {enrollment.status === "COMPLETED" && (
+        {enrollment.status === "COMPLETED" && totalChapters > 0 && (
           <div className="mt-auto mb-2">
             <div className="flex justify-between text-sm mb-1">
               <span>Progres</span>
-              <span className="font-medium">
-                {enrollment.progress}% Selesai
-              </span>
+              <span className="font-medium">{progress}% Selesai</span>
             </div>
-            <Progress value={enrollment.progress} className="h-2" />
+            <Progress value={progress} className="h-2" />
             <div className="text-xs text-muted-foreground mt-1">
-              {enrollment.completedChapters}/{enrollment.totalChapters} bab
-              selesai
+              {completedChapters}/{totalChapters} bab selesai
             </div>
           </div>
         )}
@@ -876,6 +851,113 @@ const CourseCard = ({
         </div>
       </CardContent>
     </Card>
+  );
+};
+
+// Component that filters in-progress courses based on actual progress
+const InProgressCourseList = ({
+  enrollments,
+  viewType,
+  onContinuePayment,
+  onCancelClick,
+}: InProgressFilterProps) => {
+  const router = useRouter();
+
+  const inProgressEnrollments = enrollments.filter((enrollment) => {
+    if (enrollment.status !== "COMPLETED") return false;
+    return true;
+  });
+
+  const courseCards = inProgressEnrollments
+    .map((enrollment) => (
+      <InProgressCourseCard
+        key={enrollment.id}
+        enrollment={enrollment}
+        viewType={viewType}
+        onContinuePayment={onContinuePayment}
+        onCancelClick={onCancelClick}
+      />
+    ))
+    .filter(Boolean); // Remove null components
+
+  if (viewType === "grid") {
+    return (
+      <>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {courseCards}
+        </div>
+        {courseCards.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-12">
+            <Clock className="h-16 w-16 text-gray-400 mb-4" />
+            <h3 className="text-xl font-medium mb-2">
+              Tidak ada kursus yang sedang berlangsung
+            </h3>
+            <p className="text-gray-600 mb-4">
+              Anda belum memulai kursus apapun atau masih menunggu pembayaran.
+            </p>
+            <Button onClick={() => router.push("/courses")}>
+              Jelajahi Kursus
+            </Button>
+          </div>
+        )}
+      </>
+    );
+  }
+
+  return (
+    <>
+      <div className="space-y-4">{courseCards}</div>
+      {courseCards.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-12">
+          <Clock className="h-16 w-16 text-gray-400 mb-4" />
+          <h3 className="text-xl font-medium mb-2">
+            Tidak ada kursus yang sedang berlangsung
+          </h3>
+          <p className="text-gray-600 mb-4">
+            Anda belum memulai kursus apapun atau masih menunggu pembayaran.
+          </p>
+          <Button onClick={() => router.push("/courses")}>
+            Jelajahi Kursus
+          </Button>
+        </div>
+      )}
+    </>
+  );
+};
+
+// Individual course card that checks if it should render for in-progress
+const InProgressCourseCard = ({
+  enrollment,
+  viewType,
+  onContinuePayment,
+  onCancelClick,
+}: EnhancedCourseCardProps) => {
+  const { data: courseProgressData } = useCourseProgress(
+    enrollment.status === "COMPLETED" ? enrollment.courseId : undefined
+  );
+
+  const totalChapters = courseProgressData?.courseProgress?.length || 0;
+  const completedChapters =
+    courseProgressData?.courseProgress?.filter(
+      (ch) => ch.calculation?.isCompleted
+    ).length || 0;
+  const progress =
+    totalChapters > 0
+      ? Math.round((completedChapters / totalChapters) * 100)
+      : 0;
+
+  // Only render if this is actually in progress (0 < progress < 100)
+  if (progress === 0 || progress === 100) {
+    return null;
+  }
+
+  return (
+    <EnhancedCourseCard
+      enrollment={enrollment}
+      viewType={viewType}
+      onContinuePayment={onContinuePayment}
+      onCancelClick={onCancelClick}
+    />
   );
 };
 
