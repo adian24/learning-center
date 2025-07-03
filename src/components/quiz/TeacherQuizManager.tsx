@@ -41,6 +41,7 @@ import QuestionItem from "./questions/QuestionItem";
 import EditQuestionDialog from "./questions/EditQuestionDialog";
 import DeleteQuestionDialog from "./questions/DeleteQuestionDialog";
 import { useChapterQuery } from "@/hooks/use-chapter-query";
+import { useTranslations } from "next-intl";
 
 interface TeacherQuizManagerProps {
   chapterId: string;
@@ -49,6 +50,8 @@ interface TeacherQuizManagerProps {
 const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
   chapterId,
 }) => {
+  const t = useTranslations("teacher_quiz");
+
   const params = useParams();
   const courseId = params.courseId as string;
 
@@ -86,7 +89,7 @@ const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
             <div className="text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
               <p className="mt-2 text-sm text-muted-foreground">
-                Memuat quiz...
+                {t("loading_quiz")}
               </p>
             </div>
           </div>
@@ -101,9 +104,7 @@ const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
         <CardContent className="p-6">
           <Alert>
             <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              Gagal memuat daftar quiz. Silakan coba lagi.
-            </AlertDescription>
+            <AlertDescription>{t("error_loading_quiz")}</AlertDescription>
           </Alert>
         </CardContent>
       </Card>
@@ -118,15 +119,17 @@ const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <BookOpen className="h-5 w-5" />
-              <CardTitle>Quiz Management</CardTitle>
+              <CardTitle>{t("quiz_management")}</CardTitle>
             </div>
             <div className="flex items-center gap-3">
-              <Badge variant="outline">{quizCount}/30 Quiz</Badge>
+              <Badge variant="outline">
+                {quizCount}/30 {t("quiz")}
+              </Badge>
               <Button variant="outline" onClick={() => refetch()}>
                 <RefreshCcw
                   className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
                 />
-                Refresh
+                {t("refresh")}
               </Button>
               {!isFree && (
                 <Button
@@ -135,7 +138,7 @@ const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
                   onClick={openCreateDialog}
                 >
                   <Plus className="h-4 w-4" />
-                  Buat Quiz Baru
+                  {t("create_new_quiz")}
                 </Button>
               )}
             </div>
@@ -145,10 +148,7 @@ const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
           <CardContent className="pt-0">
             <Alert>
               <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                Maksimal 30 quiz per chapter telah tercapai. Hapus quiz yang
-                tidak diperlukan untuk membuat yang baru.
-              </AlertDescription>
+              <AlertDescription>{t("max_quiz_reached")}</AlertDescription>
             </Alert>
           </CardContent>
         )}
@@ -165,11 +165,11 @@ const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
                     <BookOpen className="h-8 w-8 text-muted-foreground" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold">Belum Ada Quiz</h3>
+                    <h3 className="text-lg font-semibold">{t("no_quiz")}</h3>
                     <p className="text-sm text-muted-foreground mb-4">
                       {isFree
-                        ? "Quiz tidak tersedia untuk course gratis."
-                        : "Mulai dengan membuat quiz pertama untuk chapter ini."}
+                        ? t("no_quiz_description_free")
+                        : t("no_quiz_description")}
                     </p>
                     {!isFree && (
                       <Button
@@ -178,7 +178,7 @@ const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
                         onClick={openCreateDialog}
                       >
                         <Plus className="h-4 w-4" />
-                        Buat Quiz Baru
+                        {t("create_new_quiz")}
                       </Button>
                     )}
                   </div>
@@ -195,10 +195,13 @@ const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
                             <h3 className="text-lg font-semibold">
-                              Quiz {index + 1}: {quiz.title}
+                              {t("quiz_title_with_index", {
+                                index: index + 1,
+                                title: quiz.title,
+                              })}
                             </h3>
                             <Badge variant="outline">
-                              {quiz.questions?.length || 0} soal
+                              {quiz.questions?.length || 0} {t("question")}
                             </Badge>
                           </div>
                           {quiz.description && (
@@ -212,23 +215,31 @@ const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
                         <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                           <div className="flex items-center gap-1">
                             <Trophy className="h-4 w-4" />
-                            <span>Passing Score: {quiz.passingScore}%</span>
+                            <span>
+                              {t("passing_score", { score: quiz.passingScore })}
+                            </span>{" "}
                           </div>
                           {quiz.timeLimit ? (
                             <div className="flex items-center gap-1">
                               <Clock className="h-4 w-4" />
-                              <span>Waktu: {quiz.timeLimit} menit</span>
+                              <span>
+                                {t("time_limit", { minutes: quiz.timeLimit })}
+                              </span>
                             </div>
                           ) : (
                             <div className="flex items-center gap-1">
                               <Clock className="h-4 w-4" />
-                              <span>Tanpa batas waktu</span>
+                              <span>{t("no_time_limit")}</span>
                             </div>
                           )}
                           <div className="flex items-center gap-1">
                             <Eye className="h-4 w-4" />
                             <span>
-                              {quiz.questions?.length || 0} pertanyaan
+                              <span>
+                                {t("question_count", {
+                                  count: quiz.questions?.length || 0,
+                                })}
+                              </span>
                             </span>
                           </div>
                         </div>
@@ -236,9 +247,11 @@ const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
                         {/* Quiz Status */}
                         <div className="flex gap-2">
                           {quiz.questions?.length === 0 ? (
-                            <Badge variant="secondary">Belum ada soal</Badge>
+                            <Badge variant="secondary">
+                              {t("no_questions")}
+                            </Badge>
                           ) : (
-                            <Badge variant="default">Siap digunakan</Badge>
+                            <Badge variant="default">{t("ready")}</Badge>
                           )}
                         </div>
 
@@ -252,7 +265,9 @@ const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
                             >
                               <AccordionItem value={`questions-${quiz.id}`}>
                                 <AccordionTrigger className="text-sm font-medium">
-                                  Lihat {quiz.questions.length} Pertanyaan
+                                  {t("view_questions", {
+                                    count: quiz.questions.length,
+                                  })}
                                 </AccordionTrigger>
                                 <AccordionContent>
                                   <div className="space-y-4">
@@ -279,7 +294,7 @@ const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
                           onClick={() => openCreateQuestionDialog(quiz.id)}
                         >
                           <Plus className="h-4 w-4" />
-                          Tambah Soal
+                          {t("add_question")}
                         </Button>
                         <DropdownMenu modal={false}>
                           <DropdownMenuTrigger asChild>
@@ -292,7 +307,7 @@ const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
                               onClick={() => openEditDialog(quiz.id)}
                             >
                               <Edit className="h-4 w-4 mr-2" />
-                              Edit Quiz
+                              {t("edit_quiz")}
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
@@ -300,7 +315,7 @@ const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
                               onClick={() => openDeleteDialog(quiz.id)}
                             >
                               <Trash2 className="h-4 w-4 mr-2" />
-                              Hapus Quiz
+                              {t("delete_quiz")}
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -318,23 +333,13 @@ const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
           <Card>
             <CardContent className="p-4">
               <div className="text-sm text-muted-foreground">
-                <p className="font-medium mb-2">💡 Tips untuk Quiz:</p>
+                <p className="font-medium mb-2">{t("tips_title")}</p>
                 <ul className="space-y-2 text-xs">
-                  <li>
-                    • Setiap quiz berkontribusi terhadap skor chapter siswa
-                  </li>
-                  <li>• Siswa perlu mencapai skor chapter ≥ 65% untuk lulus</li>
-                  <li>
-                    • Quiz dengan pertanyaan yang jelas akan membantu pemahaman
-                    siswa
-                  </li>
-                  <li>
-                    • Gunakan batas waktu yang sesuai dengan tingkat kesulitan
-                  </li>
-                  <li>
-                    • Edit quiz hanya jika diperlukan, karena akan mempengaruhi
-                    siswa
-                  </li>
+                  {((t("tips") as unknown as string[]) || []).map(
+                    (tip: string, index: number) => (
+                      <li key={index}>• {tip}</li>
+                    )
+                  )}
                 </ul>
               </div>
             </CardContent>

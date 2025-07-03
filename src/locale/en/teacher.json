@@ -1,6 +1,7 @@
 {
   "dashboard_teacher": {
     "title": "Teacher Dashboard",
+    "welcome_back": "Welcome back, {name}",
     "total_courses": "Total Courses",
     "total_students": "Total Students",
     "completion_rate": "Completion Rate",
@@ -40,6 +41,7 @@
     "no_quiz": "No quizzes yet",
     "no_quiz_description": "Start by creating the first quiz for this chapter.",
     "question_count": "{{count}} question(s)",
+    "quiz_title_with_index": "Quiz {{index}}: {{title}}",
     "passing_score": "Passing Score: {{score}}%",
     "time_limit": "Time Limit: {{minutes}} minutes",
     "no_time_limit": "No time limit",
@@ -120,7 +122,8 @@
     "error_price_required": "Course price is required",
     "error_level_required": "Please select a course level",
     "toast_success": "Course successfully created!",
-    "toast_error": "An error occurred while creating the course"
+    "toast_error": "An error occurred while creating the course",
+    "toast_create_failed": "Failed to create course. Please try again."
   },
   "teacher_delete_course": {
     "back": "Back",

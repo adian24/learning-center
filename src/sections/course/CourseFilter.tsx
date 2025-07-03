@@ -8,6 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { LayoutGrid, List, Search } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React, { Dispatch, SetStateAction } from "react";
 
 interface CourseFilterProps {
@@ -16,20 +17,25 @@ interface CourseFilterProps {
 }
 
 const CourseFilter = ({ viewType, setViewType }: CourseFilterProps) => {
+  const t = useTranslations("courses");
+  const tCommon = useTranslations("common");
+
   return (
     <div className="flex flex-col sm:flex-row gap-4">
       <div className="relative flex-1">
         <Search className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-        <Input placeholder="Cari course..." className="pl-9" />
+        <Input placeholder={t("search_placeholder")} className="pl-9" />
       </div>
       <Select defaultValue="all">
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Status" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">Semua Status</SelectItem>
-          <SelectItem value="published">Published</SelectItem>
-          <SelectItem value="draft">Draft</SelectItem>
+          <SelectItem value="all">{t("filter_status_all")}</SelectItem>
+          <SelectItem value="published">
+            {t("filter_status_published")}
+          </SelectItem>
+          <SelectItem value="draft">{t("filter_status_draft")}</SelectItem>
         </SelectContent>
       </Select>
       <Select defaultValue="all">
@@ -37,10 +43,12 @@ const CourseFilter = ({ viewType, setViewType }: CourseFilterProps) => {
           <SelectValue placeholder="Level" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">Semua Level</SelectItem>
-          <SelectItem value="BEGINNER">Beginner</SelectItem>
-          <SelectItem value="INTERMEDIATE">Intermediate</SelectItem>
-          <SelectItem value="ADVANCED">Advanced</SelectItem>
+          <SelectItem value="all">{t("filter_level_all")}</SelectItem>
+          <SelectItem value="BEGINNER">{tCommon("level_beginner")}</SelectItem>
+          <SelectItem value="INTERMEDIATE">
+            {tCommon("level_intermediate")}
+          </SelectItem>
+          <SelectItem value="ADVANCED">{tCommon("level_advanced")}</SelectItem>
         </SelectContent>
       </Select>
       <div className="flex gap-2">

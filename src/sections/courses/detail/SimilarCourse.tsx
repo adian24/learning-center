@@ -9,12 +9,15 @@ import { Star } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { AvatarImage, CourseImageCard } from "@/components/media/SecureImage";
 import { AvatarFallback } from "@/components/ui/avatar";
+import { useTranslations } from "next-intl";
 
 interface SimilarCourseProps {
   courseId: string;
 }
 
 const SimilarCourse = ({ courseId }: SimilarCourseProps) => {
+  const t = useTranslations("courses");
+
   const router = useRouter();
   const { data, isLoading } = useSimilarCourses(courseId, 3, true);
   const similarCourses = data?.similarCourses;
@@ -23,13 +26,13 @@ const SimilarCourse = ({ courseId }: SimilarCourseProps) => {
   const getSectionTitle = () => {
     switch (recommendationType) {
       case "SAME_TEACHER":
-        return "Kursus Lainnya dari Instruktur Ini";
+        return t("similar_title_same_teacher");
       case "SAME_CATEGORY":
-        return `Kurus Lainya di ${
-          similarCourses?.[0]?.category?.name || "This Category"
-        }`;
+        return t("similar_title_same_category", {
+          category: similarCourses?.[0]?.category?.name || "",
+        });
       default:
-        return "Mungkin Anda Suka";
+        return t("similar_title_general");
     }
   };
 
@@ -106,7 +109,7 @@ const SimilarCourse = ({ courseId }: SimilarCourseProps) => {
                 <div className="flex items-center gap-1">
                   <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
                   <span className="text-xs">
-                    {course.rating ? course.rating.toFixed(1) : "New"}
+                    {course.rating ? course.rating.toFixed(1) : t("rating_new")}
                   </span>
                 </div>
                 <Badge variant="secondary" className="text-xs">
@@ -119,7 +122,7 @@ const SimilarCourse = ({ courseId }: SimilarCourseProps) => {
                 className="w-full"
                 size="sm"
               >
-                View Course - {formatPrice(course.price)}
+                {t("button_view_course", { price: formatPrice(course.price) })}
               </Button>
             </CardContent>
           </Card>

@@ -14,7 +14,7 @@ import { useTranslations } from "next-intl";
 // import { useCourseQuery } from "@/hooks/use-course-query";
 
 export default function NavBreadcrumb() {
-  const t = useTranslations();
+  const t = useTranslations("common");
   const pathname = usePathname();
 
   // Early return for root path
@@ -27,9 +27,7 @@ export default function NavBreadcrumb() {
   // Only fetch course query if a valid course ID exists
   // const { data: course } = courseId !== null ? useCourseQuery(courseId) : { data: null };
 
-  const breadcrumbs = generateBreadcrumb(pathname).filter(
-    (breadcrumb) => !['en', 'id'].includes(breadcrumb.label.toLowerCase())
-  );
+  const breadcrumbs = generateBreadcrumb(pathname);
 
   let updatedBreadcrumbs = breadcrumbs;
 
@@ -46,32 +44,34 @@ export default function NavBreadcrumb() {
     });
   }
 
+  const tWithFallback = (key: string) => {
+    if (t.has(key)) {
+      return t(key);
+    }
+
+    return key;
+  };
+
   return (
     <Breadcrumb>
       <BreadcrumbList>
-        <BreadcrumbItem>{t("breadcrumb_home")}</BreadcrumbItem>
+        <BreadcrumbItem>{t("home")}</BreadcrumbItem>
         <BreadcrumbSeparator />
-
         {updatedBreadcrumbs.map((breadcrumb, index) => {
-          const isUuidOrCourseId = /^[a-f0-9-]{8,}/.test(breadcrumb.label);
-          const translationKey = `breadcrumb_${breadcrumb.label.toLowerCase()}`;
-          
           return (
             <Fragment key={index}>
               {breadcrumb.isLast ? (
                 <BreadcrumbPage>
-                  {isUuidOrCourseId 
-                    ? breadcrumb.label 
-                    : t(translationKey, { default: breadcrumb.label })
-                  }
+                  {tWithFallback(
+                    `${breadcrumb.label.toLowerCase().replaceAll(/\s/g, "_")}`
+                  )}
                 </BreadcrumbPage>
               ) : (
                 <>
                   <BreadcrumbItem>
-                    {isUuidOrCourseId 
-                      ? breadcrumb.label 
-                      : t(translationKey, { default: breadcrumb.label })
-                    }
+                    {tWithFallback(
+                      `${breadcrumb.label.toLowerCase().replaceAll(/\s/g, "_")}`
+                    )}
                   </BreadcrumbItem>
                   <BreadcrumbSeparator />
                 </>

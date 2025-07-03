@@ -20,6 +20,7 @@ import { formatPrice } from "@/utils/formatPrice";
 import { formatVideoDuration } from "@/utils/formatVideoDuration";
 import { AvatarImage, CourseImageCard } from "@/components/media/SecureImage";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useTranslations } from "next-intl";
 
 // Updated Course type to include company info
 type StudentCourseProps = {
@@ -49,6 +50,8 @@ type StudentCourseProps = {
 };
 
 const CourseCard = ({ course }: { course: StudentCourseProps }) => {
+  const t = useTranslations("courses");
+
   return (
     <Card key={course.id} className="flex flex-col h-full">
       <div className="relative">
@@ -62,7 +65,7 @@ const CourseCard = ({ course }: { course: StudentCourseProps }) => {
           <div className="absolute top-2 right-2">
             <Badge className="bg-green-100 text-green-800 border border-green-300 flex items-center gap-1">
               <CheckCircle className="h-3 w-3" />
-              <span>Enrolled</span>
+              <span>{t("enrolled")}</span>
             </Badge>
           </div>
         )}
@@ -84,11 +87,11 @@ const CourseCard = ({ course }: { course: StudentCourseProps }) => {
         <div className="flex justify-between text-xs text-gray-500 mb-3">
           <div className="flex items-center">
             <Users className="h-4 w-4 mr-1" />
-            {course.enrolledCount} students
+            {t("students", { count: course.enrolledCount ?? 0 })}
           </div>
           <div className="flex items-center">
             <BookOpen className="h-4 w-4 mr-1" />
-            {course.chapterCount} chapters
+            {t("count_chapters", { count: course.chapterCount ?? 0 })}
           </div>
         </div>
 
@@ -96,12 +99,12 @@ const CourseCard = ({ course }: { course: StudentCourseProps }) => {
           <div className="flex items-center">
             <Clock className="h-4 w-4 mr-1" />
             {course.duration
-              ? `${formatVideoDuration(course.duration)}`
-              : "N/A"}
+              ? formatVideoDuration(course.duration)
+              : t("duration_na")}
           </div>
           <div className="flex items-center">
             <Star className="h-4 w-4 mr-1 fill-yellow-400 text-yellow-400" />
-            {course.rating ? course.rating.toFixed(1) : "New"}
+            {course.rating ? course.rating.toFixed(1) : t("rating_new")}
             {course.reviewCount > 0 && ` (${course.reviewCount})`}
           </div>
         </div>
@@ -133,10 +136,12 @@ const CourseCard = ({ course }: { course: StudentCourseProps }) => {
             )}
           </div>
           <div className="text-xs">
-            By {course.teacherName || "Instructor"}
+            {t("by_instructor", { name: course.teacherName || "Instructor" })}
             {course.teacherCompany && (
               <div className="flex items-center gap-1 mt-1 text-muted-foreground">
-                <span>from {course.teacherCompany.name}</span>
+                <span>
+                  {t("from_company", { company: course.teacherCompany.name })}
+                </span>
               </div>
             )}
           </div>

@@ -30,6 +30,7 @@
     "not_found_subtitle": "Please check the course link you are trying to access.",
     "level_beginner": "Beginner",
     "level_intermediate": "Intermediate",
-    "level_advanced": "Advanced"
+    "level_advanced": "Advanced",
+    "create": "Create"
   }
 }

@@ -40,22 +40,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useTranslations } from "next-intl";
 
-const createCourse = async (data: CourseFormValues) => {
-  const response = await fetch("/api/teacher/courses", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to create course");
-  }
-
-  return response.json();
-};
-
 const CreateCourse = () => {
   const t = useTranslations("teacher_form_course");
   const tCommon = useTranslations("common");
@@ -85,16 +69,32 @@ const CreateCourse = () => {
   const errors = form.formState.errors;
   const hasErrors = Object.keys(errors).length > 0;
 
+  const createCourse = async (data: CourseFormValues) => {
+    const response = await fetch("/api/teacher/courses", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error(t("toast_create_failed"));
+    }
+
+    return response.json();
+  };
+
   const { mutate, isPending } = useMutation({
     mutationFn: createCourse,
     onSuccess: () => {
-      toast.success("Course successfully created!");
+      toast.success(t("toast_success"));
       router.push("/teacher/courses");
       router.refresh();
     },
     onError: (error: any) => {
       console.error("Course creation error:", error);
-      toast.error("An error occurred while creating the course");
+      toast.error(t("toast_error"));
     },
   });
 
@@ -103,9 +103,9 @@ const CreateCourse = () => {
     if (!data.imageUrl || data.imageUrl.trim() === "") {
       form.setError("imageUrl", {
         type: "required",
-        message: "Please upload a course thumbnail",
+        message: t("error_image_required"),
       });
-      toast.error("Please upload a course thumbnail");
+      toast.error(t("error_image_required"));
       return;
     }
 
@@ -113,7 +113,7 @@ const CreateCourse = () => {
     if (!data.title.trim()) {
       form.setError("title", {
         type: "required",
-        message: "Course title is required",
+        message: t("error_title_required"),
       });
       return;
     }
@@ -121,7 +121,7 @@ const CreateCourse = () => {
     if (!data.description.trim()) {
       form.setError("description", {
         type: "required",
-        message: "Course description is required",
+        message: t("error_description_required"),
       });
       return;
     }
@@ -129,7 +129,7 @@ const CreateCourse = () => {
     if (!data.categoryId) {
       form.setError("categoryId", {
         type: "required",
-        message: "Please select a category",
+        message: t("error_category_required"),
       });
       return;
     }
@@ -140,7 +140,7 @@ const CreateCourse = () => {
 
   const onInvalid = (errors: any) => {
     console.log("Form validation errors:", errors);
-    toast.error("Please fix the form errors before submitting");
+    toast.error(t("alert_fix_errors"));
   };
 
   return (
@@ -401,7 +401,7 @@ const CreateCourse = () => {
                           <p className="font-medium">{t("alert_fix_errors")}</p>
                           <ul className="list-disc list-inside text-sm space-y-1">
                             {errors.imageUrl && (
-                              <li>{t("error_upload_thumbnail")}</li>
+                              <li>{t("error_image_required")}</li>
                             )}
                             {errors.title && <li>{errors.title.message}</li>}
                             {errors.description && (

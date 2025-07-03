@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -15,28 +17,30 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { BookOpen, Calendar, Users, ShieldCheck } from "lucide-react";
+import { BookOpen, Calendar, Users } from "lucide-react";
 import { formatPrice } from "@/utils/formatPrice";
 import { TeacherCourse } from "@/hooks/use-teacher-courses-query";
+import { useTranslations } from "next-intl";
 
 interface CourseListProps {
   courses: TeacherCourse[];
 }
 
 const CourseList: React.FC<CourseListProps> = ({ courses }) => {
+  const t = useTranslations("courses");
+
   return (
     <Card>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[300px]">Course</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Level</TableHead>
-            <TableHead className="text-center">Siswa</TableHead>
-            <TableHead className="text-center">Chapter</TableHead>
-            <TableHead>Harga</TableHead>
-            <TableHead>Terakhir Update</TableHead>
-            {/* <TableHead></TableHead> */}
+            <TableHead className="w-[300px]">{t("table_course")}</TableHead>
+            <TableHead>{t("table_status")}</TableHead>
+            <TableHead>{t("table_level")}</TableHead>
+            <TableHead className="text-center">{t("table_students")}</TableHead>
+            <TableHead className="text-center">{t("table_chapters")}</TableHead>
+            <TableHead>{t("table_price")}</TableHead>
+            <TableHead>{t("table_last_updated")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -54,7 +58,9 @@ const CourseList: React.FC<CourseListProps> = ({ courses }) => {
                 </div>
               </TableCell>
               <TableCell>
-                <Badge className="bg-green-100 text-green-800">Published</Badge>
+                <Badge className="bg-green-100 text-green-800">
+                  {t("status_published")}
+                </Badge>
               </TableCell>
               <TableCell>
                 <Badge variant="secondary">{course.level}</Badge>
@@ -69,7 +75,9 @@ const CourseList: React.FC<CourseListProps> = ({ courses }) => {
                       </div>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>{course.enrolledCount} siswa terdaftar</p>
+                      <p>
+                        {t("tooltip_students", { count: course.enrolledCount })}
+                      </p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -84,7 +92,11 @@ const CourseList: React.FC<CourseListProps> = ({ courses }) => {
                       </div>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>{course.chapters.length} chapter</p>
+                      <p>
+                        {t("tooltip_chapters", {
+                          count: course.chapters.length,
+                        })}
+                      </p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -100,9 +112,6 @@ const CourseList: React.FC<CourseListProps> = ({ courses }) => {
                   {new Date().toLocaleDateString()}
                 </div>
               </TableCell>
-              {/* <TableCell>
-                <CourseActions course={course} />
-              </TableCell> */}
             </TableRow>
           ))}
         </TableBody>

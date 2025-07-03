@@ -20,11 +20,14 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useUserRole } from "@/hooks/use-user-role";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AvatarImage } from "@/components/media/SecureImage";
+import { useTranslations } from "next-intl";
 
 // Create a client
 const queryClient = new QueryClient();
 
 function TeacherDashboardContent() {
+  const t = useTranslations("dashboard_teacher");
+
   const { profile } = useUserRole();
   const { stats, isLoading: statsLoading } = useTeacherStats();
   const { courses, isLoading: coursesLoading } = useTeacherCourses();
@@ -48,11 +51,9 @@ function TeacherDashboardContent() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                Teacher Dashboard
-              </h1>
+              <h1 className="text-2xl font-bold text-gray-900">{t("title")}</h1>
               <p className="text-gray-600">
-                Welcome back, {profile?.user?.name}
+                {t("welcome_back", { name: profile?.user?.name })}
               </p>
 
               {/* Company Badge */}
@@ -90,7 +91,7 @@ function TeacherDashboardContent() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">
-                Total Courses
+                {t("total_courses")}
               </CardTitle>
               <BookOpen className="w-4 h-4 text-gray-500" />
             </CardHeader>
@@ -108,7 +109,7 @@ function TeacherDashboardContent() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">
-                Total Students
+                {t("total_students")}
               </CardTitle>
               <Users className="w-4 h-4 text-gray-500" />
             </CardHeader>
@@ -126,7 +127,7 @@ function TeacherDashboardContent() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">
-                Tingkat Penyelesaian
+                {t("completion_rate")}
               </CardTitle>
               <GraduationCap className="w-4 h-4 text-gray-500" />
             </CardHeader>
@@ -144,7 +145,7 @@ function TeacherDashboardContent() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">
-                Total Pendapatan
+                {t("total_revenue")}
               </CardTitle>
               <BarChart className="w-4 h-4 text-gray-500" />
             </CardHeader>
@@ -165,7 +166,7 @@ function TeacherDashboardContent() {
           {/* Course Management */}
           <Card className="lg:col-span-2">
             <CardHeader>
-              <CardTitle>My Courses</CardTitle>
+              <CardTitle>{t("my_courses")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -186,7 +187,7 @@ function TeacherDashboardContent() {
                     ))
                 ) : courses.length === 0 ? (
                   <div className="text-center py-6 text-gray-500">
-                    No courses found. Create your first course!
+                    {t("no_courses")}
                   </div>
                 ) : (
                   courses.map((course) => (
@@ -197,7 +198,8 @@ function TeacherDashboardContent() {
                       <div>
                         <h3 className="font-medium">{course.title}</h3>
                         <p className="text-sm text-gray-500">
-                          {course.studentsEnrolled} students enrolled
+                          {" "}
+                          {course.studentsEnrolled} {t("students_enrolled")}
                         </p>
                       </div>
                       <span
@@ -219,17 +221,17 @@ function TeacherDashboardContent() {
           {/* Quick Actions */}
           <Card>
             <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
+              <CardTitle>{t("quick_actions")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <ButtonNavigation
-                  text="Buat Course Baru"
+                  text={t("create_new_course")}
                   className="w-full text-white bg-blue-600 rounded-lg hover:bg-blue-700"
                   url="/teacher/courses/create"
                 />
                 <ButtonNavigation
-                  text="Kelola Students"
+                  text={t("manage_students")}
                   className="w-full text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100"
                   url="/teacher/students"
                 />
