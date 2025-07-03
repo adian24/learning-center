@@ -38,10 +38,18 @@ const DialogDeleteVideo = () => {
       }
 
       const chapterData = await getChapterResponse.json();
+      
+      // Check if chapter has a video URL
+      if (!chapterData.videoUrl) {
+        throw new Error("Chapter has no video to delete");
+      }
+      
+      console.log("Video URL to delete:", chapterData.videoUrl);
       const videoKey = extractVideoPath(chapterData.videoUrl);
+      console.log("Extracted video key:", videoKey);
 
       if (!videoKey) {
-        throw new Error("No video key found");
+        throw new Error(`Unable to extract video path from URL: ${chapterData.videoUrl}`);
       }
 
       // 2. Delete the file from S3
@@ -87,7 +95,9 @@ const DialogDeleteVideo = () => {
       onClose();
     } catch (error) {
       console.error("Delete error:", error);
-      toast.error("An error occurred. Please try again.");
+      
+      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+      toast.error(errorMessage);
     } finally {
       setIsDeleting(false);
     }

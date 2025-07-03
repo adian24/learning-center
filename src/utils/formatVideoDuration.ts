@@ -43,12 +43,35 @@ export async function getVideoDuration(file: File) {
 
 export function extractVideoPath(url: string): string | null {
   try {
+    // If it's already a key (not a full URL), return it directly
+    if (url.startsWith('videos/')) {
+      return url;
+    }
+    
+    // Try to parse as URL
     const parsedUrl = new URL(url);
     const pathname = parsedUrl.pathname;
 
+    // Handle different URL patterns
     const match = pathname.match(/videos\/.+$/);
-    return match ? match[0] : null;
+    if (match) {
+      return match[0];
+    }
+
+    // If no match found, try to extract from query parameters
+    const searchParams = parsedUrl.searchParams;
+    const key = searchParams.get('key');
+    if (key && key.startsWith('videos/')) {
+      return key;
+    }
+
+    return null;
   } catch (error) {
+    // If URL parsing fails, check if it's already a valid key
+    if (typeof url === 'string' && url.startsWith('videos/')) {
+      return url;
+    }
+    
     console.error("Invalid URL:", error);
     return null;
   }
