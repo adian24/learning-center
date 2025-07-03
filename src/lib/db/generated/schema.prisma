@@ -122,17 +122,50 @@ model StudentProfile {
 }
 
 model TeacherProfile {
-  id        String   @id @default(cuid()) @map("_id")
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String   @unique
+  id         String   @id @default(cuid()) @map("_id")
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String   @unique
   // Teacher specific fields
-  bio       String?
-  expertise String[]
-  courses   Course[]
-  companyId String?
-  company   Company? @relation(fields: [companyId], references: [id])
+  bio        String?
+  expertise  String[]
+  courses    Course[]
+  profileUrl String?
+  companyId  String?
+  company    Company? @relation(fields: [companyId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Job {
+  id          String   @id @default(uuid()) @map("_id")
+  title       String
+  location    String
+  description String   @db.Text
+  level       JobLevel
+  salary      Int
+  category    String
+
+  // Company relationship
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  // Job status
+  isActive Boolean @default(true)
+
+  // Additional useful fields
+  requirements    String? @db.Text // Job requirements (optional)
+  benefits        String? @db.Text // Job benefits (optional)
+  employmentType  String? // e.g., "Full-time", "Part-time", "Contract", "Internship"
+  experienceLevel String? // e.g., "Entry Level", "Mid Level", "Senior Level"
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([companyId])
+  @@index([level])
+  @@index([category])
+  @@index([location])
+  @@index([isActive])
 }
 
 model Company {
@@ -148,6 +181,7 @@ model Company {
   isVerified Boolean @default(true) // Status verifikasi company
 
   teachers TeacherProfile[]
+  jobs     Job[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -469,4 +503,10 @@ enum ReviewStatus {
   PUBLISHED
   REJECTED
   HIDDEN
+}
+
+enum JobLevel {
+  PEMULA
+  MENENGAH
+  LANJUT
 }

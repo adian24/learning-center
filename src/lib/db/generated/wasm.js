@@ -203,6 +203,24 @@ exports.Prisma.TeacherProfileScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.JobScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  location: 'location',
+  description: 'description',
+  level: 'level',
+  salary: 'salary',
+  category: 'category',
+  companyId: 'companyId',
+  isActive: 'isActive',
+  requirements: 'requirements',
+  benefits: 'benefits',
+  employmentType: 'employmentType',
+  experienceLevel: 'experienceLevel',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.CompanyScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -381,6 +399,12 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+exports.JobLevel = exports.$Enums.JobLevel = {
+  PEMULA: 'PEMULA',
+  MENENGAH: 'MENENGAH',
+  LANJUT: 'LANJUT'
+};
+
 exports.Level = exports.$Enums.Level = {
   BEGINNER: 'BEGINNER',
   INTERMEDIATE: 'INTERMEDIATE',
@@ -418,6 +442,7 @@ exports.Prisma.ModelName = {
   Certificate: 'Certificate',
   StudentProfile: 'StudentProfile',
   TeacherProfile: 'TeacherProfile',
+  Job: 'Job',
   Company: 'Company',
   Course: 'Course',
   LearningObjective: 'LearningObjective',

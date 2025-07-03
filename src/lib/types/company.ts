@@ -1,4 +1,5 @@
 import { TeacherProfile } from "./user";
+import { Job } from "./job";
 
 // Company types based on Prisma schema
 export interface Company {
@@ -16,6 +17,15 @@ export interface Company {
 
 export interface CompanyWithTeachers extends Company {
   teachers: TeacherProfile[];
+}
+
+export interface CompanyWithJobs extends Company {
+  jobs: Job[];
+}
+
+export interface CompanyWithTeachersAndJobs extends Company {
+  teachers: TeacherProfile[];
+  jobs: Job[];
 }
 
 export interface TeacherProfileWithCompany {
