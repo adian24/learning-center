@@ -5,13 +5,15 @@ import db from "@/lib/db/db";
 // GET /api/companies/[companyId] - Get company by ID
 export async function GET(
   request: Request,
-  { params }: { params: { companyId: string } }
+  { params }: { params: Promise<{ companyId: string }> }
 ) {
   try {
+    const companyId = (await params).companyId;
+
     const { searchParams } = new URL(request.url);
     const includeJobs = searchParams.get("includeJobs") === "true";
     const includeTeachers = searchParams.get("includeTeachers") === "true";
-    
+
     // Job filtering parameters
     const jobLevel = searchParams.get("jobLevel");
     const jobCategory = searchParams.get("jobCategory");
@@ -23,7 +25,8 @@ export async function GET(
     const jobFilters: any = {};
     if (jobLevel) jobFilters.level = jobLevel;
     if (jobCategory) jobFilters.category = jobCategory;
-    if (jobLocation) jobFilters.location = { contains: jobLocation, mode: "insensitive" };
+    if (jobLocation)
+      jobFilters.location = { contains: jobLocation, mode: "insensitive" };
     if (jobActive !== null) jobFilters.isActive = jobActive === "true";
     if (jobSearch) {
       jobFilters.OR = [
@@ -35,7 +38,7 @@ export async function GET(
     // Build include object
     const includeQuery: any = {
       _count: {
-        select: { 
+        select: {
           teachers: true,
           jobs: true,
         },
@@ -66,15 +69,12 @@ export async function GET(
     }
 
     const company = await db.company.findUnique({
-      where: { id: params.companyId },
+      where: { id: companyId },
       include: includeQuery,
     });
 
     if (!company) {
-      return NextResponse.json(
-        { error: "Company not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Company not found" }, { status: 404 });
     }
 
     return NextResponse.json(company);
@@ -90,9 +90,11 @@ export async function GET(
 // PUT /api/companies/[companyId] - Update company
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { companyId: string } }
+  { params }: { params: Promise<{ companyId: string }> }
 ) {
   try {
+    const companyId = (await params).companyId;
+
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -101,7 +103,7 @@ export async function PUT(
     // Check if user has permission to update this company
     // You might want to add additional authorization logic here
     const existingCompany = await db.company.findUnique({
-      where: { id: params.companyId },
+      where: { id: companyId },
       include: {
         teachers: {
           where: { userId: session.user.id },
@@ -110,10 +112,7 @@ export async function PUT(
     });
 
     if (!existingCompany) {
-      return NextResponse.json(
-        { error: "Company not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Company not found" }, { status: 404 });
     }
 
     // Optional: Check if user is a teacher of this company
@@ -127,11 +126,11 @@ export async function PUT(
     const body = await request.json();
 
     const company = await db.company.update({
-      where: { id: params.companyId },
+      where: { id: companyId },
       data: body,
       include: {
         _count: {
-          select: { 
+          select: {
             teachers: true,
             jobs: true,
           },
@@ -152,9 +151,11 @@ export async function PUT(
 // DELETE /api/companies/[companyId] - Delete company
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { companyId: string } }
+  { params }: { params: Promise<{ companyId: string }> }
 ) {
   try {
+    const companyId = (await params).companyId;
+
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -162,7 +163,7 @@ export async function DELETE(
 
     // Check if company exists
     const existingCompany = await db.company.findUnique({
-      where: { id: params.companyId },
+      where: { id: companyId },
       include: {
         teachers: {
           where: { userId: session.user.id },
@@ -177,10 +178,7 @@ export async function DELETE(
     });
 
     if (!existingCompany) {
-      return NextResponse.json(
-        { error: "Company not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Company not found" }, { status: 404 });
     }
 
     // Optional: Prevent deletion if company has teachers or jobs
@@ -192,7 +190,7 @@ export async function DELETE(
     // }
 
     await db.company.delete({
-      where: { id: params.companyId },
+      where: { id: companyId },
     });
 
     return NextResponse.json({ message: "Company deleted successfully" });
