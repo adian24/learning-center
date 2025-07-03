@@ -32,7 +32,7 @@ export default function TeacherCourses() {
   const totalPages = data?.meta.totalPages || 1;
   const paginationItems = generatePaginationItems(page, totalPages);
 
-  const hasCourses = courses.length ?? 0 > 0;
+  const hasCourses = courses.length > 0;
 
   // Error state
   if (error) {
@@ -105,13 +105,8 @@ export default function TeacherCourses() {
           </Fragment>
         ) : (
           <Fragment>
-            {data?.courses?.length ??
-              (0 === 0 && (
-                <Fragment>
-                  {/* Empty State Card */}
-                  <TeacherEmptyCourse />
-                </Fragment>
-              ))}
+            {/* Empty State Card */}
+            <TeacherEmptyCourse />
           </Fragment>
         )}
       </div>
