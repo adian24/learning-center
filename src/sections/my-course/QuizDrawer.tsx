@@ -494,10 +494,17 @@ const QuizDrawer: React.FC<QuizDrawerProps> = ({ isOpen, onClose, quizId }) => {
               {currentQuestionIndex === totalQuestions - 1 ? (
                 <Button
                   onClick={() => setShowConfirmSubmit(true)}
-                  disabled={answeredQuestions < totalQuestions}
+                  disabled={answeredQuestions < totalQuestions || submitQuizAttempt.isPending}
                   className="flex-1"
                 >
-                  Submit Kuis
+                  {submitQuizAttempt.isPending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Mengirim...
+                    </>
+                  ) : (
+                    "Submit Kuis"
+                  )}
                 </Button>
               ) : (
                 <Button onClick={handleNext} className="flex-1">
@@ -510,7 +517,13 @@ const QuizDrawer: React.FC<QuizDrawerProps> = ({ isOpen, onClose, quizId }) => {
         )}
       </DrawerContent>
 
-      <Dialog open={showConfirmSubmit} onOpenChange={setShowConfirmSubmit}>
+      <Dialog open={showConfirmSubmit} onOpenChange={(open) => {
+        // Prevent closing dialog during submission
+        if (!open && submitQuizAttempt.isPending) {
+          return;
+        }
+        setShowConfirmSubmit(open);
+      }}>
         <DialogContent className="sm:max-w-[750px]">
           <DialogHeader>
             <DialogTitle>Konfirmasi Submit</DialogTitle>
@@ -523,6 +536,7 @@ const QuizDrawer: React.FC<QuizDrawerProps> = ({ isOpen, onClose, quizId }) => {
             <Button
               variant="outline"
               onClick={() => setShowConfirmSubmit(false)}
+              disabled={submitQuizAttempt.isPending}
             >
               Batal
             </Button>
