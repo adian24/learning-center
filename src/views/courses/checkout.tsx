@@ -45,6 +45,7 @@ import {
 } from "lucide-react";
 import { EWalletMethodSelector } from "@/sections/courses/detail/checkout/EWalletMethodSelector";
 import { CourseImageCard } from "@/components/media/SecureImage";
+import { useTranslations } from "next-intl";
 
 // Payment method types
 const paymentMethods = [
@@ -96,6 +97,8 @@ export default function CustomCheckout({
   user,
   studentProfileId,
 }: CustomCheckoutProps) {
+  const t = useTranslations("checkout");
+
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -131,7 +134,7 @@ export default function CustomCheckout({
   // Submit handler to initiate payment
   const onSubmit = async (values: CheckoutFormValues) => {
     if (!selectedMethod) {
-      toast.error("Please select a payment method");
+      toast.error(t("payment_method_required"));
       return;
     }
 
@@ -197,7 +200,7 @@ export default function CustomCheckout({
       <div className="md:col-span-2 space-y-6">
         <Card className="p-6">
           <h2 className="text-xl font-semibold mb-4">
-            Pilih Metode Pembayaran
+            {t("payment_method_required")}
           </h2>
 
           <Form {...form}>
@@ -209,9 +212,9 @@ export default function CustomCheckout({
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nama Lengkap</FormLabel>
+                      <FormLabel>{t("fullname")}</FormLabel>
                       <FormControl>
-                        <Input placeholder="Nama lengkap Anda" {...field} />
+                        <Input placeholder={t("name_placeholder")} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -223,9 +226,12 @@ export default function CustomCheckout({
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>{t("email_label")}</FormLabel>
                       <FormControl>
-                        <Input placeholder="email@example.com" {...field} />
+                        <Input
+                          placeholder={t("email_placeholder")}
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -237,9 +243,12 @@ export default function CustomCheckout({
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nomor Telepon (Opsional)</FormLabel>
+                      <FormLabel>{t("phone_label")}</FormLabel>
                       <FormControl>
-                        <Input placeholder="08xxxxxxxxxx" {...field} />
+                        <Input
+                          placeholder={t("phone_placeholder")}
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -251,7 +260,9 @@ export default function CustomCheckout({
 
               {/* Payment Method Categories */}
               <div className="space-y-4">
-                <h3 className="text-lg font-medium">Metode Pembayaran</h3>
+                <h3 className="text-lg font-medium">
+                  {t("payment_method_label")}
+                </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   {paymentMethods.map((category) => {
@@ -273,7 +284,7 @@ export default function CustomCheckout({
                             {category.id === "bank_transfer" ? (
                               <div className="flex items-center gap-1">
                                 <p className="text-xs text-muted-foreground mr-1">
-                                  Virtual Account:
+                                  {t("payment_va")}
                                 </p>
                               </div>
                             ) : (
@@ -332,10 +343,10 @@ export default function CustomCheckout({
                           </div>
                           <div>
                             <span className="font-medium text-sm">
-                              Pembayaran Kartu Kredit
+                              {t("payment_method_cc")}
                             </span>
                             <p className="text-xs text-muted-foreground">
-                              Visa, Mastercard, JCB, dan lainnya
+                              {t("payment_method")}
                             </p>
                           </div>
                         </div>
@@ -350,7 +361,7 @@ export default function CustomCheckout({
 
                 return (
                   <div className="space-y-4 animate-in fade-in-50 duration-300">
-                    <h4 className="font-medium">Pilih Channel Pembayaran</h4>
+                    <h4 className="font-medium">{t("payment_channels")}</h4>
 
                     <div className="space-y-2">
                       {selectedPaymentCategory.options.map((method) => (
@@ -406,7 +417,7 @@ export default function CustomCheckout({
                   {isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Memproses...
+                      {t("submitting")}
                     </>
                   ) : (
                     "Lanjutkan Pembayaran"
@@ -414,8 +425,7 @@ export default function CustomCheckout({
                 </Button>
 
                 <p className="text-center text-xs text-muted-foreground mt-3">
-                  Dengan melanjutkan, Anda menyetujui Syarat dan Ketentuan serta
-                  Kebijakan Privasi kami.
+                  {t("terms_notice")}
                 </p>
               </div>
             </form>
@@ -429,10 +439,11 @@ export default function CustomCheckout({
               <CheckCircle className="h-5 w-5 text-green-600" />
             </div>
             <div>
-              <h3 className="font-medium text-sm mb-1">Pembayaran Aman</h3>
+              <h3 className="font-medium text-sm mb-1">
+                {t("secure_payment")}
+              </h3>
               <p className="text-xs text-muted-foreground">
-                Semua transaksi diproses melalui gateway pembayaran terpercaya.
-                Data kartu kredit Anda tidak disimpan oleh kami.
+                {t("secure_payment_desc")}
               </p>
             </div>
           </div>
@@ -442,7 +453,7 @@ export default function CustomCheckout({
       {/* Course Summary - Right Side (1/3 on medium screens) */}
       <div className="space-y-6">
         <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">Ringkasan Pembelian</h2>
+          <h2 className="text-xl font-semibold mb-4">{t("payment_summary")}</h2>
 
           <div className="relative aspect-video rounded-md overflow-hidden mb-4">
             {course?.imageUrl ? (
@@ -476,38 +487,38 @@ export default function CustomCheckout({
 
           <div className="space-y-2">
             <div className="flex justify-between">
-              <span>Harga kursus</span>
+              <span>{t("course_price")}</span>
               <span>{formatPrice(course?.price || 0)}</span>
             </div>
 
             <Separator className="my-3" />
 
             <div className="flex justify-between font-bold">
-              <span>Total</span>
+              <span>{t("total")}</span>
               <span>{formatPrice(course?.price || 0)}</span>
             </div>
           </div>
 
           <div className="mt-6 space-y-3">
-            <h3 className="text-sm font-medium">
-              Apa yang akan Anda dapatkan:
-            </h3>
+            <h3 className="text-sm font-medium">{t("what_you_get")}</h3>
             <ul className="space-y-2">
               <li className="flex items-start gap-2">
                 <CheckCircle className="h-4 w-4 text-green-500 shrink-0 mt-0.5" />
-                <span>Akses penuh seumur hidup</span>
+                <span>{t("full_lifetime_access")}</span>
               </li>
               <li className="flex items-start gap-2">
                 <CheckCircle className="h-4 w-4 text-green-500 shrink-0 mt-0.5" />
-                <span>Akses di ponsel dan desktop</span>
+                <span>{t("mobile_desktop_access")}</span>
               </li>
               <li className="flex items-start gap-2">
                 <CheckCircle className="h-4 w-4 text-green-500 shrink-0 mt-0.5" />
-                <span>Sertifikat penyelesaian</span>
+                <span>{t("certificate")}</span>
               </li>
               <li className="flex items-start gap-2">
                 <CheckCircle className="h-4 w-4 text-green-500 shrink-0 mt-0.5" />
-                <span>{course?.chapters?.length || 0} modul pembelajaran</span>
+                <span>
+                  {course?.chapters?.length || 0} {t("modules_count")}
+                </span>
               </li>
             </ul>
           </div>
@@ -515,9 +526,9 @@ export default function CustomCheckout({
 
         <div className="text-center text-sm text-muted-foreground">
           <p>
-            Punya pertanyaan?{" "}
+            {t("have_questions")}{" "}
             <Link href="/contact" className="underline">
-              Kontak support
+              {t("contact_support")}
             </Link>
           </p>
         </div>

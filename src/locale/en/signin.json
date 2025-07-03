@@ -1,0 +1,25 @@
+{
+  "signin": {
+    "hero_title": "Unlock Your Potential with Online Learning",
+    "hero_subtitle": "Explore courses designed to help you grow, reach your goals, and transform your future!",
+    "quote_text": "Education is the most powerful weapon which you can use to change the world.",
+    "quote_author": "Nelson Mandela",
+    "quote_desc": "Former President of South Africa",
+    "clients_text": "participants and instructors have joined. Now it’s your turn!",
+    "clients_number": "5000",
+    "welcome_title": "Welcome Back",
+    "subtitle": "Sign in with your Google account",
+    "google": "Sign in with Google",
+    "email": "Email",
+    "password": "Password",
+    "forgot_password": "Forgot password?",
+    "submit": "Sign In",
+    "loading": "Please wait...",
+    "no_account": "Don't have an account?",
+    "error_wrong_credentials": "Incorrect email or password",
+    "error_generic": "An error occurred while signing in. Please try again.",
+    "error_google_linked": "This email is already registered via Google. Please sign in with Google.",
+    "error_email_linked": "This email is already registered with email/password. Please sign in using your email and password.",
+    "error_google_failed": "Google login failed. Please try again."
+  }
+}

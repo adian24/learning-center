@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface ChapterFormValues {
   title: string;
@@ -33,6 +34,8 @@ interface ChapterFormValues {
 }
 
 const DialogCreateChapter = () => {
+  const t = useTranslations("chapters");
+
   const queryClient = useQueryClient();
 
   const { isOpen, chapterToCreate, isCreating, onClose, setIsCreating, reset } =
@@ -52,7 +55,7 @@ const DialogCreateChapter = () => {
       const response = await fetch(
         `/api/teacher/courses/${chapterToCreate?.courseId}/chapters`
       );
-      if (!response.ok) throw new Error("Failed to fetch chapters");
+      if (!response.ok) throw new Error(t("fetch_error"));
       return response.json();
     },
   });
@@ -72,20 +75,20 @@ const DialogCreateChapter = () => {
       );
 
       if (!response.ok) {
-        throw new Error("Failed to create chapter");
+        throw new Error(t("toast_create_error"));
       }
 
       return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["chapters"] });
-      toast.success("Chapter created successfully");
+      toast.success(t("toast_create_success"));
       reset();
       form.reset();
       setIsCreating(false);
     },
     onError: () => {
-      toast.error("Failed to create chapter");
+      toast.error(t("toast_create_error"));
       setIsCreating(false);
     },
   });
@@ -102,9 +105,11 @@ const DialogCreateChapter = () => {
     <Dialog open={isOpen} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogContent className="sm:max-w-[750px]">
         <DialogHeader>
-          <DialogTitle>Buat Chapter Baru</DialogTitle>
+          <DialogTitle>{t("create_chapter_title")}</DialogTitle>
           <DialogDescription>
-            Buat Chapter untuk Course <b>{chapterToCreate?.courseTitle}</b>
+            {t("create_chapter_description", {
+              title: chapterToCreate?.courseTitle ?? "",
+            })}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -112,14 +117,14 @@ const DialogCreateChapter = () => {
             <FormField
               control={form.control}
               name="title"
-              rules={{ required: "Title wajib diisi" }}
+              rules={{ required: t("form_title_required") }}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Title</FormLabel>
+                  <FormLabel>{t("form_title_label")}</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="Masukan Title"
+                      placeholder={t("form_title_placeholder")}
                       startContent={`Chapter ${
                         chapters?.metadata?.totalChapters + 1
                       } : `}
@@ -135,10 +140,10 @@ const DialogCreateChapter = () => {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>{t("form_description_label")}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Tulis deskripsi dari chapter ini"
+                      placeholder={t("form_description_placeholder")}
                       {...field}
                     />
                   </FormControl>
@@ -153,7 +158,7 @@ const DialogCreateChapter = () => {
               render={({ field }) => (
                 <FormItem className="flex items-center justify-between rounded-lg border p-3">
                   <div className="space-y-0.5">
-                    <FormLabel>Chapter Gratis</FormLabel>
+                    <FormLabel>{t("form_is_free_label")}</FormLabel>
                   </div>
                   <FormControl>
                     <Switch
@@ -167,7 +172,7 @@ const DialogCreateChapter = () => {
 
             <div className="flex justify-end gap-2">
               <Button type="button" variant="outline" onClick={onClose}>
-                Batal
+                {t("cancel")}
               </Button>
               <Button
                 type="submit"
@@ -177,10 +182,10 @@ const DialogCreateChapter = () => {
                 {isCreating ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Membuat...
+                    {t("creating")}
                   </>
                 ) : (
-                  "Buat Chapter"
+                  <>{t("create")}</>
                 )}
               </Button>
             </div>

@@ -38,6 +38,7 @@ import {
 } from "@/components/ui/select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useTranslations } from "next-intl";
 
 const createCourse = async (data: CourseFormValues) => {
   const response = await fetch("/api/teacher/courses", {
@@ -56,6 +57,9 @@ const createCourse = async (data: CourseFormValues) => {
 };
 
 const CreateCourse = () => {
+  const t = useTranslations("teacher_form_course");
+  const tCommon = useTranslations("common");
+
   const router = useRouter();
   const { data: categories } = useCategories();
 
@@ -149,9 +153,9 @@ const CreateCourse = () => {
             className="mr-4"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Kembali
+            {t("back")}
           </Button>
-          <h1 className="text-2xl font-bold">Buat Course Baru</h1>
+          <h1 className="text-2xl font-bold">{t("title")}</h1>
         </div>
 
         <Form {...form}>
@@ -163,10 +167,8 @@ const CreateCourse = () => {
             <div className="col-span-8">
               <Card>
                 <CardHeader>
-                  <CardTitle>Course Information</CardTitle>
-                  <CardDescription>
-                    Masukkan informasi dasar untuk course Anda
-                  </CardDescription>
+                  <CardTitle>{t("section_info_title")}</CardTitle>
+                  <CardDescription>{t("section_info_desc")}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {/* Course Media Upload */}
@@ -178,11 +180,11 @@ const CreateCourse = () => {
                     name="title"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Judul Course *</FormLabel>
+                        <FormLabel>{t("field_title")}</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
-                            placeholder="e.g. Web Development Fundamentals"
+                            placeholder={t("field_title_placeholder")}
                             disabled={isPending}
                             className={
                               errors.title
@@ -192,8 +194,7 @@ const CreateCourse = () => {
                           />
                         </FormControl>
                         <FormDescription>
-                          Buatlah judul yang menarik dan deskriptif (minimal 3
-                          karakter)
+                          {t("field_title_description")}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -206,11 +207,11 @@ const CreateCourse = () => {
                     name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Deskripsi *</FormLabel>
+                        <FormLabel>{t("field_description")}</FormLabel>
                         <FormControl>
                           <Textarea
                             {...field}
-                            placeholder="Jelaskan apa yang akan dipelajari Student dalam Course ini..."
+                            placeholder={t("field_description_placeholder")}
                             rows={5}
                             disabled={isPending}
                             className={
@@ -221,8 +222,7 @@ const CreateCourse = () => {
                           />
                         </FormControl>
                         <FormDescription>
-                          Jelaskan secara detail apa yang akan dipelajari
-                          (minimal 10 karakter)
+                          {t("field_description_description")}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -236,9 +236,9 @@ const CreateCourse = () => {
             <div className="col-span-4 space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Course Settings</CardTitle>
+                  <CardTitle>{t("section_settings_title")}</CardTitle>
                   <CardDescription>
-                    Konfigurasikan detail dan harga course
+                    {t("section_settings_desc")}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -248,7 +248,7 @@ const CreateCourse = () => {
                     name="level"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Level</FormLabel>
+                        <FormLabel>{t("field_level")}</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
@@ -262,15 +262,21 @@ const CreateCourse = () => {
                                   : ""
                               }
                             >
-                              <SelectValue placeholder="Select level" />
+                              <SelectValue
+                                placeholder={t("field_level_placeholder")}
+                              />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="BEGINNER">Beginner</SelectItem>
-                            <SelectItem value="INTERMEDIATE">
-                              Intermediate
+                            <SelectItem value="BEGINNER">
+                              {tCommon("level_beginner")}
                             </SelectItem>
-                            <SelectItem value="ADVANCED">Advanced</SelectItem>
+                            <SelectItem value="INTERMEDIATE">
+                              {tCommon("level_intermediate")}
+                            </SelectItem>
+                            <SelectItem value="ADVANCED">
+                              {tCommon("level_advanced")}
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -284,7 +290,7 @@ const CreateCourse = () => {
                     name="categoryId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Kategori *</FormLabel>
+                        <FormLabel>{t("field_category")}</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
@@ -298,7 +304,9 @@ const CreateCourse = () => {
                                   : ""
                               }
                             >
-                              <SelectValue placeholder="Select category" />
+                              <SelectValue
+                                placeholder={t("field_category_placeholder")}
+                              />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -320,7 +328,7 @@ const CreateCourse = () => {
                     name="price"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Harga (IDR)</FormLabel>
+                        <FormLabel>{t("field_price")}</FormLabel>
                         <FormControl>
                           <Input
                             value={
@@ -338,7 +346,7 @@ const CreateCourse = () => {
                               const numericValue = parseInt(rawValue) || 0;
                               field.onChange(numericValue);
                             }}
-                            placeholder="e.g. 100.000"
+                            placeholder={t("field_price_placeholder")}
                             disabled={isPending}
                             inputMode="numeric"
                             className={`transition-all duration-200 focus:ring-2 focus:ring-blue-500 ${
@@ -365,12 +373,11 @@ const CreateCourse = () => {
                                   <Sparkles className="h-3 w-3 text-emerald-500 animate-pulse" />
                                 </div>
                                 <span className="text-sm font-semibold text-emerald-700">
-                                  GRATIS!
+                                  {t("field_free_label")}
                                 </span>
                               </div>
                               <p className="text-xs text-emerald-600 mt-1">
-                                Course harga Rp 0 akan gratis untuk semua
-                                students
+                                {t("field_free_description")}
                               </p>
                             </div>
                           </div>
@@ -391,12 +398,10 @@ const CreateCourse = () => {
                     <Alert variant="destructive" className="mb-4">
                       <AlertDescription>
                         <div className="space-y-1">
-                          <p className="font-medium">
-                            Please fix the following errors:
-                          </p>
+                          <p className="font-medium">{t("alert_fix_errors")}</p>
                           <ul className="list-disc list-inside text-sm space-y-1">
                             {errors.imageUrl && (
-                              <li>Upload a course thumbnail</li>
+                              <li>{t("error_upload_thumbnail")}</li>
                             )}
                             {errors.title && <li>{errors.title.message}</li>}
                             {errors.description && (
@@ -417,10 +422,10 @@ const CreateCourse = () => {
                     {isPending ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Creating Course...
+                        {t("button_creating")}
                       </>
                     ) : (
-                      "Create Course"
+                      t("button_submit")
                     )}
                   </Button>
                 </CardContent>

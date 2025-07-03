@@ -16,10 +16,9 @@ import { Link as LocaleLink, usePathname } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
 
 const Navbar = () => {
-  const t = useTranslations();
+  const t = useTranslations("common");
   const pathname = usePathname();
   const currentLocale = useLocale();
-
   const { data: session, status } = useSession();
   const isAuthenticated = status === "authenticated";
 

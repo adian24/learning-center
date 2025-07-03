@@ -11,6 +11,7 @@ import {
   Award,
   CheckCircle,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const companies = [
   {
@@ -85,6 +86,8 @@ const companies = [
 ];
 
 export default function CareerDetailView() {
+  const t = useTranslations("careers");
+
   const { careersId } = useParams() as { careersId: string };
   const router = useRouter();
 
@@ -102,9 +105,9 @@ export default function CareerDetailView() {
   if (!job) {
     return (
       <div className="py-20 text-center text-gray-600">
-        <p>Lowongan tidak ditemukan.</p>
+        <p>{t("detail_not_found")}</p>
         <Button className="mt-4" onClick={() => router.push("/careers")}>
-          Kembali ke Semua Lowongan
+          {t("back_to_all")}
         </Button>
       </div>
     );
@@ -131,23 +134,23 @@ export default function CareerDetailView() {
                     {job.category}
                   </Badge>
                   <Badge className="bg-green-100 text-green-700 border border-green-300">
-                    Level: {job.level}
+                    {t("level")} {job.level}
                   </Badge>
                   <Badge className="bg-yellow-100 text-yellow-700 border border-yellow-300">
-                    Gaji: Rp {job.price.toLocaleString("id-ID")}
+                    {t("salary")} Rp {job.price.toLocaleString("id-ID")}
                   </Badge>
                 </div>
 
                 <div className="text-gray-700 leading-relaxed text-sm">
                   <h3 className="font-semibold mb-2 text-sky-700 text-base">
-                    📋 Deskripsi Pekerjaan
+                    {t("detail_description")}
                   </h3>
                   <p className="whitespace-pre-line">{job.description}</p>
                 </div>
 
                 <div className="pt-4">
                   <Button className="w-full bg-sky-600 hover:bg-sky-700 text-white">
-                    Lamar Sekarang
+                    {t("apply_now")}
                   </Button>
                 </div>
               </CardContent>
@@ -159,27 +162,33 @@ export default function CareerDetailView() {
               <CardContent className="p-6">
                 <div className="bg-sky-50 border-b-2 border-sky-500 px-4 py-2 mb-4 rounded-t-md">
                   <h3 className="text-lg font-semibold text-sky-700">
-                    📌 Informasi Tambahan
+                    {t("detail_additional_info")}
                   </h3>
                 </div>
 
                 <div className="text-sm text-gray-700 space-y-3">
                   <div className="flex items-center gap-2">
                     <Building2 size={16} />
-                    <span>Perusahaan: {job.companyName}</span>
+                    <span>
+                      {t("company")}: {job.companyName}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <MapPin size={16} />
-                    <span>Lokasi: {job.location}</span>
+                    <span>
+                      {t("location")}: {job.location}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Award size={16} />
-                    <span>Tingkat: {job.level}</span>
+                    <span>
+                      {t("level")}: {job.level}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <DollarSign size={16} />
                     <span>
-                      Gaji:{" "}
+                      {t("salary")}:{" "}
                       <strong>Rp {job.price.toLocaleString("id-ID")}</strong>
                     </span>
                   </div>

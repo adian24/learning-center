@@ -6,9 +6,10 @@ import { useParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
+import ProgramDetailShimmer from "@/views/programs/program-detail/program-detail-shimmer";
 
 export default function ProgramDetailClient() {
-  const t = useTranslations();
+  const t = useTranslations("landing");
   const params = useParams();
   const courseId = params?.slug as string;
 
@@ -20,14 +21,7 @@ export default function ProgramDetailClient() {
   );
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <Loader2 className="animate-spin h-8 w-8 text-sky-500" />
-        <span className="ml-4 text-sky-600 font-medium">
-          {t("loading_course_detail")}
-        </span>
-      </div>
-    );
+    return <ProgramDetailShimmer />;
   }
 
   if (!programs) {

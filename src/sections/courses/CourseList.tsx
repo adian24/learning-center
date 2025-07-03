@@ -15,6 +15,7 @@ import { formatVideoDuration } from "@/utils/formatVideoDuration";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useTranslations } from "next-intl";
 
 // Student-specific Course type
 type StudentCourse = {
@@ -49,6 +50,7 @@ const CourseList: React.FC<CourseListProps> = ({
   view,
   onViewChange,
 }) => {
+  const t = useTranslations("courses");
   if (courses.length === 0) {
     return (
       <div className="text-center py-10">
@@ -70,7 +72,7 @@ const CourseList: React.FC<CourseListProps> = ({
             className="flex items-center"
           >
             <Grid className="h-4 w-4 mr-2" />
-            Grid
+            {t("view_toggle_grid")}
           </Button>
           <Button
             variant={view === "list" ? "default" : "ghost"}
@@ -79,7 +81,7 @@ const CourseList: React.FC<CourseListProps> = ({
             className="flex items-center"
           >
             <List className="h-4 w-4 mr-2" />
-            List
+            {t("view_toggle_list")}
           </Button>
         </div>
       </div>
@@ -95,12 +97,18 @@ const CourseList: React.FC<CourseListProps> = ({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[300px]">Course</TableHead>
-                <TableHead>Level</TableHead>
-                <TableHead className="text-center">Duration</TableHead>
-                <TableHead className="text-center">Rating</TableHead>
-                <TableHead>Price</TableHead>
-                <TableHead>Last Updated</TableHead>
+                <TableHead className="w-[300px]">
+                  {t("table_head_course")}
+                </TableHead>
+                <TableHead>{t("table_head_level")}</TableHead>
+                <TableHead className="text-center">
+                  {t("table_head_duration")}
+                </TableHead>
+                <TableHead className="text-center">
+                  {t("table_head_rating")}
+                </TableHead>
+                <TableHead>{t("table_head_price")}</TableHead>
+                <TableHead>{t("table_head_updated")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -111,7 +119,9 @@ const CourseList: React.FC<CourseListProps> = ({
                       {course?.isEnrolled && (
                         <div className="text-green-800 flex items-center gap-1">
                           <ShieldCheck className="h-3.5 w-3.5" />
-                          <span className="text-xs">Enrolled</span>
+                          <span className="text-xs">
+                            {t("course_enrolled_label")}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -137,7 +147,9 @@ const CourseList: React.FC<CourseListProps> = ({
                   <TableCell className="text-center">
                     <div className="flex items-center justify-center">
                       <Star className="h-4 w-4 mr-1 fill-yellow-400 text-yellow-400" />
-                      {course.rating ? course.rating.toFixed(1) : "New"}
+                      {course.rating
+                        ? course.rating.toFixed(1)
+                        : t("course_rating_new")}
                       {course.reviewCount > 0 && ` (${course.reviewCount})`}
                     </div>
                   </TableCell>

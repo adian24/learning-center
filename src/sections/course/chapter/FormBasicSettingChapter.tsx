@@ -8,6 +8,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { useTranslations } from "next-intl";
 import React from "react";
 import { UseFormReturn } from "react-hook-form";
 
@@ -25,15 +26,17 @@ interface FormBasicSettingChapterProps {
 }
 
 const FormBasicSettingChapter = ({ form }: FormBasicSettingChapterProps) => {
+  const t = useTranslations("chapters");
+
   return (
     <>
       <FormField
         control={form.control}
         name="title"
-        rules={{ required: "Title is required" }}
+        rules={{ required: t("form_basic_title_required") }}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Title</FormLabel>
+            <FormLabel>{t("form_basic_title_label")}</FormLabel>
             <FormControl>
               <Input
                 placeholder="Enter chapter title"
@@ -51,10 +54,10 @@ const FormBasicSettingChapter = ({ form }: FormBasicSettingChapterProps) => {
         name="description"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Description</FormLabel>
+            <FormLabel>{t("form_basic_description_label")}</FormLabel>
             <FormControl>
               <Textarea
-                placeholder="Enter chapter description"
+                placeholder={t("form_basic_description_placeholder")}
                 rows={5}
                 {...field}
               />
@@ -69,10 +72,10 @@ const FormBasicSettingChapter = ({ form }: FormBasicSettingChapterProps) => {
         name="videoUrl"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Video URL</FormLabel>
+            <FormLabel>{t("form_basic_video_label")}</FormLabel>
             <FormControl>
               <Input
-                placeholder="Enter video URL"
+                placeholder={t("form_basic_video_placeholder")}
                 type="url"
                 //   value={field?.value ?? ""}
                 {...field}
@@ -90,7 +93,7 @@ const FormBasicSettingChapter = ({ form }: FormBasicSettingChapterProps) => {
           render={({ field }) => (
             <FormItem className="flex-1 flex items-center justify-between rounded-lg border p-3">
               <div className="space-y-0.5">
-                <FormLabel>Free Chapter</FormLabel>
+                <FormLabel>{t("form_basic_is_free_label")}</FormLabel>
               </div>
               <FormControl>
                 <Switch
@@ -109,7 +112,7 @@ const FormBasicSettingChapter = ({ form }: FormBasicSettingChapterProps) => {
         render={({ field }) => (
           <FormItem className="flex-1 flex items-center justify-between rounded-lg border p-3">
             <div className="space-y-0.5">
-              <FormLabel>Published</FormLabel>
+              <FormLabel>{t("form_basic_is_published_label")}</FormLabel>
             </div>
             <FormControl>
               <Switch checked={field.value} onCheckedChange={field.onChange} />

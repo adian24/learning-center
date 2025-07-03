@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
 import Layout from "@/layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -44,8 +43,10 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import { useStudents } from "@/hooks/use-students";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 const TeacherStudents = () => {
+  const t = useTranslations("students");
   const router = useRouter();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -108,7 +109,7 @@ const TeacherStudents = () => {
             <CardContent className="pt-6 text-center">
               <p className="text-red-500 mb-4">Gagal memuat data siswa</p>
               <Button onClick={() => window.location.reload()}>
-                Coba Lagi
+                {t("try_again")}
               </Button>
             </CardContent>
           </Card>
@@ -124,10 +125,8 @@ const TeacherStudents = () => {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Siswa</h1>
-              <p className="text-gray-600 mt-2">
-                Kelola dan pantau kemajuan siswa Anda di semua kursus
-              </p>
+              <h1 className="text-3xl font-bold text-gray-900">{t("title")}</h1>
+              <p className="text-gray-600 mt-2">{t("description")}</p>
             </div>
             <Button
               variant="outline"
@@ -138,7 +137,7 @@ const TeacherStudents = () => {
               <RefreshCw
                 className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`}
               />
-              Segarkan
+              {t("refresh")}
             </Button>
           </div>
         </div>
@@ -150,7 +149,7 @@ const TeacherStudents = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">
-                    Total Siswa
+                    {t("stat_total")}
                   </p>
                   <p className="text-3xl font-bold text-gray-900">
                     {stats?.totalStudents || 0}
@@ -168,7 +167,7 @@ const TeacherStudents = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">
-                    Rata-rata Progres
+                    {t("stat_avg_progress")}
                   </p>
                   <p className="text-3xl font-bold text-gray-900">
                     {stats?.averageProgress || 0}%
@@ -186,7 +185,7 @@ const TeacherStudents = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">
-                    Baru Minggu Ini
+                    {t("stat_recent")}
                   </p>
                   <p className="text-3xl font-bold text-gray-900">
                     {stats?.recentStudents || 0}
@@ -205,7 +204,7 @@ const TeacherStudents = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Filter className="h-5 w-5" />
-              Filter & Cari Siswa
+              {t("filter_title")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -214,7 +213,7 @@ const TeacherStudents = () => {
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <Input
-                  placeholder="Cari berdasarkan nama, email, atau kursus..."
+                  placeholder={t("search_placeholder")}
                   className="pl-10"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -232,14 +231,14 @@ const TeacherStudents = () => {
                 }}
               >
                 <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Urutkan Berdasarkan" />
+                  <SelectValue placeholder={t("sort_by")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="name">Nama</SelectItem>
+                  <SelectItem value="name">{t("sort_name")}</SelectItem>
                   <SelectItem value="enrollmentDate">
-                    Tanggal Pendaftaran
+                    {t("sort_date")}
                   </SelectItem>
-                  <SelectItem value="progress">Progres</SelectItem>
+                  <SelectItem value="progress">{t("sort_progress")}</SelectItem>
                 </SelectContent>
               </Select>
 
@@ -252,11 +251,11 @@ const TeacherStudents = () => {
                 }}
               >
                 <SelectTrigger className="w-[120px]">
-                  <SelectValue placeholder="Urutan" />
+                  <SelectValue placeholder={t("sort_order")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="asc">Naik</SelectItem>
-                  <SelectItem value="desc">Turun</SelectItem>
+                  <SelectItem value="asc">{t("order_asc")}</SelectItem>
+                  <SelectItem value="desc">{t("order_desc")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -266,12 +265,14 @@ const TeacherStudents = () => {
         {/* Students Table */}
         <Card>
           <CardHeader>
-            <CardTitle>Daftar Siswa</CardTitle>
-            <CardDescription>
-              {pagination?.totalStudents || 0} siswa
-              {(pagination?.totalStudents || 0) !== 1 ? "" : ""} ditemukan
+            <CardTitle>{t("table_title")}</CardTitle>
+            <CardDescription className="lowercase">
+              {(pagination?.totalStudents || 0) !== 1
+                ? pagination?.totalStudents || 0
+                : ""}{" "}
+              {t("table_description")}
               {isFetching && (
-                <span className="ml-2 text-blue-600">(Memperbarui...)</span>
+                <span className="ml-2 text-blue-600">{t("refresh")}</span>
               )}
             </CardDescription>
           </CardHeader>
@@ -279,18 +280,16 @@ const TeacherStudents = () => {
             {isLoading ? (
               <div className="flex items-center justify-center py-12">
                 <Loader2 className="h-8 w-8 animate-spin" />
-                <span className="ml-2">Memuat siswa...</span>
+                <span className="ml-2">{t("loading")}</span>
               </div>
             ) : students.length === 0 ? (
               <div className="text-center py-12">
                 <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  {searchTerm ? "Tidak ada siswa ditemukan" : "Belum ada siswa"}
+                  {searchTerm ? t("empty_title_search") : t("empty_title")}
                 </h3>
                 <p className="text-gray-500">
-                  {searchTerm
-                    ? "Coba sesuaikan kriteria pencarian Anda"
-                    : "Siswa akan muncul di sini setelah mendaftar di kursus Anda"}
+                  {searchTerm ? t("empty_desc_search") : t("empty_desc")}
                 </p>
               </div>
             ) : (
@@ -299,11 +298,11 @@ const TeacherStudents = () => {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Siswa</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Kursus Terdaftar</TableHead>
-                        <TableHead>Progres</TableHead>
-                        <TableHead>Tanggal Terdaftar</TableHead>
+                        <TableHead>{t("column_student")}</TableHead>
+                        <TableHead>{t("column_email")}</TableHead>
+                        <TableHead>{t("column_courses")}</TableHead>
+                        <TableHead>{t("column_progress")}</TableHead>
+                        <TableHead>{t("column_enrolled")}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -418,7 +417,7 @@ const TeacherStudents = () => {
                         disabled={!pagination.hasPreviousPage || isFetching}
                       >
                         <ChevronLeft className="h-4 w-4" />
-                        Sebelumnya
+                        {t("pagination_prev")}
                       </Button>
 
                       <div className="flex items-center gap-1">
@@ -463,7 +462,7 @@ const TeacherStudents = () => {
                         onClick={() => setCurrentPage(currentPage + 1)}
                         disabled={!pagination.hasNextPage || isFetching}
                       >
-                        Selanjutnya
+                        {t("pagination_next")}
                         <ChevronRight className="h-4 w-4" />
                       </Button>
                     </div>

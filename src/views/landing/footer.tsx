@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
-export default function ElegantFooter() {
-  const t = useTranslations();
+export default function Footer() {
+  const t = useTranslations("landing");
 
   return (
     <footer className="relative bg-white text-gray-700">
@@ -16,77 +16,75 @@ export default function ElegantFooter() {
             </span>
           </div>
           <p className="text-sm leading-relaxed text-gray-600 mb-6">
-            {t("landing_footer_description")}
+            {t("footer_description")}
           </p>
         </div>
 
         <div>
           <h4 className="font-bold mb-4 text-gray-900 border-b-2 border-sky-500 inline-block">
-            {t("landing_footer_training_category")}
+            {t("footer_training_category")}
           </h4>
           <ul className="space-y-2 text-sm text-gray-600">
             <li>
-              <Link href="#">» {t("landing_footer_categories_business")}</Link>
+              <Link href="#">» {t("footer_categories_business")}</Link>
             </li>
             <li>
-              <Link href="#">» {t("landing_footer_categories_design")}</Link>
+              <Link href="#">» {t("footer_categories_design")}</Link>
             </li>
             <li>
-              <Link href="#">» {t("landing_footer_categories_personal")}</Link>
+              <Link href="#">» {t("footer_categories_personal")}</Link>
             </li>
             <li>
-              <Link href="#">
-                » {t("landing_footer_categories_certification")}
-              </Link>
+              <Link href="#">» {t("footer_categories_certification")}</Link>
             </li>
             <li>
-              <Link href="#">» {t("landing_footer_categories_tech")}</Link>
+              <Link href="#">» {t("footer_categories_tech")}</Link>
             </li>
           </ul>
         </div>
 
         <div>
           <h4 className="font-bold mb-4 text-gray-900 border-b-2 border-sky-500 inline-block">
-            {t("landing_footer_help")}
+            {t("footer_help")}
           </h4>
           <ul className="space-y-2 text-sm text-gray-600">
             <li>
-              <Link href="#">» {t("landing_footer_help_center")}</Link>
+              <Link href="#">» {t("footer_help_center")}</Link>
             </li>
             <li>
-              <Link href="#">» {t("landing_footer_faq")}</Link>
+              <Link href="#">» {t("footer_faq")}</Link>
             </li>
             <li>
-              <Link href="#">» {t("landing_footer_contact_us")}</Link>
+              <Link href="#">» {t("footer_contact_us")}</Link>
             </li>
             <li>
-              <Link href="#">» {t("landing_footer_user_guide")}</Link>
+              <Link href="#">» {t("footer_user_guide")}</Link>
             </li>
             <li>
-              <Link href="#">» {t("landing_footer_report_issue")}</Link>
+              <Link href="#">» {t("footer_report_issue")}</Link>
             </li>
           </ul>
         </div>
 
         <div>
           <h4 className="font-bold mb-4 text-gray-900 border-b-2 border-sky-500 inline-block">
-            {t("landing_footer_quick_links")}
+            {t("footer_quick_links")}
           </h4>
           <ul className="space-y-2 text-sm text-gray-600">
             <li>
-              <Link href="#">» {t("landing_footer_all_courses")}</Link>
+              <Link href="#">» {t("footer_all_courses")}</Link>
             </li>
             <li>
-              <Link href="#">» {t("landing_footer_about_us")}</Link>
+              <Link href="#">» {t("footer_about_us")}</Link>
             </li>
             <li>
-              <Link href="#">» {t("landing_footer_partner")}</Link>
+              <Link href="#">» {t("footer_partner")}</Link>
             </li>
             <li>
-              <Link href="#">» {t("landing_footer_privacy_policy")}</Link>
+              <Link href="#">» {t("footer_privacy_policy")}</Link>
             </li>
             <li>
-              <Link href="#">» {t("landing_footer_terms_conditions")}</Link>
+              <Link href="#">» {t("footer_terms_conditions")}</Link>
             </li>
           </ul>
         </div>
@@ -95,8 +93,7 @@ export default function ElegantFooter() {
       <div className="absolute bottom-0 left-0 w-full h-28 bg-contain bg-no-repeat bg-bottom bg-[url('/footer-silhouette.svg')] opacity-10"></div>
 
       <div className="text-center pt-6 text-xs text-gray-500 border-t border-gray-200">
-        © {new Date().getFullYear()} Learning Center.{" "}
-        {t("landing_footer_rights")}
+        © {new Date().getFullYear()} Learning Center. {t("footer_rights")}
       </div>
     </footer>
   );

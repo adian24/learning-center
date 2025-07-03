@@ -23,11 +23,11 @@ export default function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  const t = useTranslations();
+  const t = useTranslations("signin");
+  const tCommon = useTranslations("common");
   const router = useRouter();
 
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-
   const [error, setError] = useState("");
 
   // Helper function to check what provider an email is registered with
@@ -61,9 +61,7 @@ export default function LoginForm({
       const existingProvider = await checkEmailProvider(email);
 
       if (existingProvider === "google") {
-        setError(
-          "This email is already registered with Google. Please use 'Sign in with Google' instead."
-        );
+        setError(t("errors.google_registered"));
         return;
       }
 
@@ -75,9 +73,9 @@ export default function LoginForm({
 
       if (result?.error) {
         if (result.error === "CredentialsSignin") {
-          setError("Email atau password yang Anda masukkan salah");
+          setError(t("errors.credentials_signin"));
         } else {
-          setError("Terjadi kesalahan saat proses login. Silakan coba lagi.");
+          setError(t("errors.login_error"));
         }
       } else {
         const routerCache = localStorage.getItem("routerCache");
@@ -86,7 +84,7 @@ export default function LoginForm({
       }
     } catch (error) {
       console.error("Authentication error:", error);
-      setError("Terjadi kesalahan saat proses login. Silakan coba lagi.");
+      setError(t("errors.login_error"));
     }
   }
 
@@ -101,15 +99,11 @@ export default function LoginForm({
 
       if (result?.error) {
         if (result.error === "OAuthAccountNotLinked") {
-          setError(
-            "This email is already registered with email/password. Please sign in using your email and password instead."
-          );
+          setError(t("errors.oauth_not_linked"));
         } else if (result.error === "EmailExistsWithCredentials") {
-          setError(
-            "This email is already registered with email/password. Please sign in using your email and password instead."
-          );
+          setError(t("errors.email_exists_credentials"));
         } else {
-          setError("Google sign-in failed. Please try again.");
+          setError(t("errors.google_signin_failed"));
         }
       } else if (result?.ok) {
         const routerCache = localStorage.getItem("routerCache");
@@ -118,7 +112,7 @@ export default function LoginForm({
       }
     } catch (error) {
       console.error("Google sign-in error:", error);
-      setError("Google sign-in failed. Please try again.");
+      setError(t("errors.google_signin_failed"));
     } finally {
       setIsGoogleLoading(false);
     }
@@ -128,8 +122,8 @@ export default function LoginForm({
     <div className={cn("flex flex-col gap-4", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">{t("title_signin")}</CardTitle>
-          <CardDescription>{t("subtitle_signin")}</CardDescription>
+          <CardTitle className="text-xl">{tCommon("signin")}</CardTitle>
+          <CardDescription>{t("subtitle")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-6">
@@ -150,12 +144,12 @@ export default function LoginForm({
                     />
                   </svg>
                 )}
-                {isGoogleLoading ? "Signing in..." : "Masuk dengan Google"}
+                {isGoogleLoading ? t("loading") + "..." : t("subtitle")}
               </Button>
             </div>
             <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
               <span className="relative z-10 bg-background px-2 text-muted-foreground">
-                {t("or_signin")}
+                {tCommon("or")}
               </span>
             </div>
             {error && (
@@ -166,7 +160,7 @@ export default function LoginForm({
             <form action={handleCredential}>
               <div className="grid gap-6">
                 <div className="grid gap-2">
-                  <Label htmlFor="email">{t("email_signin")}</Label>
+                  <Label htmlFor="email">{t("email")}</Label>
                   <Input
                     id="email"
                     name="email"
@@ -177,12 +171,12 @@ export default function LoginForm({
                 </div>
                 <div className="grid gap-2">
                   <div className="flex items-center">
-                    <Label htmlFor="password">{t("password_signin")}</Label>
+                    <Label htmlFor="password">{t("password")}</Label>
                     <a
                       href="#"
                       className="ml-auto text-sm underline-offset-4 hover:underline"
                     >
-                      {t("forgot_password_signin")}
+                      {t("forgot_password")}
                     </a>
                   </div>
                   <Input
@@ -195,23 +189,23 @@ export default function LoginForm({
                 <ActionButton
                   type="submit"
                   className="w-full"
-                  defaultText={t("submit_signin")}
-                  loadingText={t("loading_signin")}
+                  defaultText={t("submit")}
+                  loadingText={t("loading")}
                 />
               </div>
             </form>
             <div className="text-center text-sm">
-              {t("no_account_signin")}{" "}
+              {t("no_account")}{" "}
               <Link href="/sign-up" className="underline underline-offset-4">
-                {t("signup")}
+                {tCommon("signup")}
               </Link>
             </div>
           </div>
         </CardContent>
       </Card>
       <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary  ">
-        {t("terms")} <a href="#">{t("terms_link")}</a> {t("and")}{" "}
-        <a href="#">{t("privacy_link")}</a>.
+        {tCommon("terms")} <a href="#">{tCommon("terms_link")}</a>{" "}
+        {tCommon("and")} <a href="#">{tCommon("privacy_link")}</a>.
       </div>
     </div>
   );

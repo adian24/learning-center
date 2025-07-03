@@ -1,0 +1,9 @@
+{
+  "reviews": {
+    "section_title": "Reviews",
+    "view_all": "View All Reviews",
+    "no_reviews": "No reviews yet",
+    "loading": "Loading reviews...",
+    "error": "Failed to load reviews"
+  }
+}

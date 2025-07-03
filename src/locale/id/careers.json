@@ -1,0 +1,22 @@
+{
+  "careers": {
+    "careers_filter_title": "Filter Pencarian",
+    "careers_open_filter": "Buka Filter",
+    "careers_close_filter": "Tutup Filter",
+    "careers_filter_company": "Perusahaan",
+    "careers_filter_category": "Kategori",
+    "careers_filter_level": "Tingkat",
+    "careers_filter_location": "Lokasi",
+    "careers_reset_filter": "Reset Filter",
+    "careers_not_found": "Tidak ada lowongan yang sesuai dengan filter saat ini.",
+    "detail_not_found": "Lowongan tidak ditemukan.",
+    "back_to_all": "Kembali ke Semua Lowongan",
+    "detail_description": "📋 Deskripsi Pekerjaan",
+    "detail_additional_info": "📌 Informasi Tambahan",
+    "company": "Perusahaan",
+    "location": "Lokasi",
+    "level": "Tingkat",
+    "salary": "Gaji",
+    "apply_now": "Lamar Sekarang"
+  }
+}

@@ -36,10 +36,10 @@ function getLocalized(
 }
 
 const ProgramDetailView = ({ programs }: { programs: any }) => {
-  const t = useTranslations();
+  const t = useTranslations("landing");
+  const tCommon = useTranslations("common");
   const locale = useLocale();
   const router = useRouter();
-  const params = useParams();
   const session = useSession();
 
   if (!programs) return null;
@@ -95,9 +95,8 @@ const ProgramDetailView = ({ programs }: { programs: any }) => {
                     <div className="flex items-center gap-2">
                       <User2 size={16} />
                       <span>
-                        {t("landing_program_detail_by")}{" "}
-                        {teacherName ??
-                          t("landing_program_detail_instructor_unknown")}
+                        {t("program_detail_by")}{" "}
+                        {teacherName ?? t("program_detail_instructor_unknown")}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
@@ -121,7 +120,7 @@ const ProgramDetailView = ({ programs }: { programs: any }) => {
                 <CardContent className="p-6">
                   <div className="bg-sky-50 border-b-2 border-sky-500 px-4 py-2 rounded-t-md">
                     <h3 className="text-lg font-semibold text-sky-700">
-                      {t("landing_program_detail_description")}
+                      {t("program_detail_description")}
                     </h3>
                   </div>
                   <p className="mt-4 text-sm text-gray-700 whitespace-pre-line leading-relaxed">
@@ -136,11 +135,11 @@ const ProgramDetailView = ({ programs }: { programs: any }) => {
               <CardContent className="p-6">
                 <div className="bg-sky-50 border-b-2 border-sky-500 px-4 py-2 mb-6 rounded-t-md">
                   <h3 className="text-lg font-semibold text-sky-700">
-                    {t("landing_program_detail_certification_title")}
+                    {t("program_detail_certification_title")}
                   </h3>
                 </div>
                 <p className="text-lg text-sky-700 mb-6 font-semibold">
-                  {t("landing_program_detail_certification_get")}
+                  {t("program_detail_certification_get")}
                 </p>
                 <div className="space-y-3 text-sm text-gray-700">
                   {[1, 2, 3].map((i) => (
@@ -148,14 +147,10 @@ const ProgramDetailView = ({ programs }: { programs: any }) => {
                       <CheckCircle className="text-sky-500 mt-1" size={18} />
                       <div>
                         <strong className="text-sky-700">
-                          {t(
-                            `landing_program_detail_certification_item${i}_title`
-                          )}
+                          {t(`program_detail_certification_item${i}_title`)}
                         </strong>
                         <p className="text-muted-foreground">
-                          {t(
-                            `landing_program_detail_certification_item${i}_desc`
-                          )}
+                          {t(`program_detail_certification_item${i}_desc`)}
                         </p>
                       </div>
                     </div>
@@ -171,7 +166,7 @@ const ProgramDetailView = ({ programs }: { programs: any }) => {
               <CardContent className="p-6">
                 <div className="bg-sky-50 border-b-2 border-sky-500 px-4 py-2 rounded-t-md">
                   <h3 className="text-lg font-semibold text-sky-700">
-                    {t("landing_program_detail_highlight_title")}
+                    {t("program_detail_highlight_title")}
                   </h3>
                 </div>
                 <div className="mt-4 text-sm text-gray-700 space-y-3">
@@ -179,14 +174,14 @@ const ProgramDetailView = ({ programs }: { programs: any }) => {
                     <LayoutList size={16} />
                     <span className="capitalize">
                       {chapterCount ?? 0}{" "}
-                      {t("landing_program_detail_highlight_chapters")}
+                      {t("program_detail_highlight_chapters")}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Users size={16} />
                     <span className="capitalize">
                       {enrolledCount ?? 0}{" "}
-                      {t("landing_program_detail_highlight_enrolled")}
+                      {t("program_detail_highlight_enrolled")}
                     </span>
                   </div>
                   <div className="flex items-center gap-1.5 text-sm">
@@ -196,7 +191,7 @@ const ProgramDetailView = ({ programs }: { programs: any }) => {
                       className="text-xs bg-teal-50 text-teal-600 border-teal-200 uppercase"
                     >
                       {typeof level === "string"
-                        ? t(`level_${level.toLowerCase()}`)
+                        ? tCommon(`level_${level.toLowerCase()}`)
                         : getLocalized(level, locale)}
                     </Badge>
                   </div>
@@ -212,7 +207,7 @@ const ProgramDetailView = ({ programs }: { programs: any }) => {
                     }}
                     className="w-full rounded-xl px-4 py-3 bg-sky-600 hover:bg-sky-700 text-white text-sm font-semibold shadow-md hover:shadow-lg transition"
                   >
-                    {t("landing_program_detail_register")}
+                    {t("program_detail_register")}
                   </Button>
                 </div>
               </CardContent>

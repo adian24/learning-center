@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface ChapterFormValues {
   title: string;
@@ -32,6 +33,8 @@ interface ChapterFormValues {
 }
 
 const DialogEditChapter = () => {
+  const t = useTranslations("chapters");
+
   const queryClient = useQueryClient();
 
   const { isOpen, chapterToEdit, isEditing, onClose, setIsEditing, reset } =
@@ -71,20 +74,20 @@ const DialogEditChapter = () => {
       );
 
       if (!response.ok) {
-        throw new Error("Failed to update chapter");
+        throw new Error(t("toast_edit_error"));
       }
 
       return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["chapters"] });
-      toast.success("Chapter updated successfully");
+      toast.success(t("toast_edit_success"));
       reset();
       form.reset();
       setIsEditing(false);
     },
     onError: () => {
-      toast.error("Failed to update chapter");
+      toast.error(t("toast_edit_error"));
       setIsEditing(false);
     },
   });
@@ -103,21 +106,21 @@ const DialogEditChapter = () => {
     <Dialog open={isOpen} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogContent className="sm:max-w-[750px]">
         <DialogHeader>
-          <DialogTitle>Edit Chapter</DialogTitle>
+          <DialogTitle>{t("edit_chapter_title")}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
               name="title"
-              rules={{ required: "Title wajib diisi" }}
+              rules={{ required: t("form_title_required") }}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Title</FormLabel>
+                  <FormLabel>{t("form_title_label")}</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="Masukan Title"
+                      placeholder={t("form_title_placeholder")}
                       startContent={
                         chapterToEdit?.title.match(/^Chapter \d+ :/)?.[0] || ""
                       }
@@ -133,10 +136,10 @@ const DialogEditChapter = () => {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>{t("form_description_label")}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Tulis deskripsi dari chapter ini"
+                      placeholder={t("form_description_placeholder")}
                       {...field}
                     />
                   </FormControl>
@@ -151,7 +154,7 @@ const DialogEditChapter = () => {
               render={({ field }) => (
                 <FormItem className="flex items-center justify-between rounded-lg border p-3">
                   <div className="space-y-0.5">
-                    <FormLabel>Chapter Gratis</FormLabel>
+                    <FormLabel>{t("form_is_free_label")}</FormLabel>
                   </div>
                   <FormControl>
                     <Switch
@@ -165,7 +168,7 @@ const DialogEditChapter = () => {
 
             <div className="flex justify-end gap-2">
               <Button type="button" variant="outline" onClick={onClose}>
-                Batal
+                {t("cancel")}
               </Button>
               <Button
                 type="submit"
@@ -175,10 +178,10 @@ const DialogEditChapter = () => {
                 {isEditing ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Menyimpan...
+                    {t("saving")}
                   </>
                 ) : (
-                  "Simpan Perubahan"
+                  <>{t("save_changes")}</>
                 )}
               </Button>
             </div>

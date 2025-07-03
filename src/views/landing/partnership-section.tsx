@@ -19,7 +19,7 @@ const partners = [
 ];
 
 export default function PartnershipSection() {
-  const t = useTranslations();
+  const t = useTranslations("landing");
   const router = useRouter();
 
   const isLoading = false;
@@ -78,7 +78,7 @@ export default function PartnershipSection() {
   return (
     <section className="bg-gray-50 py-20 px-6">
       <h2 className="text-3xl font-semibold mb-12 text-center text-sky-700">
-        {t("landing_partners_title")}
+        {t("partners_title")}
       </h2>
       <div
         ref={sliderRef}

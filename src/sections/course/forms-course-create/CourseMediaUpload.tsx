@@ -23,6 +23,8 @@ import { CourseFormValues } from "@/lib/validations/courses";
 import { toast } from "sonner";
 import SecureImage from "@/components/media/SecureImage";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useTranslations } from "next-intl";
+import Image from "next/image";
 
 interface CourseMediaUploadProps {
   form: UseFormReturn<CourseFormValues>;
@@ -33,6 +35,8 @@ export const CourseMediaUpload = ({
   form,
   isSubmitting,
 }: CourseMediaUploadProps) => {
+  const t = useTranslations("teacher_form_course");
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -178,7 +182,7 @@ export const CourseMediaUpload = ({
       name="imageUrl"
       render={({ field }) => (
         <FormItem>
-          <FormLabel>Course Thumbnail *</FormLabel>
+          <FormLabel>{t("label_form")}</FormLabel>
           <FormControl>
             <div className="space-y-4">
               {/* Hidden file input */}
@@ -211,7 +215,9 @@ export const CourseMediaUpload = ({
                       {previewUrl ? (
                         // Show local preview while uploading
                         <div className="relative w-full h-full">
-                          <img
+                          <Image
+                            width={50}
+                            height={50}
                             src={previewUrl}
                             alt="Course thumbnail preview"
                             className="w-full h-full object-cover rounded-lg"
@@ -220,7 +226,9 @@ export const CourseMediaUpload = ({
                             <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-lg">
                               <div className="text-white text-center">
                                 <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2" />
-                                <p className="text-sm">Uploading...</p>
+                                <p className="text-sm">
+                                  {t("button_uploading")}
+                                </p>
                               </div>
                             </div>
                           )}
@@ -260,12 +268,12 @@ export const CourseMediaUpload = ({
                         {isUploading ? (
                           <>
                             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                            Uploading...
+                            {t("button_uploading")}
                           </>
                         ) : (
                           <>
                             <Upload className="h-4 w-4 mr-2" />
-                            Replace Image
+                            {t("button_replace_image")}
                           </>
                         )}
                       </Button>
@@ -295,13 +303,13 @@ export const CourseMediaUpload = ({
 
                       <div>
                         <h3 className="font-medium text-gray-900">
-                          Upload Course Thumbnail
+                          {t("label_upload_thumbnail")}
                         </h3>
                         <p className="text-sm text-gray-500 mt-1">
-                          PNG, JPG, JPEG, or WEBP (max 5MB)
+                          {t("upload_format_info")}
                         </p>
                         <p className="text-xs text-red-500 mt-1">
-                          * Required field
+                          {t("field_required_note")}
                         </p>
                       </div>
 
@@ -315,19 +323,19 @@ export const CourseMediaUpload = ({
                         {isUploading ? (
                           <>
                             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                            Uploading...
+                            {t("button_uploading")}
                           </>
                         ) : (
                           <>
                             <Upload className="h-4 w-4 mr-2" />
-                            Choose Image
+                            {t("button_choose_image")}
                           </>
                         )}
                       </Button>
 
                       {/* Drag and drop hint */}
                       <p className="text-xs text-gray-400">
-                        or drag and drop an image here
+                        {t("upload_drag_drop")}
                       </p>
                     </div>
                   </CardContent>

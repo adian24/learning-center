@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { User } from "next-auth";
 import PaymentButton from "../../checkout/PaymentButton";
 import { Course } from "@/hooks/use-course";
+import { useTranslations } from "next-intl";
 
 // Define form schema with Zod
 const checkoutFormSchema = z.object({
@@ -38,6 +39,8 @@ interface CheckoutFormProps {
 }
 
 export function CheckoutForm({ course, user }: CheckoutFormProps) {
+  const t = useTranslations("checkout");
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Initialize form with default values from user (if available)
@@ -64,7 +67,7 @@ export function CheckoutForm({ course, user }: CheckoutFormProps) {
       // Show the payment button (handled in the JSX below)
     } catch (error) {
       console.error("Checkout error:", error);
-      toast.error("There was a problem processing your request");
+      toast.error(t("processing_failed"));
     } finally {
       setIsSubmitting(false);
     }
@@ -84,9 +87,9 @@ export function CheckoutForm({ course, user }: CheckoutFormProps) {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Nama</FormLabel>
+                <FormLabel>{t("name_label")}</FormLabel>
                 <FormControl>
-                  <Input placeholder="Your full name" {...field} />
+                  <Input placeholder={t("name_placeholder")} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -98,9 +101,9 @@ export function CheckoutForm({ course, user }: CheckoutFormProps) {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>{t("email_label")}</FormLabel>
                 <FormControl>
-                  <Input placeholder="your@email.com" {...field} />
+                  <Input placeholder={t("email_placeholder")} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -112,7 +115,7 @@ export function CheckoutForm({ course, user }: CheckoutFormProps) {
 
         {/* Payment Method Selection */}
         <div className="space-y-4">
-          <h3 className="text-lg font-medium">Metode Pembayaran</h3>
+          <h3 className="text-lg font-medium">{t("payment_method_label")}</h3>
 
           <FormField
             control={form.control}
@@ -133,7 +136,7 @@ export function CheckoutForm({ course, user }: CheckoutFormProps) {
                         htmlFor="midtrans"
                         className="font-normal cursor-pointer"
                       >
-                        Midtrans (Credit Card, Bank Transfer, E-Wallet)
+                        {t("payment_method_midtrans")}
                       </FormLabel>
                     </FormItem>
                   </RadioGroup>
@@ -149,10 +152,7 @@ export function CheckoutForm({ course, user }: CheckoutFormProps) {
           <div className="rounded-md bg-blue-50 p-4">
             <div className="flex">
               <div className="text-sm text-blue-700">
-                <p>
-                  Anda akan dialihkan ke halaman pembayaran aman Midtrans untuk
-                  menyelesaikan pembelian Anda.
-                </p>
+                <p>{t("payment_notice")}</p>
               </div>
             </div>
           </div>
@@ -175,13 +175,12 @@ export function CheckoutForm({ course, user }: CheckoutFormProps) {
               className="w-full h-12"
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Processing..." : "Continue to Payment"}
+              {isSubmitting ? t("submitting") : t("submit_button")}
             </Button>
           )}
 
           <p className="text-center text-xs text-muted-foreground mt-3">
-            Dengan menyelesaikan pembelian Anda, Anda menyetujui Ketentuan
-            Layanan dan Kebijakan Privasi kami.
+            {t("terms_notice")}
           </p>
         </div>
       </form>

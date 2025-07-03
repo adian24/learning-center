@@ -40,7 +40,8 @@ import { PendingPaymentsWidget } from "@/components/dashboard/PendingPaymentsWid
 import { useTranslations } from "next-intl";
 
 const Dashboard = () => {
-  const t = useTranslations();
+  const t = useTranslations("dashboard");
+  const tCommon = useTranslations("common");
   const router = useRouter();
 
   const { data: profile, isLoading: profileLoading } = useStudentProfile();
@@ -71,8 +72,8 @@ const Dashboard = () => {
 
   // Calculate next achievement
   const nextAchievement = {
-    title: t("dashboard_course_completion"),
-    description: t("dashboard_complete_first_course"),
+    title: t("course_completion"),
+    description: t("complete_first_course"),
     progress:
       completedCourses.length > 0
         ? 100
@@ -109,7 +110,7 @@ const Dashboard = () => {
                       <Skeleton className="h-8 w-48" />
                     ) : (
                       <>
-                        {t("dashboard_welcome_back", {
+                        {t("welcome_back", {
                           name: profile?.name || "Student",
                         })}
                       </>
@@ -127,7 +128,7 @@ const Dashboard = () => {
                   <div className="flex items-center gap-2">
                     <Award className="h-5 w-5 text-amber-500" />
                     <span className="font-medium">
-                      {t("dashboard_experience_points")}
+                      {t("experience_points")}
                     </span>
                   </div>
                   <span className="text-sm font-medium">
@@ -159,11 +160,11 @@ const Dashboard = () => {
                   onClick={() => router.push("/my-courses")}
                 >
                   <BookOpen className="h-4 w-4 mr-2" />
-                  {t("my_course")}
+                  {tCommon("my_courses")}
                 </Button>
                 <Button variant="outline">
                   <GraduationCap className="h-4 w-4 mr-2" />
-                  {t("certificate")}
+                  {tCommon("certificate")}
                 </Button>
               </div>
             </div>
@@ -180,7 +181,7 @@ const Dashboard = () => {
                     )}
                   </div>
                   <p className="text-xs text-center text-muted-foreground mt-1">
-                    {t("dashboard_progress_in_progress")}
+                    {t("progress_in_progress")}
                   </p>
                 </div>
 
@@ -193,7 +194,7 @@ const Dashboard = () => {
                     )}
                   </div>
                   <p className="text-xs text-center text-muted-foreground mt-1">
-                    {t("dashboard_progress_completed")}
+                    {t("progress_completed")}
                   </p>
                 </div>
 
@@ -206,7 +207,7 @@ const Dashboard = () => {
                     )}
                   </div>
                   <p className="text-xs text-center text-muted-foreground mt-1">
-                    {t("dashboard_progress_points")}
+                    {t("progress_points")}
                   </p>
                 </div>
 
@@ -218,7 +219,7 @@ const Dashboard = () => {
                     <TrendingUp className="h-5 w-5 text-purple-600 dark:text-purple-400 ml-1" />
                   </div>
                   <p className="text-xs text-center text-muted-foreground mt-1">
-                    {t("dashboard_progress_streak")}
+                    {t("progress_streak")}
                   </p>
                 </div>
               </div>
@@ -236,19 +237,17 @@ const Dashboard = () => {
             <Card>
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <CardTitle>{t("dashboard_my_recent_courses")}</CardTitle>
+                  <CardTitle>{t("my_recent_courses")}</CardTitle>
                   <Button
                     variant="link"
                     onClick={() => router.push("/my-courses")}
                     className="text-primary"
                   >
-                    {t("dashboard_view_all")}
+                    {t("view_all")}
                     <ChevronRight className="h-4 w-4 ml-1" />
                   </Button>
                 </div>
-                <CardDescription>
-                  {t("dashboard_continue_learning")}
-                </CardDescription>
+                <CardDescription>{t("continue_learning")}</CardDescription>
               </CardHeader>
               <CardContent>
                 {coursesLoading ? (
@@ -282,7 +281,7 @@ const Dashboard = () => {
                             }
                           >
                             {course.progress === 100
-                              ? t("dashboard_completed")
+                              ? t("completed")
                               : `${course.progress}%`}
                           </Badge>
                         </div>
@@ -295,7 +294,7 @@ const Dashboard = () => {
                             <BookOpen className="h-4 w-4 mr-1" />
                             <span>
                               {course.completedChapters}/{course.chaptersCount}{" "}
-                              {t("dashboard_chapters")}
+                              {t("chapters")}
                             </span>
                           </div>
                           <Button
@@ -303,10 +302,10 @@ const Dashboard = () => {
                             onClick={() => router.push(`/courses/${course.id}`)}
                           >
                             {course.progress === 0
-                              ? t("dashboard_start")
+                              ? t("start")
                               : course.progress === 100
-                              ? t("dashboard_review")
-                              : t("dashboard_continue")}
+                              ? t("review")
+                              : t("continue")}
                           </Button>
                         </div>
                       </div>
@@ -316,13 +315,13 @@ const Dashboard = () => {
                   <div className="text-center py-8">
                     <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-20" />
                     <h3 className="font-medium text-lg mb-2">
-                      {t("dashboard_no_courses")}
+                      {t("no_courses")}
                     </h3>
                     <p className="text-muted-foreground mb-4">
-                      {t("dashboard_start_learning")}
+                      {t("start_learning")}
                     </p>
                     <Button onClick={() => router.push("/courses")}>
-                      {t("dashboard_browse_courses")}
+                      {t("browse_courses")}
                     </Button>
                   </div>
                 )}
@@ -332,23 +331,17 @@ const Dashboard = () => {
             {/* Learning insights */}
             <Card>
               <CardHeader>
-                <CardTitle>{t("dashboard_learning_insights")}</CardTitle>
-                <CardDescription>
-                  {t("dashboard_learning_progress")}
-                </CardDescription>
+                <CardTitle>{t("learning_insights")}</CardTitle>
+                <CardDescription>{t("learning_progress")}</CardDescription>
               </CardHeader>
               <CardContent>
                 <Tabs defaultValue="progress">
                   <TabsList className="mb-4">
-                    <TabsTrigger value="progress">
-                      {t("dashboard_progress")}
-                    </TabsTrigger>
+                    <TabsTrigger value="progress">{t("progress")}</TabsTrigger>
                     <TabsTrigger value="achievements">
-                      {t("dashboard_achievements")}
+                      {t("achievements")}
                     </TabsTrigger>
-                    <TabsTrigger value="activity">
-                      {t("dashboard_activity")}
-                    </TabsTrigger>
+                    <TabsTrigger value="activity">{t("activity")}</TabsTrigger>
                   </TabsList>
 
                   <TabsContent value="progress">
@@ -361,10 +354,10 @@ const Dashboard = () => {
                           </div>
                           <div>
                             <h3 className="font-medium">
-                              {t("dashboard_course_completion")}
+                              {t("course_completion")}
                             </h3>
                             <p className="text-xs text-muted-foreground">
-                              {t("dashboard_overall_progress")}
+                              {t("overall_progress")}
                             </p>
                           </div>
                         </div>
@@ -409,12 +402,12 @@ const Dashboard = () => {
                               </div>
                               <div className="text-sm text-muted-foreground lowercase">
                                 {completedCourses.length} of {courses.length}{" "}
-                                {t("dashboard_course_completed")}
+                                {t("course_completed")}
                               </div>
                             </>
                           ) : (
                             <p className="text-muted-foreground py-4">
-                              {t("dashboard_no_course_data")}
+                              {t("no_course_data")}
                             </p>
                           )}
                         </div>
@@ -428,10 +421,10 @@ const Dashboard = () => {
                           </div>
                           <div>
                             <h3 className="font-medium">
-                              {t("dashboard_next_achievement")}
+                              {t("next_achievement")}
                             </h3>
                             <p className="text-xs text-muted-foreground">
-                              {t("dashboard_current_goal")}
+                              {t("current_goal")}
                             </p>
                           </div>
                         </div>
@@ -448,8 +441,7 @@ const Dashboard = () => {
                             className="h-2 mb-2"
                           />
                           <div className="text-right text-sm">
-                            {nextAchievement.progress}%{" "}
-                            {t("dashboard_completed_course")}
+                            {nextAchievement.progress}% {t("completed_course")}
                           </div>
                         </div>
                       </div>
@@ -496,10 +488,10 @@ const Dashboard = () => {
                       <div className="text-center py-8">
                         <Award className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-20" />
                         <h3 className="font-medium text-lg mb-2">
-                          {t("dashboard_no_achievements")}
+                          {t("no_achievements")}
                         </h3>
                         <p className="text-muted-foreground mb-4">
-                          {t("dashboard_earn_achievements")}
+                          {t("earn_achievements")}
                         </p>
                       </div>
                     )}
@@ -514,10 +506,10 @@ const Dashboard = () => {
                           </div>
                           <div>
                             <h3 className="font-medium">
-                              {t("dashboard_activity_streak")}
+                              {t("activity_streak")}
                             </h3>
                             <p className="text-xs text-muted-foreground">
-                              {t("dashboard_keep_learning")}
+                              {t("keep_learning")}
                             </p>
                           </div>
                         </div>
@@ -544,14 +536,14 @@ const Dashboard = () => {
                               ))}
                           </div>
                           <Badge className="bg-green-100 text-green-800">
-                            {activityStreak} {t("dashboard_progress_streak")}
+                            {activityStreak} {t("progress_streak")}
                           </Badge>
                         </div>
                       </div>
 
                       <div className="border rounded-lg p-4">
                         <h3 className="font-medium mb-3">
-                          {t("dashboard_recent_activity")}
+                          {t("recent_activity")}
                         </h3>
                         <div className="space-y-3">
                           {recentCourses.slice(0, 2).map((course, index) => (
@@ -565,8 +557,8 @@ const Dashboard = () => {
                               <div>
                                 <p className="text-sm font-medium">
                                   {course.progress < 100
-                                    ? t("dashboard_continued_course")
-                                    : t("dashboard_completed")}{" "}
+                                    ? t("continued_course")
+                                    : t("completed")}{" "}
                                   {course.title}
                                 </p>
                                 <p className="text-xs text-muted-foreground">
@@ -593,7 +585,7 @@ const Dashboard = () => {
 
             <Card>
               <CardHeader>
-                <CardTitle>{t("dashboard_quick_links")}</CardTitle>
+                <CardTitle>{t("quick_links")}</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-2">
                 <Button
@@ -603,7 +595,7 @@ const Dashboard = () => {
                 >
                   <div className="flex items-center">
                     <BookOpen className="mr-2 h-4 w-4" />
-                    <span>{t("my_course")}</span>
+                    <span>{tCommon("my_courses")}</span>
                   </div>
                   <ArrowUpRight className="h-4 w-4" />
                 </Button>
@@ -614,7 +606,7 @@ const Dashboard = () => {
                 >
                   <div className="flex items-center">
                     <Star className="mr-2 h-4 w-4" />
-                    <span>{t("dashboard_browse_courses")}</span>
+                    <span>{t("browse_courses")}</span>
                   </div>
                   <ArrowUpRight className="h-4 w-4" />
                 </Button>
@@ -625,14 +617,14 @@ const Dashboard = () => {
                 >
                   <div className="flex items-center">
                     <Award className="mr-2 h-4 w-4" />
-                    <span>{t("dashboard_my_certificates")}</span>
+                    <span>{t("my_certificates")}</span>
                   </div>
                   <ArrowUpRight className="h-4 w-4" />
                 </Button>
                 <Button variant="outline" className="justify-between">
                   <div className="flex items-center">
                     <Calendar className="mr-2 h-4 w-4" />
-                    <span>{t("dashboard_learning_schedule")}</span>
+                    <span>{t("learning_schedule")}</span>
                   </div>
                   <ArrowUpRight className="h-4 w-4" />
                 </Button>
@@ -642,9 +634,9 @@ const Dashboard = () => {
             {/* Achievements Summary */}
             <Card>
               <CardHeader>
-                <CardTitle>{t("dashboard_your_achievements")}</CardTitle>
+                <CardTitle>{t("your_achievements")}</CardTitle>
                 <CardDescription>
-                  {t("dashboard_keep_learning_earn_more")}
+                  {t("keep_learning_earn_more")}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -677,7 +669,7 @@ const Dashboard = () => {
                 ) : (
                   <div className="text-center py-4">
                     <p className="text-sm text-muted-foreground">
-                      {t("dashboard_no_achievements")}
+                      {t("no_achievements")}
                     </p>
                   </div>
                 )}
@@ -686,7 +678,7 @@ const Dashboard = () => {
                     variant="ghost"
                     className="w-full text-muted-foreground hover:text-foreground"
                   >
-                    {t("dashboard_view_all_achievements")}
+                    {t("view_all_achievements")}
                   </Button>
                 )}
               </CardContent>
@@ -695,29 +687,29 @@ const Dashboard = () => {
             {/* Upcoming Deadlines or Recommendations */}
             <Card>
               <CardHeader>
-                <CardTitle>{t("dashboard_recommended_for_you")}</CardTitle>
+                <CardTitle>{t("recommended_for_you")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="rounded-md border overflow-hidden">
                   <div className="aspect-video bg-blue-100 flex items-center justify-center relative">
                     <BookOpen className="h-8 w-8 text-blue-500" />
                     <Badge className="absolute top-2 right-2">
-                      {t("dashboard_popular")}
+                      {t("popular")}
                     </Badge>
                   </div>
                   <div className="p-3">
                     <h3 className="font-medium text-sm">
-                      {t("dashboard_recommended_course_title")}
+                      {t("recommended_course_title")}
                     </h3>
                     <p className="text-xs text-muted-foreground mb-3">
-                      {t("dashboard_recommended_course_desc")}
+                      {t("recommended_course_desc")}
                     </p>
                     <Button
                       size="sm"
                       className="w-full"
                       onClick={() => router.push("/courses")}
                     >
-                      {t("dashboard_view_course")}
+                      {t("view_course")}
                     </Button>
                   </div>
                 </div>

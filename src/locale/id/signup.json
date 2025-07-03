@@ -1,0 +1,16 @@
+{
+  "signup": {
+    "title": "Selamat Datang di Learning Center",
+    "already_have_account": "Sudah punya akun?",
+    "name_label": "Nama",
+    "name_placeholder": "Nama lengkap",
+    "email_label": "Email",
+    "email_placeholder": "m@example.com",
+    "password_label": "Kata Sandi",
+    "password_placeholder": "Kata sandi",
+    "submit": "Daftar",
+    "loading": "Mendaftarkan...",
+    "google": "Daftar dengan Google",
+    "have_account": "Sudah memiliki akun?"
+  }
+}

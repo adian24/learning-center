@@ -87,7 +87,7 @@ const levels = ["PEMULA", "MENENGAH", "LANJUT"];
 
 export default function AllCareersView() {
   const router = useRouter();
-  const t = useTranslations();
+  const t = useTranslations("careers");
 
   const [selectedCompanies, setSelectedCompanies] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -151,16 +151,14 @@ export default function AllCareersView() {
   }, []);
 
   return (
-    <section className="bg-white px-6 py-10">
+    <section className="bg-white px-6">
       <div className="max-w-8xl mx-auto">
         <div className="lg:hidden flex justify-end mb-4">
           <button
             onClick={() => setShowFilter(!showFilter)}
             className="px-4 py-2 rounded-md border border-sky-200 bg-white text-sky-700 shadow-sm text-sm"
           >
-            {showFilter
-              ? t("landing_careers_close_filter")
-              : t("landing_careers_open_filter")}
+            {showFilter ? t("careers_close_filter") : t("careers_open_filter")}
           </button>
         </div>
 
@@ -173,12 +171,12 @@ export default function AllCareersView() {
             )}
           >
             <h3 className="text-lg font-semibold text-sky-700 border-b pb-2">
-              Filter Pencarian
+              {t("careers_filter_title")}
             </h3>
 
             <div>
               <h4 className="text-sm font-medium text-gray-700 mb-2">
-                Perusahaan
+                {t("careers_filter_company")}
               </h4>
               <div className="space-y-1">
                 {companies.map((company) => (
@@ -204,7 +202,7 @@ export default function AllCareersView() {
 
             <div>
               <h4 className="text-sm font-medium text-gray-700 mb-2">
-                Kategori
+                {t("careers_filter_category")}
               </h4>
               <div className="space-y-1">
                 {categories.map((cat) => (
@@ -227,7 +225,7 @@ export default function AllCareersView() {
 
             <div>
               <h4 className="text-sm font-medium text-gray-700 mb-2">
-                Tingkat
+                {t("careers_filter_level")}
               </h4>
               <div className="space-y-1">
                 {levels.map((lvl) => (
@@ -245,7 +243,9 @@ export default function AllCareersView() {
             </div>
 
             <div>
-              <h4 className="text-sm font-medium text-gray-700 mb-2">Lokasi</h4>
+              <h4 className="text-sm font-medium text-gray-700 mb-2">
+                {t("careers_filter_location")}
+              </h4>
               <div className="space-y-1">
                 {uniqueLocations.map((loc) => (
                   <label key={loc} className="flex items-center gap-2 text-sm">
@@ -297,7 +297,7 @@ export default function AllCareersView() {
                   setMaxPrice(undefined);
                 }}
               >
-                Reset Filter
+                {t("careers_reset_filter")}
               </button>
             </div>
           </aside>
@@ -336,7 +336,7 @@ export default function AllCareersView() {
                 ))
               ) : (
                 <p className="text-gray-500 text-sm col-span-full">
-                  Tidak ada lowongan yang sesuai dengan filter saat ini.
+                  {t("careers_not_found")}
                 </p>
               )}
             </div>
