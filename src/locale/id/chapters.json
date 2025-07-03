@@ -1,7 +1,7 @@
 {
   "chapters": {
     "create_chapter_title": "Create New Chapter",
-    "create_chapter_description": "Create a chapter for course <b>{title}</b>",
+    "create_chapter_description": "Create a chapter for course {title}",
     "form_title_label": "Title",
     "form_title_placeholder": "Enter Title",
     "form_title_required": "Title is required",

@@ -1,7 +1,7 @@
 {
   "chapters": {
     "create_chapter_title": "Buat Chapter Baru",
-    "create_chapter_description": "Buat Chapter untuk Course <b>{title}</b>",
+    "create_chapter_description": "Buat Chapter untuk Course {title}",
     "form_title_label": "Judul",
     "form_title_placeholder": "Masukkan Judul",
     "form_title_required": "Judul wajib diisi",
