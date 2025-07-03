@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/alt-text */
 "use client";
 
 import { useSecureImage } from "@/hooks/use-secure-media";
@@ -139,22 +140,26 @@ export function AvatarImage({
   userName,
   size = 40,
   className = "",
+  classNameSecureImage = "object-contain",
+  rounded = "rounded-full",
 }: {
   imageKey: string | null | undefined;
   userName: string;
   size?: number;
   className?: string;
+  classNameSecureImage?: string;
+  rounded?: string;
 }) {
   return (
     <div
-      className={`relative overflow-hidden rounded-full ${className}`}
+      className={`relative overflow-hidden ${rounded} ${className}`}
       style={{ width: size, height: size }}
     >
       <SecureImage
         imageKey={imageKey}
         alt={`${userName}'s avatar`}
         fill
-        className="object-cover"
+        className={`transition-transform duration-300 ${classNameSecureImage}`}
         fallbackSrc="/placeholder-avatar.jpg"
       />
     </div>

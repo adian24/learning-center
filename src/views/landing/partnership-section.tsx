@@ -10,19 +10,16 @@ import ptsLogo from "@/assets/companies-logo/pts.png";
 import PartnerShimmer from "./shimmer/partner-shimmer";
 import { useEffect } from "react";
 import { useTranslations } from "next-intl";
-
-const partners = [
-  { name: "TSI", logo: tsiLogo },
-  { name: "DMS", logo: dmsLogo },
-  { name: "JIT", logo: jitLogo },
-  { name: "PTS", logo: ptsLogo },
-];
+import { useCompanies } from "@/hooks/use-companies";
+import { AvatarImage } from "@/components/media/SecureImage";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export default function PartnershipSection() {
   const t = useTranslations("landing");
   const router = useRouter();
 
-  const isLoading = false;
+  const { data, isLoading } = useCompanies(1, 10);
+  const companies = data?.companies || [];
 
   const [sliderRef, slider] = useKeenSlider<HTMLDivElement>({
     loop: true,
@@ -86,8 +83,11 @@ export default function PartnershipSection() {
       >
         {isLoading
           ? Array.from({ length: 4 }).map((_, i) => <PartnerShimmer key={i} />)
-          : partners.map((partner, idx) => (
-              <div key={idx} className="keen-slider__slide flex justify-center">
+          : companies?.map((company) => (
+              <div
+                key={company.id}
+                className="keen-slider__slide flex justify-center"
+              >
                 <div
                   onClick={() => {
                     const isLoggedIn =
@@ -95,22 +95,31 @@ export default function PartnershipSection() {
                       !!localStorage.getItem("token");
                     router.push(
                       isLoggedIn
-                        ? `/career/${partner.name.toLowerCase()}`
+                        ? `/career/${company.name.toLowerCase()}`
                         : "/sign-in"
                     );
                   }}
                   className="cursor-pointer group p-6 transition-all w-[200px] flex flex-col items-center"
                 >
-                  <div className="relative w-[180px] h-[60px]">
-                    <Image
-                      src={partner.logo}
-                      alt={partner.name}
-                      fill
-                      className="shadow-inner shadow-transparent object-contain transition-transform duration-300 ease-in-out group-hover:scale-105"
-                    />
+                  <div className="justify-center items-center w-50 h-50 relative">
+                    {company.logoUrl ? (
+                      <AvatarImage
+                        imageKey={company.logoUrl}
+                        userName={company.name}
+                        size={80}
+                        rounded="rounded-lg"
+                        classNameSecureImage="object-contain group-hover:scale-105"
+                      />
+                    ) : (
+                      <Avatar className="w-20 h-20 rounded-lg bg-gray-100 shadow-inner flex items-center justify-center">
+                        <AvatarFallback className="text-xl font-bold text-gray-600">
+                          {company.name.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
+                    )}
                   </div>
                   <p className="mt-4 text-sm font-medium text-gray-700 group-hover:text-sky-600">
-                    {partner.name}
+                    {company.name}
                   </p>
                 </div>
               </div>
