@@ -53,7 +53,7 @@ import { useQuizDialogStore } from "@/store/use-store-quiz-dialog";
 // Step 1 Schema - Question Details
 const questionSchema = z.object({
   text: z.string().min(1, "Teks pertanyaan wajib diisi"),
-  type: z.enum(["MULTIPLE_CHOICE", "SINGLE_CHOICE", "TRUE_FALSE"], {
+  type: z.enum(["SINGLE_CHOICE", "TRUE_FALSE"], {
     required_error: "Tipe pertanyaan wajib dipilih",
   }),
   points: z.number().min(1, "Minimal 1 poin").max(100, "Maksimal 100 poin"),
@@ -100,13 +100,6 @@ const CreateQuestionDialog: React.FC = () => {
 
   // Question type configurations
   const questionTypeConfig = {
-    MULTIPLE_CHOICE: {
-      label: "Pilihan Ganda (Banyak Jawaban)",
-      description: "Siswa dapat memilih lebih dari satu jawaban yang benar",
-      needsOptions: true,
-      minCorrectOptions: 1,
-      maxCorrectOptions: undefined,
-    },
     SINGLE_CHOICE: {
       label: "Pilihan Ganda (Satu Jawaban)",
       description: "Siswa hanya dapat memilih satu jawaban yang benar",
