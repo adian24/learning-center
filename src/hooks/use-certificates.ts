@@ -180,8 +180,18 @@ export const useCertificateManager = () => {
     try {
       setDownloadingId(certificate.id);
       
+      // Get pre-signed URL for download
+      const response = await fetch(`/api/certificates/download?certificateId=${certificate.id}`);
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to get download URL");
+      }
+      
+      const { url } = await response.json();
+      
       const link = document.createElement("a");
-      link.href = certificate.pdfUrl;
+      link.href = url;
       link.download = `certificate_${certificate.certificateNumber}.pdf`;
       document.body.appendChild(link);
       link.click();
@@ -189,20 +199,34 @@ export const useCertificateManager = () => {
       
       toast.success("Certificate downloaded!");
     } catch (error) {
-      toast.error("Failed to download certificate");
+      toast.error(error instanceof Error ? error.message : "Failed to download certificate");
     } finally {
       setDownloadingId(null);
     }
   };
   
   // View certificate in new tab
-  const viewCertificate = (certificate: Certificate) => {
+  const viewCertificate = async (certificate: Certificate) => {
     if (!certificate.pdfUrl) {
       toast.error("Certificate PDF not available");
       return;
     }
     
-    window.open(certificate.pdfUrl, "_blank");
+    try {
+      // Get pre-signed URL for viewing
+      const response = await fetch(`/api/certificates/view?certificateId=${certificate.id}`);
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to get view URL");
+      }
+      
+      const { url } = await response.json();
+      
+      window.open(url, "_blank");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to view certificate");
+    }
   };
   
   // Share certificate
