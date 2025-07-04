@@ -485,7 +485,9 @@ const QuizDrawer: React.FC<QuizDrawerProps> = ({ isOpen, onClose, quizId }) => {
               <Button
                 variant="outline"
                 onClick={handlePrevious}
-                disabled={currentQuestionIndex === 0}
+                disabled={
+                  currentQuestionIndex === 0 || submitQuizAttempt.isPending
+                }
               >
                 <ChevronLeft className="h-4 w-4 mr-1" />
                 Sebelumnya
@@ -494,7 +496,10 @@ const QuizDrawer: React.FC<QuizDrawerProps> = ({ isOpen, onClose, quizId }) => {
               {currentQuestionIndex === totalQuestions - 1 ? (
                 <Button
                   onClick={() => setShowConfirmSubmit(true)}
-                  disabled={answeredQuestions < totalQuestions || submitQuizAttempt.isPending}
+                  disabled={
+                    answeredQuestions < totalQuestions ||
+                    submitQuizAttempt.isPending
+                  }
                   className="flex-1"
                 >
                   {submitQuizAttempt.isPending ? (
@@ -517,13 +522,16 @@ const QuizDrawer: React.FC<QuizDrawerProps> = ({ isOpen, onClose, quizId }) => {
         )}
       </DrawerContent>
 
-      <Dialog open={showConfirmSubmit} onOpenChange={(open) => {
-        // Prevent closing dialog during submission
-        if (!open && submitQuizAttempt.isPending) {
-          return;
-        }
-        setShowConfirmSubmit(open);
-      }}>
+      <Dialog
+        open={showConfirmSubmit}
+        onOpenChange={(open) => {
+          // Prevent closing dialog during submission
+          if (!open && submitQuizAttempt.isPending) {
+            return;
+          }
+          setShowConfirmSubmit(open);
+        }}
+      >
         <DialogContent className="sm:max-w-[750px]">
           <DialogHeader>
             <DialogTitle>Konfirmasi Submit</DialogTitle>
