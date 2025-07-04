@@ -1,4 +1,3 @@
-// src/sections/my-course/ChapterPlayer.tsx
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,7 +19,6 @@ import { toast } from "sonner";
 import { ChapterVideoPlayer } from "@/components/media/SecureVideo";
 import {
   useChapterStatus,
-  useCourseOverview,
   useUpdateProgress,
 } from "@/hooks/use-chapter-progress";
 import { useQueryClient } from "@tanstack/react-query";
@@ -57,14 +55,12 @@ export default function ChapterPlayer({
   // Use chapter status hook for progress tracking
   const {
     progress,
-    calculation,
     canProceed,
     isCompleted,
     totalQuizzes,
     passedQuizzes,
     refetch,
   } = useChapterStatus(chapter?.id);
-  const { courseProgress } = useCourseOverview(course.id);
   const updateProgressMutation = useUpdateProgress();
   const {
     showModal,
@@ -100,7 +96,10 @@ export default function ChapterPlayer({
     const currentChapterData = getCurrentChapterData();
 
     // For chapters with no quizzes - Next button is always enabled (free or paid)
-    if (!currentChapterData?.quizzes || currentChapterData.quizzes.length === 0) {
+    if (
+      !currentChapterData?.quizzes ||
+      currentChapterData.quizzes.length === 0
+    ) {
       setIsNextEnabled(true);
       return;
     }
@@ -119,7 +118,6 @@ export default function ChapterPlayer({
   // Handle Next Chapter with proper progress update
   const handleNextChapterClick = async () => {
     if (!isNextEnabled || !hasNext || isNextLoading) {
-      console.log("Next button disabled, no next chapter, or loading");
       return;
     }
 
@@ -138,7 +136,7 @@ export default function ChapterPlayer({
 
       // For chapters without quizzes, mark as completed first
       if (!hasQuizzes) {
-        const result = await updateProgressMutation.mutateAsync({
+        await updateProgressMutation.mutateAsync({
           chapterId: chapter.id,
           isCompleted: true,
           watchedSeconds: Math.round(watchedSeconds),
@@ -170,7 +168,7 @@ export default function ChapterPlayer({
           // Check course completion after a short delay
           setTimeout(async () => {
             await checkCourseCompletion();
-          }, 1000);
+          }, 500);
         }
 
         toast.success("Chapter completed!");
@@ -219,11 +217,6 @@ export default function ChapterPlayer({
     try {
       setWatchedSeconds(watchedSeconds);
 
-      console.log("Updating progress:", {
-        chapterId: chapter.id,
-        watchedSeconds: Math.round(watchedSeconds),
-        isCompleted,
-      });
 
       // Use the mutation for consistency
       const result = await updateProgressMutation.mutateAsync({
@@ -232,7 +225,6 @@ export default function ChapterPlayer({
         isCompleted,
       });
 
-      console.log("Progress update result:", result);
 
       // Invalidate course progress immediately
       await queryClient.invalidateQueries({
@@ -242,6 +234,21 @@ export default function ChapterPlayer({
       // Show completion toast only once for video completion
       if (isCompleted && !progress?.isCompleted) {
         toast.success("Video completed!");
+      }
+
+      // Check if this is the last chapter and it's completed, then trigger certificate
+      if (isCompleted) {
+        const currentChapterIndex = chapters.findIndex(
+          (ch) => ch.chapterId === chapter.id
+        );
+        const isLastChapter = currentChapterIndex === chapters.length - 1;
+
+        if (isLastChapter) {
+          // Small delay to ensure progress is saved
+          setTimeout(async () => {
+            await checkCourseCompletion();
+          }, 500);
+        }
       }
     } catch (error) {
       console.error("Failed to update progress:", error);
@@ -407,7 +414,6 @@ export default function ChapterPlayer({
               const isCompleted = ch?.userProgress?.isCompleted;
               const isCurrentChapter = ch.chapterId === chapter.id;
               const isLocked = ch.isLocked;
-              console.log("Chapter:", ch);
 
               return (
                 <div

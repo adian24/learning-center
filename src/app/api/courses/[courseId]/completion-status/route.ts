@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import db from "@/lib/db/db";
 import { NextRequest, NextResponse } from "next/server";
+import { checkAndHandleCourseCompletion } from "@/lib/services/quiz-score-service";
 
 export async function GET(
   req: NextRequest,
@@ -32,7 +33,6 @@ export async function GET(
       where: { id: courseId },
       include: {
         chapters: {
-          where: { isPublished: true },
           orderBy: { position: "asc" },
         },
         teacher: {
@@ -68,7 +68,7 @@ export async function GET(
       completedChapters.length === course.chapters.length &&
       course.chapters.length > 0;
 
-    // Get certificate if exists
+    // Get certificate if exists, or generate if course is completed
     let certificate = null;
     if (isCompleted) {
       certificate = await db.certificate.findUnique({
@@ -79,6 +79,21 @@ export async function GET(
           },
         },
       });
+
+      // If course is completed but no certificate exists, generate it
+      if (!certificate) {
+        await checkAndHandleCourseCompletion(studentProfile.id, courseId);
+        
+        // Fetch the newly created certificate
+        certificate = await db.certificate.findUnique({
+          where: {
+            studentId_courseId: {
+              studentId: studentProfile.id,
+              courseId: courseId,
+            },
+          },
+        });
+      }
     }
 
     return NextResponse.json({

@@ -261,10 +261,9 @@ export async function checkAndHandleCourseCompletion(
 ) {
   try {
     // Get all published chapters for this course
-    const publishedChapters = await db.chapter.findMany({
+    const chapters = await db.chapter.findMany({
       where: {
         courseId: courseId,
-        isPublished: true,
       },
       select: {
         id: true,
@@ -276,8 +275,7 @@ export async function checkAndHandleCourseCompletion(
       },
     });
 
-    if (publishedChapters.length === 0) {
-      console.log("No published chapters found for course:", courseId);
+    if (chapters.length === 0) {
       return;
     }
 
@@ -286,7 +284,7 @@ export async function checkAndHandleCourseCompletion(
       where: {
         studentId: studentId,
         chapterId: {
-          in: publishedChapters.map((ch) => ch.id),
+          in: chapters.map((ch) => ch.id),
         },
       },
       select: {
@@ -301,12 +299,9 @@ export async function checkAndHandleCourseCompletion(
       (p) => p.isCompleted && (p.chapterScore || 0) >= 65
     );
 
-    const isAllChaptersCompleted =
-      completedChapters.length === publishedChapters.length;
+    const isAllChaptersCompleted = completedChapters.length === chapters.length;
 
     if (isAllChaptersCompleted) {
-      console.log(`🎉 Course ${courseId} completed by student ${studentId}`);
-
       // Check if certificate already exists
       const existingCertificate = await db.certificate.findUnique({
         where: {
@@ -332,19 +327,7 @@ export async function checkAndHandleCourseCompletion(
             updatedAt: new Date(),
           },
         });
-
-        console.log(
-          `✅ Certificate generated for student ${studentId}, course ${courseId}`
-        );
-      } else {
-        console.log(
-          `📜 Certificate already exists for student ${studentId}, course ${courseId}`
-        );
       }
-    } else {
-      console.log(
-        `❌ Course not yet completed: ${completedChapters.length}/${publishedChapters.length} chapters`
-      );
     }
   } catch (error) {
     console.error("Error checking course completion:", error);

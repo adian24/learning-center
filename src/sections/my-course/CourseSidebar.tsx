@@ -70,10 +70,6 @@ export default function CourseSidebar({
       ? Math.round((completedChapters / totalChapters) * 100)
       : 0;
 
-  console.log("progressPercentage : ", progressPercentage);
-  console.log("chapters : ", chapters);
-  console.log("currentChapter : ", currentChapter);
-
   return (
     <div className="space-y-6">
       {/* Course Info Card */}
@@ -201,7 +197,7 @@ export default function CourseSidebar({
                 Anda.
               </p>
 
-              <Link href={`/certificate/${course.id}`}>
+              <Link href={`/certificates`}>
                 <Button
                   size="sm"
                   className="w-full bg-green-600 hover:bg-green-700"
@@ -215,7 +211,11 @@ export default function CourseSidebar({
       )}
 
       {/* Quiz Card */}
-      <StudentQuizzes chapterId={currentChapter?.id} />
+      <StudentQuizzes
+        chapterId={currentChapter?.id}
+        courseData={course}
+        chapters={chapters}
+      />
 
       {/* Resources Card */}
       {resources.length > 0 && (

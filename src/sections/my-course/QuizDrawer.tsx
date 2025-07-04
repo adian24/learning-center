@@ -33,21 +33,34 @@ import { Progress } from "@/components/ui/progress";
 import { useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { useChapterStatus } from "@/hooks/use-chapter-progress";
+import { useCourseCompletionDetection } from "@/components/course-completion-modal";
 
 interface QuizDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   quizId: string;
   chapterId: string;
+  courseData?: any;
+  chapters?: any[];
 }
 
-const QuizDrawer: React.FC<QuizDrawerProps> = ({ isOpen, onClose, quizId }) => {
+const QuizDrawer: React.FC<QuizDrawerProps> = ({
+  isOpen,
+  onClose,
+  quizId,
+  chapterId,
+  courseData,
+  chapters,
+}) => {
   const { data: quizData, isLoading: quizLoading } = useStudentQuiz(quizId);
   const { canRetake, attemptsRemaining, bestScore } = useCanRetakeQuiz(quizId);
   const submitQuizAttempt = useSubmitQuizAttempt();
   const params = useParams();
   const courseId = params.courseId as string;
   const queryClient = useQueryClient();
+
+  // Certificate generation hook
+  const { handleCourseCompletion } = useCourseCompletionDetection(courseId);
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, QuizAnswer>>({});
@@ -147,6 +160,19 @@ const QuizDrawer: React.FC<QuizDrawerProps> = ({ isOpen, onClose, quizId }) => {
         await queryClient.invalidateQueries({
           queryKey: ["course-progress", courseId],
         });
+
+        // Wait for queries to refetch and get updated data
+        await queryClient.refetchQueries({
+          queryKey: ["course-progress", courseId],
+        });
+      }
+
+      // Check if this quiz completion triggers course completion (after data is refreshed)
+      if (result.passed && courseData && chapters && chapterId) {
+        // Small delay to ensure all data is fully updated
+        setTimeout(() => {
+          checkAndGenerateCertificate(result.score);
+        }, 1000);
       }
     } catch (error) {
       toast.dismiss();
@@ -154,6 +180,72 @@ const QuizDrawer: React.FC<QuizDrawerProps> = ({ isOpen, onClose, quizId }) => {
       console.error("Submit quiz error:", error);
     }
   }, [quizData, answers, totalQuestions, submitQuizAttempt]);
+
+  // Function to check if course is completed and generate certificate
+  const checkAndGenerateCertificate = async (quizScore: number) => {
+    try {
+      // Get fresh course progress data from server
+      const courseProgressResponse = await fetch(`/api/courses/${courseId}/progress`);
+      const courseProgressData = await courseProgressResponse.json();
+
+      if (!courseProgressData.chapters) return;
+
+      // Find current chapter index in fresh data
+      const currentChapterIndex = courseProgressData.chapters.findIndex(
+        (ch: any) => ch.chapterId === chapterId
+      );
+
+      if (currentChapterIndex === -1) return;
+
+      // Check if this is the last chapter
+      const isLastChapter = currentChapterIndex === courseProgressData.chapters.length - 1;
+      
+      if (!isLastChapter) return;
+
+      // Get current chapter data from fresh data
+      const currentChapter = courseProgressData.chapters[currentChapterIndex];
+      if (!currentChapter) return;
+
+      // Check if this is the last quiz in the chapter
+      const currentQuizIndex = currentChapter.quizzes?.findIndex((q: any) => q.id === quizId);
+      const isLastQuiz = currentQuizIndex === (currentChapter.quizzes?.length || 0) - 1;
+      
+      if (!isLastQuiz) return;
+
+      // Check if all chapters are completed (using fresh data)
+      const allChaptersCompleted = courseProgressData.chapters.every(
+        (chapter: any) => chapter.userProgress?.isCompleted === true
+      );
+
+      if (!allChaptersCompleted) return;
+
+      const response = await fetch(
+        `/api/courses/${courseId}/completion-status`
+      );
+      const completionData = await response.json();
+
+      if (completionData.isCompleted && completionData.certificate) {
+        // Course is completed, show certificate modal
+        handleCourseCompletion({
+          id: courseData.id,
+          title: courseData.title,
+          instructor: completionData.instructor || "Unknown Instructor",
+          category: completionData.category || "General",
+          level: courseData.level || "Beginner",
+          completionDate: completionData.completionDate,
+          certificateUrl: completionData.certificate.pdfUrl,
+          certificateNumber: completionData.certificate.certificateNumber,
+        });
+
+        toast.success(
+          "🎉 Selamat! Anda telah menyelesaikan kursus dan mendapatkan sertifikat!"
+        );
+      }
+    } catch (error) {
+      console.error("Error checking course completion:", error);
+      // Don't show error toast to user since this is secondary functionality
+    }
+  };
 
   const handleClose = () => {
     if (quizStarted && !showResults) {

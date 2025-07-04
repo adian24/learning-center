@@ -335,11 +335,15 @@ const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
               <div className="text-sm text-muted-foreground">
                 <p className="font-medium mb-2">{t("tips_title")}</p>
                 <ul className="space-y-2 text-xs">
-                  {((t("tips") as unknown as string[]) || []).map(
-                    (tip: string, index: number) => (
-                      <li key={index}>• {tip}</li>
-                    )
-                  )}
+                  {[
+                    t("tips.0"),
+                    t("tips.1"),
+                    t("tips.2"),
+                    t("tips.3"),
+                    t("tips.4"),
+                  ].map((tip: string, index: number) => (
+                    <li key={index}>• {tip}</li>
+                  ))}
                 </ul>
               </div>
             </CardContent>

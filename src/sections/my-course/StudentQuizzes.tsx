@@ -17,6 +17,8 @@ import QuizDrawer from "./QuizDrawer";
 
 interface StudentQuizzesProps {
   chapterId: string;
+  courseData?: any;
+  chapters?: any[];
 }
 
 // Quiz Carousel Component
@@ -167,7 +169,7 @@ const QuizCarousel: React.FC<QuizCarouselProps> = ({ quizzes, onOpenQuiz }) => {
   );
 };
 
-const StudentQuizzes = ({ chapterId }: StudentQuizzesProps) => {
+const StudentQuizzes = ({ chapterId, courseData, chapters }: StudentQuizzesProps) => {
   const { data: quizzes, isLoading } = useStudentQuizzes(chapterId);
   const [selectedQuizId, setSelectedQuizId] = useState<string | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -319,6 +321,8 @@ const StudentQuizzes = ({ chapterId }: StudentQuizzesProps) => {
           onClose={handleCloseDrawer}
           quizId={selectedQuizId}
           chapterId={chapterId}
+          courseData={courseData}
+          chapters={chapters}
         />
       )}
     </>
