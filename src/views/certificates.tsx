@@ -14,7 +14,7 @@ import {
   User,
   BookOpen,
   Building,
-  ExternalLink,
+  // ExternalLink,
   RefreshCw,
   Loader2,
 } from "lucide-react";
@@ -31,13 +31,13 @@ export function CertificatesPage() {
     error,
     downloadCertificate,
     viewCertificate,
-    shareCertificate,
-    regenerateCertificate,
+    // shareCertificate,
+    // regenerateCertificate,
     refreshCertificates,
     downloadingId,
-    sharingId,
-    isRegenerating,
-    regeneratingId,
+    // sharingId,
+    // isRegenerating,
+    // regeneratingId,
   } = useCertificateManager();
 
   const {
@@ -291,7 +291,7 @@ export function CertificatesPage() {
                     </Button>
                   </div>
 
-                  <div className="flex gap-2">
+                  {/* <div className="flex gap-2">
                     <Button
                       variant="ghost"
                       size="sm"
@@ -325,7 +325,7 @@ export function CertificatesPage() {
                         ? "Regenerating..."
                         : "Regenerate"}
                     </Button>
-                  </div>
+                  </div> */}
                 </CardContent>
               </Card>
             ))}
