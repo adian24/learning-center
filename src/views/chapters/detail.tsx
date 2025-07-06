@@ -68,11 +68,6 @@ const DetailChapter = ({
                 Free
               </Badge>
             )}
-            {!chapter?.isPublished && (
-              <Badge variant="default" className="bg-orange-400">
-                Draft
-              </Badge>
-            )}
           </div>
         </div>
 
