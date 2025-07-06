@@ -296,37 +296,52 @@ export async function generateCertificatePDF(
   data: CertificateData
 ): Promise<string> {
   try {
-    // Create PDF document
+    console.log("Starting PDF generation for certificate:", data.certificate.certificateNumber);
+    
     // Get secure company logo URL if available
     let companyLogoUrl: string | null = null;
     if (data.course.teacher.company?.logoUrl) {
+      console.log("Getting secure logo URL for company:", data.course.teacher.company.name);
       companyLogoUrl = await getSecureImageUrl(
         data.course.teacher.company.logoUrl
       );
+      console.log("Logo URL obtained:", companyLogoUrl ? "success" : "failed");
     }
+    
     // Create PDF document with secure logo URL
+    console.log("Creating PDF document...");
     const doc = (
       <CertificateDocument data={data} companyLogoUrl={companyLogoUrl} />
     );
 
     // Generate PDF buffer
+    console.log("Generating PDF blob...");
     const pdfBlob = await pdf(doc).toBlob();
+    console.log("PDF blob size:", pdfBlob.size);
+    
     const arrayBuffer = await pdfBlob.arrayBuffer();
     const pdfBuffer = Buffer.from(arrayBuffer);
+    console.log("PDF buffer size:", pdfBuffer.length);
 
     // Upload to S3
     const fileName = `certificates/cert_${
       data.certificate.certificateNumber
     }_${Date.now()}.pdf`;
+    console.log("Uploading to S3 with filename:", fileName);
+    
     const uploadResult = await uploadToS3(
       pdfBuffer,
       fileName,
       "application/pdf"
     );
 
-    return uploadResult.Location || uploadResult.url;
+    const finalUrl = uploadResult.Location || uploadResult.url;
+    console.log("PDF uploaded successfully. Final URL:", finalUrl);
+
+    return finalUrl;
   } catch (error) {
     console.error("Error generating certificate PDF:", error);
+    console.error("Error stack:", error instanceof Error ? error.stack : error);
     throw new Error("Failed to generate certificate PDF");
   }
 }
@@ -350,6 +365,11 @@ async function uploadToS3(
   contentType: string
 ): Promise<{ Location?: string; url: string }> {
   try {
+    console.log("S3 Upload - Bucket:", BUCKET_NAME);
+    console.log("S3 Upload - Key:", fileName);
+    console.log("S3 Upload - Buffer size:", buffer.length);
+    console.log("S3 Upload - Content type:", contentType);
+    
     const uploadCommand = new PutObjectCommand({
       Bucket: BUCKET_NAME,
       Key: fileName,
@@ -362,10 +382,13 @@ async function uploadToS3(
       },
     });
 
-    await s3Client.send(uploadCommand);
+    console.log("Sending upload command to S3...");
+    const result = await s3Client.send(uploadCommand);
+    console.log("S3 upload result:", result);
 
     // Return the URL where the file can be accessed
     const url = `${process.env.NEXT_PUBLIC_S3_ENDPOINT}/${BUCKET_NAME}/${fileName}`;
+    console.log("Generated S3 URL:", url);
 
     return {
       Location: url,
@@ -373,6 +396,7 @@ async function uploadToS3(
     };
   } catch (error) {
     console.error("Error uploading to S3:", error);
+    console.error("S3 Error details:", error instanceof Error ? error.message : error);
     throw new Error("Failed to upload certificate to S3");
   }
 }

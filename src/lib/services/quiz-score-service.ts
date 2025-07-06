@@ -339,7 +339,11 @@ async function generateCourseCompletionCertificate(
   studentId: string,
   courseId: string
 ) {
+  let certificateId: string | null = null;
+  
   try {
+    console.log(`Starting certificate generation for student ${studentId}, course ${courseId}`);
+    
     // Get course and student data
     const [course, student] = await Promise.all([
       db.course.findUnique({
@@ -366,8 +370,11 @@ async function generateCourseCompletionCertificate(
       throw new Error("Course or student not found");
     }
 
+    console.log(`Found course: ${course.title}, student: ${student.user.name}`);
+
     // Generate unique certificate number
     const certificateNumber = await generateCertificateNumber();
+    console.log(`Generated certificate number: ${certificateNumber}`);
 
     // Create certificate record
     const certificate = await db.certificate.create({
@@ -380,22 +387,43 @@ async function generateCourseCompletionCertificate(
       },
     });
 
-    // Generate PDF certificate (implement this separately)
+    certificateId = certificate.id;
+    console.log(`Certificate record created with ID: ${certificateId}`);
+
+    // Generate PDF certificate
+    console.log("Starting PDF generation...");
     const pdfUrl = await generateCertificatePDF({
       certificate,
       student,
       course,
     });
 
+    console.log(`PDF generated successfully, URL: ${pdfUrl}`);
+
     // Update certificate with PDF URL
-    await db.certificate.update({
+    const updatedCertificate = await db.certificate.update({
       where: { id: certificate.id },
       data: { pdfUrl },
     });
 
-    return certificate;
+    console.log(`Certificate updated with PDF URL: ${updatedCertificate.pdfUrl}`);
+
+    return updatedCertificate;
   } catch (error) {
     console.error("Error generating certificate:", error);
+    
+    // If certificate was created but PDF generation failed, try to clean up
+    if (certificateId) {
+      try {
+        await db.certificate.delete({
+          where: { id: certificateId },
+        });
+        console.log(`Cleaned up certificate record ${certificateId} due to error`);
+      } catch (cleanupError) {
+        console.error("Error cleaning up certificate:", cleanupError);
+      }
+    }
+    
     throw error;
   }
 }
