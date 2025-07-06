@@ -47,7 +47,6 @@ const TableChapter = ({ chapters }: TableChapterProps) => {
           <TableRow>
             <TableHead className="w-12">No</TableHead>
             <TableHead>Title</TableHead>
-            <TableHead className="w-24">Status</TableHead>
             <TableHead className="w-24">Akses</TableHead>
             <TableHead className="w-32">Video</TableHead>
             <TableHead className="w-32">Quis</TableHead>
@@ -66,11 +65,6 @@ const TableChapter = ({ chapters }: TableChapterProps) => {
                 >
                   {chapter.title}
                 </Link>
-              </TableCell>
-              <TableCell>
-                <Badge variant={chapter.isPublished ? "default" : "secondary"}>
-                  {chapter.isPublished ? "Published" : "Draft"}
-                </Badge>
               </TableCell>
               <TableCell>
                 <Badge variant={chapter.isFree ? "default" : "secondary"}>
