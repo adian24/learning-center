@@ -36,7 +36,7 @@ export function SnapCheckout({
   // Load Midtrans Snap script
   useEffect(() => {
     const snapScript = document.createElement("script");
-    snapScript.src = "https://app.sandbox.midtrans.com/snap/snap.js";
+    snapScript.src = process.env.NEXT_PUBLIC_MIDTRANS_SNAP_URL || "";
     snapScript.type = "text/javascript";
     snapScript.setAttribute(
       "data-client-key",
