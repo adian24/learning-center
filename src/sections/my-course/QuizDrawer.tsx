@@ -185,35 +185,42 @@ const QuizDrawer: React.FC<QuizDrawerProps> = ({
   const checkAndGenerateCertificate = async (quizScore: number) => {
     try {
       // Get fresh course progress data from server
-      const courseProgressResponse = await fetch(`/api/courses/${courseId}/progress`);
+      const courseProgressResponse = await fetch(
+        `/api/student/chapter-progress?courseId=${courseId}`
+      );
       const courseProgressData = await courseProgressResponse.json();
 
-      if (!courseProgressData.chapters) return;
+      if (!courseProgressData.courseProgress) return;
 
       // Find current chapter index in fresh data
-      const currentChapterIndex = courseProgressData.chapters.findIndex(
+      const currentChapterIndex = courseProgressData.courseProgress.findIndex(
         (ch: any) => ch.chapterId === chapterId
       );
 
       if (currentChapterIndex === -1) return;
 
       // Check if this is the last chapter
-      const isLastChapter = currentChapterIndex === courseProgressData.chapters.length - 1;
-      
+      const isLastChapter =
+        currentChapterIndex === courseProgressData.courseProgress.length - 1;
+
       if (!isLastChapter) return;
 
       // Get current chapter data from fresh data
-      const currentChapter = courseProgressData.chapters[currentChapterIndex];
+      const currentChapter =
+        courseProgressData.courseProgress[currentChapterIndex];
       if (!currentChapter) return;
 
       // Check if this is the last quiz in the chapter
-      const currentQuizIndex = currentChapter.quizzes?.findIndex((q: any) => q.id === quizId);
-      const isLastQuiz = currentQuizIndex === (currentChapter.quizzes?.length || 0) - 1;
-      
+      const currentQuizIndex = currentChapter.quizzes?.findIndex(
+        (q: any) => q.id === quizId
+      );
+      const isLastQuiz =
+        currentQuizIndex === (currentChapter.quizzes?.length || 0) - 1;
+
       if (!isLastQuiz) return;
 
       // Check if all chapters are completed (using fresh data)
-      const allChaptersCompleted = courseProgressData.chapters.every(
+      const allChaptersCompleted = courseProgressData.courseProgress.every(
         (chapter: any) => chapter.userProgress?.isCompleted === true
       );
 
