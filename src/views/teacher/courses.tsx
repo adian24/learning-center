@@ -26,8 +26,6 @@ export default function TeacherCourses() {
     perPage,
   });
 
-  console.log("COUSRE : ", data);
-
   const courses = data?.courses ?? [];
   const totalPages = data?.meta.totalPages || 1;
   const paginationItems = generatePaginationItems(page, totalPages);
