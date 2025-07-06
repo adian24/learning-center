@@ -21,6 +21,8 @@ import { BookOpen, Calendar, Users } from "lucide-react";
 import { formatPrice } from "@/utils/formatPrice";
 import { TeacherCourse } from "@/hooks/use-teacher-courses-query";
 import { useTranslations } from "next-intl";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { AvatarImage } from "@/components/media/SecureImage";
 
 interface CourseListProps {
   courses: TeacherCourse[];
@@ -40,7 +42,7 @@ const CourseList: React.FC<CourseListProps> = ({ courses }) => {
             <TableHead className="text-center">{t("table_students")}</TableHead>
             <TableHead className="text-center">{t("table_chapters")}</TableHead>
             <TableHead>{t("table_price")}</TableHead>
-            <TableHead>{t("table_last_updated")}</TableHead>
+            <TableHead>{t("table_company")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -58,8 +60,14 @@ const CourseList: React.FC<CourseListProps> = ({ courses }) => {
                 </div>
               </TableCell>
               <TableCell>
-                <Badge className="bg-green-100 text-green-800">
-                  {t("status_published")}
+                <Badge
+                  className={`${
+                    course.isPublished
+                      ? "bg-green-100 text-green-800"
+                      : "bg-yellow-100 text-yellow-800"
+                  }`}
+                >
+                  {course.isPublished ? "Published" : "Draft"}
                 </Badge>
               </TableCell>
               <TableCell>
@@ -107,10 +115,26 @@ const CourseList: React.FC<CourseListProps> = ({ courses }) => {
                 </div>
               </TableCell>
               <TableCell>
-                <div className="flex items-center">
-                  <Calendar className="h-4 w-4 mr-1" />
-                  {new Date().toLocaleDateString()}
-                </div>
+                {course.teacher?.company && (
+                  <div className="flex items-center gap-2 mt-2 p-2 bg-gray-50 rounded-md">
+                    {course.teacher?.company.logoUrl ? (
+                      <Avatar className="h-6 w-6">
+                        <AvatarImage
+                          imageKey={course.teacher?.company.logoUrl}
+                          userName={course.teacher?.company.name}
+                          size={22}
+                        />
+                      </Avatar>
+                    ) : (
+                      <AvatarFallback className="text-xs">
+                        {course.teacher?.company.name.charAt(0)}
+                      </AvatarFallback>
+                    )}
+                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                      <span>{course.teacher?.company.name}</span>
+                    </div>
+                  </div>
+                )}
               </TableCell>
             </TableRow>
           ))}

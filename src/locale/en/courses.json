@@ -149,6 +149,7 @@
     "table_chapters": "Chapters",
     "table_price": "Price",
     "table_last_updated": "Last Updated",
+    "table_company": "Company",
     "status_published": "Published",
     "tooltip_students": "{count} students enrolled",
     "tooltip_chapters": "{count} chapters",

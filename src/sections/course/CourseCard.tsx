@@ -7,9 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Course } from "@/lib/types";
-import { BookOpen, Users, CheckCircle, Building2 } from "lucide-react";
-import CourseActions from "./CourseActions";
+import { BookOpen, Users } from "lucide-react";
 import { formatPrice } from "@/utils/formatPrice";
 import { AvatarImage, CourseImageCard } from "@/components/media/SecureImage";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -20,8 +18,6 @@ interface CourseCardProps {
 }
 
 const TeacherCourseCard = ({ course }: CourseCardProps) => {
-  console.log("Rendering TeacherCourseCard for course:", course);
-
   return (
     <Card key={course.id} className="flex flex-col">
       <div className="relative">
