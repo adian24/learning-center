@@ -15,8 +15,12 @@ import {
   Video,
   VideoOff,
   LockKeyhole,
+  Award,
+  ArrowUpRight,
 } from "lucide-react";
 import { CourseImageCard } from "@/components/media/SecureImage";
+import { StarFilledIcon } from "@radix-ui/react-icons";
+import Link from "next/link";
 
 interface CourseOverviewProps {
   course: any;
@@ -38,9 +42,19 @@ export default function CourseOverview({
     totalChapters > 0
       ? Math.round((completedChapters / totalChapters) * 100)
       : 0;
+  const completed = progressPercentage === 100;
 
   // Get next chapter to continue
   const nextChapter = chapters.find((ch) => !ch.userProgress?.isCompleted);
+  let playText = "";
+  if (progressPercentage === 0) {
+    playText = "Start Learning";
+  } else if (progressPercentage > 0 && progressPercentage < 100) {
+    playText = "Continue Learning";
+  } else {
+    playText = "Review Course";
+  }
+
   const lastWatchedChapter = chapters
     .filter((ch) => ch.userProgress?.watchedSeconds > 0)
     .sort(
@@ -65,7 +79,7 @@ export default function CourseOverview({
                 courseTitle={course.title}
                 className="aspect-video w-full"
               />
-              {continueChapter && (
+              {!completed ? (
                 <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
                   <Button
                     size="lg"
@@ -73,17 +87,44 @@ export default function CourseOverview({
                     onClick={() => onChapterSelect(continueChapter.id)}
                   >
                     <PlayCircle className="h-5 w-5 mr-2" />
-                    {lastWatchedChapter ? "Continue" : "Start"} Learning
+                    {playText}
                   </Button>
+                </div>
+              ) : (
+                <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                  <Link href="/certificates">
+                    <Button
+                      size="lg"
+                      className="bg-white/90 text-green-600 hover:bg-white"
+                    >
+                      <StarFilledIcon className="h-5 w-5 mr-2 text-yellow-500" />
+                      {playText}
+                    </Button>
+                  </Link>
                 </div>
               )}
             </div>
 
             {/* Course Info */}
             <div className="md:col-span-2">
-              <div className="flex items-center gap-2 mb-3">
-                <Badge variant="outline">{course.category?.name}</Badge>
-                <Badge variant="secondary">{course.level.toLowerCase()}</Badge>
+              <div className="flex justify-between">
+                <div className="flex items-center gap-2 mb-3">
+                  <Badge variant="outline">{course.category?.name}</Badge>
+                  <Badge variant="secondary">
+                    {course.level.toLowerCase()}
+                  </Badge>
+                </div>
+
+                {completed && (
+                  <Button
+                    className="bg-sky-50 border border-sky-300 text-sky-500 font-semibold hover:text-yellow-500 hover:bg-yellow-50 hover:border-yellow-300"
+                    size="lg"
+                  >
+                    <Award />
+                    Lihat Sertifikat
+                    <ArrowUpRight />
+                  </Button>
+                )}
               </div>
 
               <h1 className="text-2xl font-bold mb-3">{course.title}</h1>
