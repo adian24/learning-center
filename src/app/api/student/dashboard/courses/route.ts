@@ -41,9 +41,6 @@ export async function GET() {
             createdAt: true,
             updatedAt: true,
             chapters: {
-              where: {
-                isPublished: true,
-              },
               select: {
                 id: true,
               },
