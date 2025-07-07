@@ -23,9 +23,7 @@ export async function GET(
     const totalChapters = await db.chapter.count({
       where: {
         courseId,
-        title: {
-          mode: "insensitive",
-        },
+        isPublished: true,
       },
     });
 
@@ -33,14 +31,19 @@ export async function GET(
     const chapters = await db.chapter.findMany({
       where: {
         courseId,
-        title: {
-          mode: "insensitive",
-        },
       },
       orderBy: {
         position: "asc",
       },
-      include: {
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        videoUrl: true,
+        position: true,
+        isPublished: true,
+        isFree: true,
+        duration: true,
         course: {
           select: {
             id: true,
@@ -48,8 +51,21 @@ export async function GET(
             teacherId: true,
           },
         },
-        resources: true,
-        quizzes: true,
+        resources: {
+          select: {
+            id: true,
+            title: true,
+            summary: true,
+            readTime: true,
+          },
+        },
+        quizzes: {
+          select: {
+            id: true,
+            title: true,
+            description: true,
+          },
+        },
       },
       skip,
       take: limit,

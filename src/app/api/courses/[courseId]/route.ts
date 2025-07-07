@@ -14,7 +14,6 @@ export async function GET(
     const course = await db.course.findUnique({
       where: {
         id: courseId,
-        isPublished: true,
       },
       include: {
         teacher: {
@@ -42,10 +41,15 @@ export async function GET(
         },
         category: true,
         chapters: {
-          where: {
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            videoUrl: true,
+            position: true,
             isPublished: true,
-          },
-          include: {
+            isFree: true,
+            duration: true,
             resources: {
               select: {
                 id: true,
@@ -88,6 +92,11 @@ export async function GET(
       return NextResponse.json({ error: "Course not found" }, { status: 404 });
     }
 
+    // Calculate total duration from chapters
+    const totalDuration = course.chapters.reduce((total, chapter) => {
+      return total + (chapter.duration || 0);
+    }, 0);
+
     // Check for certificate if user is enrolled
     let certificate = null;
     let studentId = null;
@@ -129,6 +138,7 @@ export async function GET(
     return NextResponse.json({
       course: {
         ...course,
+        duration: totalDuration,
         isEnrolled,
       },
       certificate,
