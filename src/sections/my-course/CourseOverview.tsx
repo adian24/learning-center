@@ -37,7 +37,7 @@ export default function CourseOverview({
   onChapterSelect,
 }: CourseOverviewProps) {
   const { openCreateDialog, openEditDialog } = useReviewDialogStore();
-  
+
   // Check if user has already reviewed this course
   const { data: reviewsData } = useReviews(course.id, 1, 1);
   const userReview = reviewsData?.items?.find(
@@ -78,13 +78,16 @@ export default function CourseOverview({
   // Handle review button click
   const handleReviewClick = () => {
     if (userReview) {
-      openEditDialog(course.id, userReview.id, userReview.rating, userReview.comment || "");
+      openEditDialog(
+        course.id,
+        userReview.id,
+        userReview.rating,
+        userReview.comment || ""
+      );
     } else {
       openCreateDialog(course.id);
     }
   };
-
-  console.log("COurse : ", course);
 
   return (
     <div className="space-y-6">
@@ -119,7 +122,9 @@ export default function CourseOverview({
                     onClick={handleReviewClick}
                   >
                     <StarFilledIcon className="h-5 w-5 mr-2 text-yellow-500" />
-                    {userReview ? `★${userReview.rating} Update Rating` : "Rate Course"}
+                    {userReview
+                      ? `★${userReview.rating} Update Rating`
+                      : "Rate Course"}
                   </Button>
                 </div>
               )}
