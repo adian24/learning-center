@@ -15,7 +15,7 @@ interface ReviewsSectionProps {
 const ReviewsSection = ({ courseId }: ReviewsSectionProps) => {
   const t = useTranslations("reviews");
 
-  const { data, isLoading, isError } = useReviews(courseId, 2);
+  const { data, isLoading, isError } = useReviews(courseId, 1);
 
   const reviews = data?.items;
 
@@ -47,25 +47,28 @@ const ReviewsSection = ({ courseId }: ReviewsSectionProps) => {
               <CardContent className="pt-6">
                 <div className="flex items-start gap-4">
                   <Avatar>
-                    <AvatarImage
-                      src={review.user.image}
-                      alt={review.user.name}
-                    />
-                    <AvatarFallback>
-                      {review.student.user.name?.charAt(0)}
-                    </AvatarFallback>
+                    {review?.student?.user?.image ? (
+                      <AvatarImage
+                        src={review.student.user.image}
+                        alt={review.student.user.name}
+                      />
+                    ) : (
+                      <AvatarFallback>
+                        {review.student.user.name?.charAt(0)}
+                      </AvatarFallback>
+                    )}
                   </Avatar>
                   <div className="flex-1">
                     <div className="flex justify-between items-start">
                       <div>
-                        <h4 className="font-medium">
+                        <h4 className="font-bold text-sm">
                           {review.student.user.name}
                         </h4>
                         <div className="flex items-center mt-1">
                           {[...Array(5)].map((_, i) => (
                             <Star
                               key={i}
-                              className={`h-4 w-4 ${
+                              className={`h-3 w-3 ${
                                 i < review.rating
                                   ? "text-yellow-400 fill-yellow-400"
                                   : "text-gray-300"
@@ -78,7 +81,9 @@ const ReviewsSection = ({ courseId }: ReviewsSectionProps) => {
                         {formatDate(review.createdAt, "dd MMM yyyy")}
                       </span>
                     </div>
-                    <p className="mt-2 text-gray-700">{review.comment}</p>
+                    <p className="mt-2 text-muted-foreground text-xs">
+                      {review.comment}
+                    </p>
                   </div>
                 </div>
               </CardContent>
