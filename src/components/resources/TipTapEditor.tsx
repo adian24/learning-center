@@ -1,6 +1,10 @@
 // TipTapEditor.tsx
 import Highlight from "@tiptap/extension-highlight";
 import TextAlign from "@tiptap/extension-text-align";
+import Table from "@tiptap/extension-table";
+import TableRow from "@tiptap/extension-table-row";
+import TableHeader from "@tiptap/extension-table-header";
+import TableCell from "@tiptap/extension-table-cell";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import React, { useEffect } from "react";
@@ -18,6 +22,9 @@ import {
   Redo,
   Underline,
   Undo,
+  Table as TableIcon,
+  Plus,
+  Minus,
 } from "lucide-react";
 
 const MenuBar = ({ editor }: { editor: any }) => {
@@ -193,6 +200,71 @@ const MenuBar = ({ editor }: { editor: any }) => {
           <AlignJustify className="h-4 w-4" />
         </Button>
 
+        {/* Table Controls */}
+        <div className="w-px bg-gray-300 mx-1"></div>
+        <Button
+          type="button"
+          size={"sm"}
+          onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}
+          className="text-xs border bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+          title="Insert Table"
+        >
+          <TableIcon className="h-4 w-4" />
+        </Button>
+        {editor.isActive("table") && (
+          <>
+            <Button
+              type="button"
+              size={"sm"}
+              onClick={() => editor.chain().focus().addColumnBefore().run()}
+              className="text-xs border bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+              title="Add Column Before"
+            >
+              <Plus className="h-3 w-3" />
+              Col
+            </Button>
+            <Button
+              type="button"
+              size={"sm"}
+              onClick={() => editor.chain().focus().addRowBefore().run()}
+              className="text-xs border bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+              title="Add Row Before"
+            >
+              <Plus className="h-3 w-3" />
+              Row
+            </Button>
+            <Button
+              type="button"
+              size={"sm"}
+              onClick={() => editor.chain().focus().deleteColumn().run()}
+              className="text-xs border bg-white text-red-600 border-red-300 hover:bg-red-50"
+              title="Delete Column"
+            >
+              <Minus className="h-3 w-3" />
+              Col
+            </Button>
+            <Button
+              type="button"
+              size={"sm"}
+              onClick={() => editor.chain().focus().deleteRow().run()}
+              className="text-xs border bg-white text-red-600 border-red-300 hover:bg-red-50"
+              title="Delete Row"
+            >
+              <Minus className="h-3 w-3" />
+              Row
+            </Button>
+            <Button
+              type="button"
+              size={"sm"}
+              onClick={() => editor.chain().focus().deleteTable().run()}
+              className="text-xs border bg-red-500 text-white border-red-500 hover:bg-red-600"
+              title="Delete Table"
+            >
+              Delete Table
+            </Button>
+          </>
+        )}
+
         {/* Undo/Redo */}
         <div className="flex gap-1">
           <Button
@@ -247,6 +319,12 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({
       TextAlign.configure({
         types: ["heading", "paragraph"],
       }),
+      Table.configure({
+        resizable: true,
+      }),
+      TableRow,
+      TableHeader,
+      TableCell,
     ],
     content: value || `<p>${placeholder}</p>`,
     onUpdate: ({ editor }) => {
@@ -377,6 +455,55 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({
           [&_.tiptap_p]:my-3
           [&_.tiptap_p]:leading-relaxed
           
+          /* Table styles */
+          [&_.tiptap_table]:border-collapse:separate
+          [&_.tiptap_table]:border-spacing:0
+          [&_.tiptap_table]:width:full
+          [&_.tiptap_table]:my-6
+          [&_.tiptap_table]:border:1px
+          [&_.tiptap_table]:border-gray-300
+          [&_.tiptap_table]:rounded-lg
+          [&_.tiptap_table]:overflow:hidden
+          
+          [&_.tiptap_td]:border:1px
+          [&_.tiptap_td]:border-gray-200
+          [&_.tiptap_td]:min-width:1em
+          [&_.tiptap_td]:px-3
+          [&_.tiptap_td]:py-2
+          [&_.tiptap_td]:vertical-align:top
+          [&_.tiptap_td]:position:relative
+          
+          [&_.tiptap_th]:border:1px
+          [&_.tiptap_th]:border-gray-200
+          [&_.tiptap_th]:min-width:1em
+          [&_.tiptap_th]:px-3
+          [&_.tiptap_th]:py-2
+          [&_.tiptap_th]:vertical-align:top
+          [&_.tiptap_th]:position:relative
+          [&_.tiptap_th]:background-color:rgb(249_250_251)
+          [&_.tiptap_th]:font-weight:600
+          [&_.tiptap_th]:text-align:left
+          
+          [&_.tiptap_.selectedCell]:after:z-20
+          [&_.tiptap_.selectedCell]:after:position:absolute
+          [&_.tiptap_.selectedCell]:after:content:['']
+          [&_.tiptap_.selectedCell]:after:left:0
+          [&_.tiptap_.selectedCell]:after:right:0
+          [&_.tiptap_.selectedCell]:after:top:0
+          [&_.tiptap_.selectedCell]:after:bottom:0
+          [&_.tiptap_.selectedCell]:after:background:rgba(200_200_255_/_0.4)
+          [&_.tiptap_.selectedCell]:after:pointer-events:none
+          
+          [&_.tiptap_.column-resize-handle]:position:absolute
+          [&_.tiptap_.column-resize-handle]:right:-2px
+          [&_.tiptap_.column-resize-handle]:top:0
+          [&_.tiptap_.column-resize-handle]:bottom:-2px
+          [&_.tiptap_.column-resize-handle]:width:4px
+          [&_.tiptap_.column-resize-handle]:background-color:#adf
+          [&_.tiptap_.column-resize-handle]:pointer-events:none
+          
+          [&_.tiptap_p]:within-table-cell:my-1
+
           /* Focus styles */
           [&_.tiptap]:focus-visible:outline-none
         "
