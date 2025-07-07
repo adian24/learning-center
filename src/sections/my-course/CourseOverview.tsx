@@ -92,15 +92,13 @@ export default function CourseOverview({
                 </div>
               ) : (
                 <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                  <Link href="/certificates">
-                    <Button
-                      size="lg"
-                      className="bg-white/90 text-green-600 hover:bg-white"
-                    >
-                      <StarFilledIcon className="h-5 w-5 mr-2 text-yellow-500" />
-                      {playText}
-                    </Button>
-                  </Link>
+                  <Button
+                    size="lg"
+                    className="bg-white/90 text-green-600 hover:bg-white"
+                  >
+                    <StarFilledIcon className="h-5 w-5 mr-2 text-yellow-500" />
+                    {playText}
+                  </Button>
                 </div>
               )}
             </div>
@@ -116,14 +114,16 @@ export default function CourseOverview({
                 </div>
 
                 {completed && (
-                  <Button
-                    className="bg-sky-50 border border-sky-300 text-sky-500 font-semibold hover:text-yellow-500 hover:bg-yellow-50 hover:border-yellow-300"
-                    size="lg"
-                  >
-                    <Award />
-                    Lihat Sertifikat
-                    <ArrowUpRight />
-                  </Button>
+                  <Link href="/certificates">
+                    <Button
+                      className="bg-sky-50 border border-sky-300 text-sky-500 font-semibold hover:text-yellow-500 hover:bg-yellow-50 hover:border-yellow-300"
+                      size="lg"
+                    >
+                      <Award />
+                      Lihat Sertifikat
+                      <ArrowUpRight />
+                    </Button>
+                  </Link>
                 )}
               </div>
 
