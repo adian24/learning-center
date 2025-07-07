@@ -25,6 +25,9 @@ import { useStudentResources } from "@/hooks/use-resources";
 import { useSearchParams } from "next/navigation";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import Link from "next/link";
+import { useReviewDialogStore } from "@/stores/review-dialog-store";
+import { ReviewDialog } from "@/components/reviews/review-dialog";
+import { useReviews } from "@/hooks/use-course-reviews";
 
 interface CourseSidebarProps {
   course: any;
@@ -39,6 +42,13 @@ export default function CourseSidebar({
 }: CourseSidebarProps) {
   const searchParams = useSearchParams();
   const playChapterId = searchParams.get("play") as string;
+  const { openCreateDialog, openEditDialog } = useReviewDialogStore();
+
+  // Check if user has already reviewed this course
+  const { data: reviewsData } = useReviews(course.id, 1, 1);
+  const userReview = reviewsData?.items?.find(
+    (review: any) => review.student.user.id === course.currentUserId
+  );
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedResourceId, setSelectedResourceId] = useState<string | null>(
@@ -69,6 +79,22 @@ export default function CourseSidebar({
     totalChapters > 0
       ? Math.round((completedChapters / totalChapters) * 100)
       : 0;
+
+  // Handle review button click
+  const handleReviewClick = () => {
+    if (userReview) {
+      if (userReview.id) {
+        openEditDialog(
+          course.id,
+          userReview.id,
+          userReview.rating,
+          userReview.comment || ""
+        );
+      }
+    } else {
+      openCreateDialog(course.id);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -165,9 +191,12 @@ export default function CourseSidebar({
                 size="sm"
                 variant="outline"
                 className="w-full border-yellow-300 text-yellow-700 hover:bg-yellow-100"
+                onClick={handleReviewClick}
               >
                 <Star className="h-3 w-3 mr-1" />
-                Review Course
+                {userReview
+                  ? `★${userReview.rating} Update Review`
+                  : "Review Course"}
               </Button>
             </div>
           </CardContent>
@@ -331,6 +360,7 @@ export default function CourseSidebar({
         onClose={handleCloseDrawer}
         resourceId={selectedResourceId}
       />
+      <ReviewDialog />
     </div>
   );
 }

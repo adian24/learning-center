@@ -21,6 +21,9 @@ import {
 import { CourseImageCard } from "@/components/media/SecureImage";
 import { StarFilledIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
+import { useReviewDialogStore } from "@/stores/review-dialog-store";
+import { ReviewDialog } from "@/components/reviews/review-dialog";
+import { useReviews } from "@/hooks/use-course-reviews";
 
 interface CourseOverviewProps {
   course: any;
@@ -33,6 +36,13 @@ export default function CourseOverview({
   chapters,
   onChapterSelect,
 }: CourseOverviewProps) {
+  const { openCreateDialog, openEditDialog } = useReviewDialogStore();
+  
+  // Check if user has already reviewed this course
+  const { data: reviewsData } = useReviews(course.id, 1, 1);
+  const userReview = reviewsData?.items?.find(
+    (review: any) => review.student.user.id === course.currentUserId
+  );
   // Calculate progress
   const totalChapters = chapters.length;
   const completedChapters = chapters.filter(
@@ -65,6 +75,17 @@ export default function CourseOverview({
 
   const continueChapter = lastWatchedChapter || nextChapter || chapters[0];
 
+  // Handle review button click
+  const handleReviewClick = () => {
+    if (userReview) {
+      openEditDialog(course.id, userReview.id, userReview.rating, userReview.comment || "");
+    } else {
+      openCreateDialog(course.id);
+    }
+  };
+
+  console.log("COurse : ", course);
+
   return (
     <div className="space-y-6">
       {/* Course Header */}
@@ -95,9 +116,10 @@ export default function CourseOverview({
                   <Button
                     size="lg"
                     className="bg-white/90 text-green-600 hover:bg-white"
+                    onClick={handleReviewClick}
                   >
                     <StarFilledIcon className="h-5 w-5 mr-2 text-yellow-500" />
-                    {playText}
+                    {userReview ? `★${userReview.rating} Update Rating` : "Rate Course"}
                   </Button>
                 </div>
               )}
@@ -278,6 +300,8 @@ export default function CourseOverview({
           </div>
         </CardContent>
       </Card>
+
+      <ReviewDialog />
     </div>
   );
 }
