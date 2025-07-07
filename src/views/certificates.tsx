@@ -263,7 +263,12 @@ export function CertificatesPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => viewCertificate(certificate)}
+                      onClick={() =>
+                        viewCertificate({
+                          certificateId: certificate.id,
+                          pdfUrl: certificate.pdfUrl || "",
+                        })
+                      }
                       disabled={!certificate.pdfUrl}
                       className="flex-1"
                     >

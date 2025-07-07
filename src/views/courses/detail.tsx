@@ -2,7 +2,7 @@
 
 import SimpleLayout from "@/layout/SimpleLayout.tsx";
 import CardEnrollment from "@/sections/courses/detail/CardEnrollment";
-import ContentTabs from "@/sections/courses/detail/ContentTabs";
+import ContentChapters from "@/sections/courses/detail/ContentChapters";
 import CourseHeader from "@/sections/courses/detail/CourseHeader";
 import CourseSylabus from "@/sections/courses/detail/CourseSylabus";
 import InstructorSection from "@/sections/courses/detail/InstructorSection";
@@ -22,7 +22,7 @@ const CourseDetailPage = () => {
           <div className="lg:col-span-2">
             <CourseHeader courseId={courseId} />
             <CourseSylabus courseId={courseId} />
-            <ContentTabs courseId={courseId} />
+            <ContentChapters courseId={courseId} />
             <InstructorSection courseId={courseId} />
             <ReviewsSection courseId={courseId} />
             <SimilarCourse courseId={courseId} />

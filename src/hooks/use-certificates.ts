@@ -53,14 +53,14 @@ export const useCertificates = () => {
     queryKey: ["certificates"],
     queryFn: async () => {
       const response = await fetch("/api/certificates");
-      
+
       if (!response.ok) {
         if (response.status === 401) {
           throw new Error("Please sign in to view your certificates");
         }
         throw new Error("Failed to load certificates");
       }
-      
+
       return response.json();
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -80,9 +80,9 @@ export const useCertificate = (certificateId: string | null) => {
     queryKey: ["certificate", certificateId],
     queryFn: async () => {
       if (!certificateId) throw new Error("Certificate ID required");
-      
+
       const response = await fetch(`/api/certificates/${certificateId}`);
-      
+
       if (!response.ok) {
         if (response.status === 404) {
           throw new Error("Certificate not found");
@@ -92,7 +92,7 @@ export const useCertificate = (certificateId: string | null) => {
         }
         throw new Error("Failed to load certificate");
       }
-      
+
       return response.json();
     },
     enabled: !!certificateId,
@@ -101,25 +101,29 @@ export const useCertificate = (certificateId: string | null) => {
 };
 
 // Hook for certificate verification (public)
-export const useCertificateVerification = (certificateNumber: string | null) => {
+export const useCertificateVerification = (
+  certificateNumber: string | null
+) => {
   return useQuery<CertificateVerification>({
     queryKey: ["certificate-verify", certificateNumber],
     queryFn: async () => {
       if (!certificateNumber) throw new Error("Certificate number required");
-      
-      const response = await fetch(`/api/certificates/verify/${certificateNumber}`);
-      
+
+      const response = await fetch(
+        `/api/certificates/verify/${certificateNumber}`
+      );
+
       if (!response.ok) {
         // For verification, 404 means invalid certificate
         if (response.status === 404) {
           return {
             valid: false,
-            message: "Certificate not found or invalid"
+            message: "Certificate not found or invalid",
           };
         }
         throw new Error("Error verifying certificate");
       }
-      
+
       return response.json();
     },
     enabled: !!certificateNumber,
@@ -130,7 +134,7 @@ export const useCertificateVerification = (certificateNumber: string | null) => 
 // Hook for certificate regeneration
 export const useCertificateRegenerate = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async (certificateId: string) => {
       const response = await fetch("/api/certificates/regenerate", {
@@ -140,20 +144,22 @@ export const useCertificateRegenerate = () => {
         },
         body: JSON.stringify({ certificateId }),
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.error || "Failed to regenerate certificate");
       }
-      
+
       return response.json();
     },
     onSuccess: (data, certificateId) => {
       toast.success("Certificate regenerated successfully!");
-      
+
       // Invalidate and refetch relevant queries
       queryClient.invalidateQueries({ queryKey: ["certificates"] });
-      queryClient.invalidateQueries({ queryKey: ["certificate", certificateId] });
+      queryClient.invalidateQueries({
+        queryKey: ["certificate", certificateId],
+      });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to regenerate certificate");
@@ -166,80 +172,93 @@ export const useCertificateManager = () => {
   const queryClient = useQueryClient();
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const [sharingId, setSharingId] = useState<string | null>(null);
-  
+
   const certificates = useCertificates();
   const regenerateMutation = useCertificateRegenerate();
-  
+
   // Download certificate
   const downloadCertificate = async (certificate: Certificate) => {
     if (!certificate.pdfUrl) {
       toast.error("Certificate PDF not available");
       return;
     }
-    
+
     try {
       setDownloadingId(certificate.id);
-      
+
       // Get pre-signed URL for download
-      const response = await fetch(`/api/certificates/download?certificateId=${certificate.id}`);
-      
+      const response = await fetch(
+        `/api/certificates/download?certificateId=${certificate.id}`
+      );
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.error || "Failed to get download URL");
       }
-      
+
       const { url } = await response.json();
-      
+
       const link = document.createElement("a");
       link.href = url;
       link.download = `certificate_${certificate.certificateNumber}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
+
       toast.success("Certificate downloaded!");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to download certificate");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to download certificate"
+      );
     } finally {
       setDownloadingId(null);
     }
   };
-  
+
   // View certificate in new tab
-  const viewCertificate = async (certificate: Certificate) => {
+  const viewCertificate = async (certificate: {
+    pdfUrl: string;
+    certificateId: string;
+  }) => {
     if (!certificate.pdfUrl) {
       toast.error("Certificate PDF not available");
       return;
     }
-    
+
     try {
       // Get pre-signed URL for viewing
-      const response = await fetch(`/api/certificates/view?certificateId=${certificate.id}`);
-      
+      const response = await fetch(
+        `/api/certificates/view?certificateId=${certificate.certificateId}`
+      );
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.error || "Failed to get view URL");
       }
-      
+
       const { url } = await response.json();
-      
+
       window.open(url, "_blank");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to view certificate");
+      toast.error(
+        error instanceof Error ? error.message : "Failed to view certificate"
+      );
     }
   };
-  
+
   // Share certificate
   const shareCertificate = async (certificate: Certificate) => {
     try {
       setSharingId(certificate.id);
-      
+
       const shareData = {
         title: "My Course Certificate",
         text: `I earned a certificate for completing "${certificate.course.title}"!`,
         url: `${window.location.origin}/certificates/verify/${certificate.certificateNumber}`,
       };
-      
+
       if (navigator.share) {
         await navigator.share(shareData);
       } else {
@@ -255,36 +274,36 @@ export const useCertificateManager = () => {
       setSharingId(null);
     }
   };
-  
+
   // Regenerate certificate
   const regenerateCertificate = (certificateId: string) => {
     regenerateMutation.mutate(certificateId);
   };
-  
+
   // Refresh certificates
   const refreshCertificates = () => {
     queryClient.invalidateQueries({ queryKey: ["certificates"] });
   };
-  
+
   return {
     // Data
     certificates: certificates.data?.certificates || [],
     isLoading: certificates.isLoading,
     error: certificates.error,
-    
+
     // Actions
     downloadCertificate,
     viewCertificate,
     shareCertificate,
     regenerateCertificate,
     refreshCertificates,
-    
+
     // States
     downloadingId,
     sharingId,
     isRegenerating: regenerateMutation.isPending,
     regeneratingId: regenerateMutation.variables,
-    
+
     // Utilities
     refetch: certificates.refetch,
   };
@@ -295,7 +314,7 @@ export const useCertificateFilters = (certificates: Certificate[]) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLevel, setSelectedLevel] = useState<string>("all");
   const [sortBy, setSortBy] = useState<"date" | "title">("date");
-  
+
   const filteredCertificates = certificates
     .filter((cert) => {
       const matchesSearch =
@@ -308,11 +327,13 @@ export const useCertificateFilters = (certificates: Certificate[]) => {
     })
     .sort((a, b) => {
       if (sortBy === "date") {
-        return new Date(b.issueDate).getTime() - new Date(a.issueDate).getTime();
+        return (
+          new Date(b.issueDate).getTime() - new Date(a.issueDate).getTime()
+        );
       }
       return a.course.title.localeCompare(b.course.title);
     });
-  
+
   return {
     searchTerm,
     setSearchTerm,

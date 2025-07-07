@@ -25,10 +25,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useCourse } from "@/hooks/use-course";
 import { formatPrice } from "@/utils/formatPrice";
 import { formatVideoDuration } from "@/utils/formatVideoDuration";
-import { CheckCircle, Clock, FileText, Play, User } from "lucide-react";
+import { Award, CheckCircle, Clock, FileText, Play, User } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useCertificateManager } from "@/hooks/use-certificates";
 
 interface CardEnrollmentProps {
   courseId: string;
@@ -36,6 +37,8 @@ interface CardEnrollmentProps {
 
 const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
   const t = useTranslations("courses");
+
+  const { viewCertificate } = useCertificateManager();
 
   const { data: session } = useSession();
   const router = useRouter();
@@ -112,7 +115,7 @@ const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
             <div className="space-y-4">
               <Button
                 onClick={handleStartLearning}
-                className="w-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center gap-2"
+                className="w-full bg-blue-600 hover:bg-blue-700"
               >
                 <Play className="h-4 w-4" />
                 {t("resume_learning")}
@@ -120,11 +123,17 @@ const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
               {hasCertificate && (
                 <Button
                   variant="outline"
-                  className="w-full"
+                  className="w-full bg-green-100 hover:bg-green-200 text-green-600 hover:text-green-800"
                   onClick={() =>
-                    window.open(data?.certificate?.pdfUrl || "", "_blank")
+                    data?.certificate
+                      ? viewCertificate({
+                          certificateId: data.certificate.id || "",
+                          pdfUrl: data.certificate.pdfUrl ?? "",
+                        })
+                      : null
                   }
                 >
+                  <Award className="h-4 w-4" />
                   {t("view_certificate")}
                 </Button>
               )}
