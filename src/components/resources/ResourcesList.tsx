@@ -15,7 +15,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { Badge } from "../ui/badge";
-import TipTapReader from "./TipTapReader";
+import QuillReader from "./QuillReader";
 import { Button } from "../ui/button";
 import { Resource } from "@/lib/types/resource";
 import { useResourcesStore } from "@/store/use-store-resources";
@@ -130,7 +130,7 @@ const ResourcesList = ({ resource }: { resource: Resource }) => {
                   </h4>
                   <div className="bg-muted/30 rounded-lg p-4">
                     {resource.content && (
-                      <TipTapReader content={resource.content} />
+                      <QuillReader content={resource.content} />
                     )}
                   </div>
                 </div>

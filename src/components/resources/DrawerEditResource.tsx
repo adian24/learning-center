@@ -23,7 +23,7 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
-import TiptapEditor from "./TipTapEditor";
+import Editor from "./Editor";
 import { Button } from "../ui/button";
 import { Save, X } from "lucide-react";
 
@@ -166,11 +166,11 @@ const DrawerEditResource = () => {
                     <FormLabel>Konten</FormLabel>
                     <FormControl>
                       <div className="border border-gray-200 rounded-lg overflow-hidden">
-                        <TiptapEditor
+                        <Editor
                           value={field.value}
                           onChange={field.onChange}
                           placeholder="Mulai menulis konten resource Anda..."
-                          className="p-0"
+                          className="min-h-[400px]"
                         />
                       </div>
                     </FormControl>

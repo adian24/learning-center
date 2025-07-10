@@ -1,4 +1,4 @@
-import TipTapReader from "@/components/resources/TipTapReader";
+import QuillReader from "@/components/resources/QuillReader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -87,7 +87,7 @@ const ResourceDrawer = ({
                 </h4>
                 <div className="bg-muted/30 rounded-lg p-4">
                   {resourceData?.content && (
-                    <TipTapReader content={resourceData.content} />
+                    <QuillReader content={resourceData.content} />
                   )}
                 </div>
               </div>

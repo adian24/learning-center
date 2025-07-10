@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/form";
 import { useResourcesStore } from "@/store/use-store-resources";
 import { Save, X } from "lucide-react";
-import TiptapEditor from "./TipTapEditor";
+import Editor from "./Editor";
 import { useCreateResource } from "@/hooks/use-resources";
 
 const resourceSchema = z.object({
@@ -144,11 +144,11 @@ const DrawerCreateResource: React.FC = () => {
                     <FormLabel>Konten</FormLabel>
                     <FormControl>
                       <div className="border border-gray-200 rounded-lg overflow-hidden">
-                        <TiptapEditor
+                        <Editor
                           value={field.value}
                           onChange={field.onChange}
                           placeholder="Mulai menulis konten resource Anda..."
-                          className="p-0"
+                          className="min-h-[400px]"
                         />
                       </div>
                     </FormControl>
