@@ -18,10 +18,12 @@ import { useUpdateCourse } from "@/hooks/use-update-course";
 import {
   ArrowRight,
   Eye,
+  Gift,
   HandCoins,
   LibraryBig,
   Loader2,
   Rocket,
+  Sparkles,
 } from "lucide-react";
 import {
   Card,
@@ -55,11 +57,13 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { useCategories } from "@/hooks/use-categories";
 import LearningObjectives from "@/sections/course/forms-course-detail/LearningObjectives";
+import { useTranslations } from "next-intl";
 
 const CourseDetail = () => {
   const params = useParams();
   const router = useRouter();
   const courseId = params.courseId as string;
+  const t = useTranslations("teacher_form_course");
 
   const { data: course, isLoading: isLoadingCourse } = useCourseQuery(courseId);
   const { mutate: updateCourse, isPending: isUpdating } =
@@ -102,6 +106,9 @@ const CourseDetail = () => {
   const handlePreviewCourse = () => {
     router.push(`/courses/${courseId}`);
   };
+
+  const watchedPrice = form.watch("price");
+  const isFree = !watchedPrice || watchedPrice == 0;
 
   if (!course) {
     return (
@@ -290,16 +297,63 @@ const CourseDetail = () => {
                           <FormControl>
                             <Input
                               {...field}
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              placeholder="e.g. 49.99"
+                              type="text"
+                              placeholder="e.g. 10.000"
                               disabled={isUpdating}
-                              value={field.value}
-                              // startContent="Rp"
+                              value={
+                                field.value
+                                  ? field.value
+                                      .toString()
+                                      .replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+                                  : ""
+                              }
+                              onChange={(e) => {
+                                const rawValue = e.target.value.replace(
+                                  /[^\d]/g,
+                                  ""
+                                );
+                                const numericValue = parseInt(rawValue) || 0;
+                                field.onChange(numericValue);
+                              }}
+                              onKeyPress={(e) => {
+                                // Only allow numbers and dots
+                                if (
+                                  !/[\d.]/.test(e.key) &&
+                                  e.key !== "Backspace" &&
+                                  e.key !== "Delete"
+                                ) {
+                                  e.preventDefault();
+                                }
+                              }}
                             />
                           </FormControl>
                           <FormMessage />
+
+                          {/* Beautiful Free Course Info with Animation */}
+                          <div className="relative overflow-hidden">
+                            <div
+                              className={`transition-all duration-500 ease-in-out transform ${
+                                isFree
+                                  ? "opacity-100 translate-y-0 max-h-20"
+                                  : "opacity-0 -translate-y-2 max-h-0"
+                              }`}
+                            >
+                              <div className="mt-3 p-3 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-lg">
+                                <div className="flex items-center gap-2">
+                                  <div className="flex items-center gap-1">
+                                    <Gift className="h-4 w-4 text-emerald-600" />
+                                    <Sparkles className="h-3 w-3 text-emerald-500 animate-pulse" />
+                                  </div>
+                                  <span className="text-sm font-semibold text-emerald-700">
+                                    {t("field_free_label")}
+                                  </span>
+                                </div>
+                                <p className="text-xs text-emerald-600 mt-1">
+                                  {t("field_free_description")}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
                         </FormItem>
                       )}
                     />
