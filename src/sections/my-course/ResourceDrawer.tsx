@@ -34,7 +34,7 @@ const ResourceDrawer = ({
 
   return (
     <Drawer open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DrawerContent className="h-[95vh] max-w-4xl ml-auto w-full flex flex-col">
+      <DrawerContent className="min-h-screen max-w-4xl ml-auto w-full flex flex-col mt-4 rounded-t-lg">
         <DrawerTitle className="text-2xl font-bold px-6"></DrawerTitle>
 
         {/* header - fixed */}
