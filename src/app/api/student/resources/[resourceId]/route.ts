@@ -56,21 +56,6 @@ export async function GET(
       return new NextResponse("Resource not found", { status: 404 });
     }
 
-    // Verify student has access to this resource through course enrollment
-    const enrolledCourse = await db.enrolledCourse.findFirst({
-      where: {
-        studentId: studentProfile.id,
-        courseId: resource.chapter.course.id,
-        isActive: true,
-      },
-    });
-
-    if (!enrolledCourse) {
-      return new NextResponse("Access denied to this resource", {
-        status: 403,
-      });
-    }
-
     // Return resource data
     return NextResponse.json(resource);
   } catch (error) {

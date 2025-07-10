@@ -37,33 +37,6 @@ export async function GET(req: NextRequest) {
       return new NextResponse("Student profile not found", { status: 404 });
     }
 
-    // Verify student has access to the chapter (through course enrollment)
-    const enrolledCourse = await db.enrolledCourse.findFirst({
-      where: {
-        studentId: studentProfile.id,
-        course: {
-          chapters: {
-            some: {
-              id: chapterId,
-            },
-          },
-        },
-        isActive: true,
-      },
-      include: {
-        course: {
-          select: {
-            id: true,
-            title: true,
-          },
-        },
-      },
-    });
-
-    if (!enrolledCourse) {
-      return new NextResponse("Access denied to this chapter", { status: 403 });
-    }
-
     // Calculate offset for pagination
     const offset = (page - 1) * perPage;
 
