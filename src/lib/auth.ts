@@ -103,7 +103,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
             if (hasPassword && !hasGoogleAccount) {
               // User exists with credentials, prevent Google sign-in
-              return false;
+              throw new Error("EmailExistsWithCredentials");
             }
           }
         }
