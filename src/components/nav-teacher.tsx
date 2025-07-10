@@ -29,7 +29,7 @@ export function NavTeacher({
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>{t("teacher")}</SidebarGroupLabel>
+      <SidebarGroupLabel>Menu</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <SidebarMenuItem key={item.name}>

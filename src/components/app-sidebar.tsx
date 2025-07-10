@@ -23,9 +23,11 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { useTranslations } from "next-intl";
+import { useUserRole } from "@/hooks/use-user-role";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const t = useTranslations("common");
+  const { role } = useUserRole();
 
   const data = {
     teams: [
@@ -88,8 +90,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
-        <NavStudent items={data.navStudent} />
-        <NavTeacher items={data.navTeacher} />
+        {role === "STUDENT" && <NavStudent items={data.navStudent} />}
+        {role === "TEACHER" && <NavTeacher items={data.navTeacher} />}
       </SidebarContent>
       <SidebarFooter>
         <NavUser />

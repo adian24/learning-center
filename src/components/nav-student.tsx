@@ -31,7 +31,7 @@ export function NavStudent({
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>{t("student")}</SidebarGroupLabel>
+      <SidebarGroupLabel>Menu</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item, index) => (
           <SidebarMenuItem key={index}>
