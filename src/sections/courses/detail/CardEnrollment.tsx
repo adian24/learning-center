@@ -23,6 +23,7 @@ import { CourseImageCard } from "@/components/media/SecureImage";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCourse } from "@/hooks/use-course";
+import { useCreateEnrollment } from "@/hooks/use-enrolled-courses";
 import { formatPrice } from "@/utils/formatPrice";
 import { formatVideoDuration } from "@/utils/formatVideoDuration";
 import { Award, CheckCircle, Clock, FileText, Play, User } from "lucide-react";
@@ -30,6 +31,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useCertificateManager } from "@/hooks/use-certificates";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface CardEnrollmentProps {
   courseId: string;
@@ -39,6 +41,8 @@ const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
   const t = useTranslations("courses");
 
   const { viewCertificate } = useCertificateManager();
+  const createEnrollment = useCreateEnrollment();
+  const queryClient = useQueryClient();
 
   const { data: session } = useSession();
   const router = useRouter();
@@ -53,11 +57,34 @@ const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
     return <CardEnrollmentSkeleton />;
   }
 
-  const handleEnrollCourse = () => {
-    if (session?.user) {
-      router.push(`/courses/${courseId}/snap-checkout`);
-    } else {
+  const handleEnrollCourse = async () => {
+    if (!session?.user) {
       router.push("/sign-up");
+      return;
+    }
+
+    const coursePrice = course?.price || 0;
+
+    // If course is free (price is 0), create enrollment directly
+    if (coursePrice == 0) {
+      try {
+        await createEnrollment.mutateAsync({
+          courseId,
+          amount: 0,
+          currency: "IDR",
+        });
+
+        // Invalidate course data to refresh enrollment status
+        queryClient.invalidateQueries({ queryKey: ["course", courseId] });
+
+        // Show success message and redirect to course
+        router.push(`/my-courses/${courseId}`);
+      } catch (error) {
+        console.error("Failed to enroll in free course:", error);
+      }
+    } else {
+      // For paid courses, go to checkout
+      router.push(`/courses/${courseId}/snap-checkout`);
     }
   };
 
@@ -142,8 +169,13 @@ const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
             // Show UI for non-enrolled users
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                  {t("enroll_now")}
+                <Button
+                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  disabled={createEnrollment.isPending}
+                >
+                  {createEnrollment.isPending
+                    ? "Processing..."
+                    : t("enroll_now")}
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
@@ -157,8 +189,13 @@ const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>{t("dialog_cancel")}</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleEnrollCourse}>
-                    {session?.user
+                  <AlertDialogAction
+                    onClick={handleEnrollCourse}
+                    disabled={createEnrollment.isPending}
+                  >
+                    {createEnrollment.isPending
+                      ? "Processing..."
+                      : session?.user
                       ? t("dialog_action_enroll")
                       : t("dialog_action_login")}
                   </AlertDialogAction>
