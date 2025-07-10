@@ -78,12 +78,14 @@ interface Company {
 interface TeacherRegistrationStepperProps {
   onStep1Submit: (values: Step1FormValues) => void;
   onFinalSubmit: () => void;
+  onBackToRoleSelection?: () => void;
   isSubmitting: boolean;
 }
 
 export default function TeacherRegistrationStepper({
   onStep1Submit,
   onFinalSubmit,
+  onBackToRoleSelection,
   isSubmitting,
 }: TeacherRegistrationStepperProps) {
   const {
@@ -191,75 +193,94 @@ export default function TeacherRegistrationStepper({
                   onSubmit={step1Form.handleSubmit(onStep1Submit)}
                   className="space-y-6"
                 >
-                  {/* Profile Image Upload */}
-                  <FormField
-                    control={step1Form.control}
-                    name="profileUrl"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Profile Photo</FormLabel>
-                        <FormControl>
-                          <ProfileImageUpload
-                            value={field.value}
-                            onChange={field.onChange}
-                            size="lg"
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          Upload a professional profile photo (optional)
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {/* Left Section - Profile Photo */}
+                    <div className="space-y-6">
+                      <FormField
+                        control={step1Form.control}
+                        name="profileUrl"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Profile Photo</FormLabel>
+                            <FormControl>
+                              <ProfileImageUpload
+                                value={field.value}
+                                onChange={field.onChange}
+                                size="lg"
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              Upload a professional profile photo (optional)
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
 
-                  {/* Bio Field */}
-                  <FormField
-                    control={step1Form.control}
-                    name="bio"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Bio</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Tell us about yourself, your experience, and what makes you a great teacher..."
-                            className="min-h-[100px]"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          Share your background, teaching philosophy, and
-                          expertise (minimum 50 characters)
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    {/* Right Section - Bio & Expertise */}
+                    <div className="space-y-6">
+                      {/* Bio Field */}
+                      <FormField
+                        control={step1Form.control}
+                        name="bio"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Bio</FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder="Tell us about yourself, your experience, and what makes you a great teacher..."
+                                className="min-h-[120px]"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              Share your background, teaching philosophy, and
+                              expertise (minimum 50 characters)
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                  {/* Expertise Field */}
-                  <FormField
-                    control={step1Form.control}
-                    name="expertise"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Areas of Expertise</FormLabel>
-                        <FormControl>
-                          <MultiSelect
-                            value={field.value}
-                            onChange={field.onChange}
-                            options={EXPERTISE_CATEGORIES}
-                            placeholder="Select your areas of expertise..."
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          Choose the subjects and skills you can teach
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                      {/* Expertise Field */}
+                      <FormField
+                        control={step1Form.control}
+                        name="expertise"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Areas of Expertise</FormLabel>
+                            <FormControl>
+                              <MultiSelect
+                                value={field.value}
+                                onChange={field.onChange}
+                                options={EXPERTISE_CATEGORIES}
+                                placeholder="Select your areas of expertise..."
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              Choose the subjects and skills you can teach
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
 
-                  <div className="flex justify-end">
+                  <div className="flex justify-between pt-4">
+                    {onBackToRoleSelection && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={onBackToRoleSelection}
+                        className="min-w-[120px]"
+                      >
+                        <ArrowLeft className="w-4 h-4 mr-2" />
+                        Back to Role Selection
+                      </Button>
+                    )}
+                    {!onBackToRoleSelection && <div />}
                     <Button type="submit" className="min-w-[120px]">
                       Next <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>

@@ -8,7 +8,6 @@ import {
   GraduationCap,
   UserRoundCheck,
   ShoppingCart,
-  TicketCheck,
   Award,
 } from "lucide-react";
 

@@ -1,30 +1,30 @@
-import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import Landing from "@/views/landing";
 import { Metadata } from "next";
+import Onboarding from "@/views/onboarding";
+import { auth } from "@/lib/auth";
 import db from "@/lib/db/db";
 
 export const metadata: Metadata = {
-  title: "Landing Page | E-Learning",
-  description: "Platform belajar online untuk semua kalangan",
-  keywords: ["e-learning", "belajar online", "kursus", "pelatihan"],
+  title: "Onboarding | E-Learning",
+  description: "Halaman onboarding User",
+  keywords: ["onboarding", "pengajar", "e-learning"],
 };
 
-const Page = async () => {
+export default async function OnboardingPage() {
   const session = await auth();
 
   if (!session?.user) {
-    return <Landing />;
+    redirect("/");
   }
 
   const user = await db.user.findUnique({
     where: { id: session.user.id },
     select: {
       id: true,
-      studentProfile: {
+      teacherProfile: {
         select: { id: true },
       },
-      teacherProfile: {
+      studentProfile: {
         select: { id: true },
       },
     },
@@ -38,7 +38,5 @@ const Page = async () => {
     redirect("/dashboard");
   }
 
-  redirect("/onboarding?step=role-selection");
-};
-
-export default Page;
+  return <Onboarding />;
+}

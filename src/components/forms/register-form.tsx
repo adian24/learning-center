@@ -43,7 +43,7 @@ export default function RegisterForm({
               "use server";
               const res = await signUp(formData);
               if (res.success) {
-                redirect("/");
+                redirect("/sign-in");
               } else {
                 console.error("Failed to sign up");
               }
@@ -105,6 +105,7 @@ export default function RegisterForm({
               await executeAction({
                 actionFn: async () => {
                   await signIn("google");
+                  redirect("/sign-in");
                 },
               });
             }}

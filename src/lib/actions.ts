@@ -24,23 +24,15 @@ const signUp = async (formData: FormData) => {
 
   const hashedPassword = await argon2.hash(validatedData.password);
 
-  return await db.$transaction(async (tx) => {
-    const user = await tx.user.create({
-      data: {
-        name: validatedData.name,
-        email: validatedData.email,
-        password: hashedPassword,
-      },
-    });
-
-    await tx.studentProfile.create({
-      data: {
-        userId: user.id,
-      },
-    });
-
-    return { success: true };
+  await db.user.create({
+    data: {
+      name: validatedData.name,
+      email: validatedData.email,
+      password: hashedPassword,
+    },
   });
+
+  return { success: true };
 };
 
 const checkEmailExists = async (email: string) => {
