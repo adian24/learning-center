@@ -2,7 +2,7 @@
 
 import React, { useRef, useEffect, forwardRef, useImperativeHandle } from "react";
 import QuillEditor from "./QuillEditor";
-import Quill from "quill";
+import ReactQuill, { Quill } from "react-quill-new";
 
 const Delta = Quill.import("delta");
 
@@ -24,18 +24,20 @@ const Editor = forwardRef<EditorRef, EditorProps>((
   { value, onChange, placeholder = "Start writing your content here...", className, readOnly = false },
   ref
 ) => {
-  const quillRef = useRef<Quill | null>(null);
+  const quillRef = useRef<ReactQuill | null>(null);
 
   useImperativeHandle(ref, () => ({
     getContent: () => {
       if (quillRef.current) {
-        return quillRef.current.root.innerHTML;
+        const editor = quillRef.current.getEditor();
+        return editor.root.innerHTML;
       }
       return "";
     },
     setContent: (content: string) => {
       if (quillRef.current) {
-        quillRef.current.root.innerHTML = content;
+        const editor = quillRef.current.getEditor();
+        editor.root.innerHTML = content;
       }
     },
     focus: () => {
@@ -47,16 +49,18 @@ const Editor = forwardRef<EditorRef, EditorProps>((
 
   const handleTextChange = (delta: any, oldDelta: any, source: string) => {
     if (source === 'user' && onChange && quillRef.current) {
-      const content = quillRef.current.root.innerHTML;
+      const editor = quillRef.current.getEditor();
+      const content = editor.root.innerHTML;
       onChange(content);
     }
   };
 
   useEffect(() => {
     if (value !== undefined && quillRef.current) {
-      const currentContent = quillRef.current.root.innerHTML;
+      const editor = quillRef.current.getEditor();
+      const currentContent = editor.root.innerHTML;
       if (currentContent !== value) {
-        quillRef.current.root.innerHTML = value;
+        editor.root.innerHTML = value;
       }
     }
   }, [value]);
@@ -79,7 +83,7 @@ export default Editor;
 
 // Legacy component for backward compatibility
 export const StandaloneEditor = () => {
-  const quillRef = useRef<Quill | null>(null);
+  const quillRef = useRef<ReactQuill | null>(null);
 
   return (
     <div className="w-full max-w-4xl mx-auto p-4">

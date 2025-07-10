@@ -1,8 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
-import Quill from "quill";
-import "quill/dist/quill.snow.css";
+import React from "react";
 
 // Custom styles for read-only display
 const readerStyles = `
@@ -143,7 +141,43 @@ const readerStyles = `
   .quill-reader-container s {
     text-decoration: line-through !important;
   }
+  
+  /* Table styles for quill-table-better */
+  .quill-reader-container .ql-table-better-wrapper {
+    border: 1px solid #e5e7eb !important;
+    border-collapse: collapse !important;
+    margin: 1rem 0 !important;
+  }
+  
+  .quill-reader-container .ql-table-better {
+    border-collapse: collapse !important;
+    width: 100% !important;
+    margin: 0 !important;
+  }
+  
+  .quill-reader-container .ql-table-better td,
+  .quill-reader-container .ql-table-better th {
+    border: 1px solid #e5e7eb !important;
+    padding: 8px 12px !important;
+    vertical-align: top !important;
+    text-align: left !important;
+  }
+  
+  .quill-reader-container .ql-table-better th {
+    background-color: #f9fafb !important;
+    font-weight: 600 !important;
+  }
+  
+  .quill-reader-container .ql-table-better tr:nth-child(even) {
+    background-color: #f9fafb !important;
+  }
+  
+  .quill-reader-container .ql-table-better tr:hover {
+    background-color: #f3f4f6 !important;
+  }
 `;
+
+// No need to register table-better for read-only display
 
 // Inject styles once
 if (typeof document !== 'undefined') {
@@ -165,85 +199,13 @@ const QuillReader: React.FC<QuillReaderProps> = ({
   content,
   className = ""
 }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const quillRef = useRef<Quill | null>(null);
-
-  useEffect(() => {
-    if (!containerRef.current || quillRef.current) return;
-
-    const editorContainer = containerRef.current.appendChild(
-      document.createElement("div")
-    );
-
-    const quill = new Quill(editorContainer, {
-      theme: "snow",
-      readOnly: true,
-      modules: {
-        toolbar: false,
-        clipboard: {
-          matchVisual: false
-        }
-      },
-      formats: [
-        "header",
-        "font",
-        "size",
-        "bold",
-        "italic",
-        "underline",
-        "strike",
-        "color",
-        "background",
-        "script",
-        "list",
-        "indent",
-        "align",
-        "blockquote",
-        "code-block",
-        "link",
-        "image",
-        "video"
-      ]
-    });
-
-    quillRef.current = quill;
-
-    // Set content
-    if (content) {
-      if (content.startsWith('<')) {
-        // HTML content
-        quill.root.innerHTML = content;
-      } else {
-        // Plain text
-        quill.setText(content);
-      }
-    }
-
-    return () => {
-      if (containerRef.current) {
-        containerRef.current.innerHTML = "";
-      }
-      quillRef.current = null;
-    };
-  }, []);
-
-  // Update content when it changes
-  useEffect(() => {
-    if (quillRef.current && content !== undefined) {
-      if (content.startsWith('<')) {
-        // HTML content
-        quillRef.current.root.innerHTML = content;
-      } else {
-        // Plain text
-        quillRef.current.setText(content);
-      }
-    }
-  }, [content]);
-
+  // Clean up temporary elements and render as HTML
+  const cleanContent = content ? content.replace(/<temporary[^>]*>.*?<\/temporary>/g, '') : '';
+  
   return (
     <div 
-      ref={containerRef}
       className={`quill-reader-container ${className}`}
+      dangerouslySetInnerHTML={{ __html: cleanContent }}
     />
   );
 };

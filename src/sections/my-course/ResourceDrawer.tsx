@@ -34,11 +34,11 @@ const ResourceDrawer = ({
 
   return (
     <Drawer open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DrawerContent className="h-screen max-w-xl ml-auto w-full p-4">
+      <DrawerContent className="h-screen max-w-xl ml-auto w-full flex flex-col">
         <DrawerTitle className="text-2xl font-bold px-6"></DrawerTitle>
 
-        {/* header */}
-        <div className="py-4">
+        {/* header - fixed */}
+        <div className="flex-shrink-0 px-4 py-4 border-b">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold">{resourceData?.title}</h2>
             <Button variant="ghost" size="icon" onClick={handleClose}>
@@ -76,8 +76,8 @@ const ResourceDrawer = ({
           </div>
         </div>
 
-        {/* Content */}
-        <div>
+        {/* Content - scrollable */}
+        <div className="flex-1 overflow-y-auto px-4 py-4">
           <Card>
             <CardContent className="p-4">
               <div className="prose prose-sm max-w-none">

@@ -3,12 +3,15 @@
 import React, {
   forwardRef,
   Ref,
+  useRef,
+  useMemo,
   useEffect,
   useLayoutEffect,
-  useRef,
 } from "react";
-import Quill from "quill";
-import "quill/dist/quill.snow.css";
+import ReactQuill, { Quill } from "react-quill-new";
+import QuillTableBetter from "quill-table-better";
+import "react-quill-new/dist/quill.snow.css";
+import "quill-table-better/dist/quill-table-better.css";
 
 // Custom styles to make the editor taller
 const editorStyles = `
@@ -20,7 +23,32 @@ const editorStyles = `
   .quill-editor-container .ql-container {
     min-height: 350px;
   }
+  
+  /* Table Better Styles */
+  .quill-editor-container .ql-table-better-wrapper {
+    border: 1px solid #ccc;
+    border-collapse: collapse;
+  }
+  .quill-editor-container .ql-table-better {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 10px 0;
+  }
+  .quill-editor-container .ql-table-better td,
+  .quill-editor-container .ql-table-better th {
+    border: 1px solid #ccc;
+    padding: 8px;
+    min-width: 50px;
+    min-height: 20px;
+  }
+  .quill-editor-container .ql-table-better td:hover,
+  .quill-editor-container .ql-table-better th:hover {
+    background-color: #f0f0f0;
+  }
 `;
+
+// Register quill-table-better
+Quill.register({ "modules/table-better": QuillTableBetter }, true);
 
 // Inject styles
 if (typeof document !== "undefined") {
@@ -41,24 +69,100 @@ interface QuillEditorProps {
 }
 
 // Editor is an uncontrolled React component
-const QuillEditor = forwardRef<Quill, QuillEditorProps>(
+const QuillEditor = forwardRef<ReactQuill, QuillEditorProps>(
   (
     {
       readOnly,
       defaultValue,
       onTextChange,
       onSelectionChange,
-      placeholder,
+      placeholder = "Write something amazing...",
       theme = "snow",
       modules,
       formats,
     },
     ref
   ) => {
-    const containerRef = useRef<HTMLDivElement>(null);
+    const quillRef = useRef<ReactQuill>(null);
     const defaultValueRef = useRef(defaultValue);
     const onTextChangeRef = useRef(onTextChange);
     const onSelectionChangeRef = useRef(onSelectionChange);
+
+    const quillModules = useMemo(
+      () => ({
+        toolbar: {
+          container: [
+            [{ header: [1, 2, 3, 4, 5, 6, false] }],
+            [{ font: [] }],
+            [{ size: ["small", false, "large", "huge"] }],
+            ["bold", "italic", "underline", "strike"],
+            [{ color: [] }, { background: [] }],
+            [{ script: "sub" }, { script: "super" }],
+            [{ list: "ordered" }, { list: "bullet" }],
+            [{ indent: "-1" }, { indent: "+1" }],
+            [{ align: [] }],
+            ["blockquote", "code-block"],
+            ["link", "image", "video", "table-better"],
+            ["clean"],
+          ],
+          handlers: {
+            image: function () {
+              const input = document.createElement("input");
+              input.setAttribute("type", "file");
+              input.setAttribute("accept", "image/*");
+              input.click();
+
+              input.onchange = () => {
+                const file = input.files?.[0];
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onload = (e) => {
+                    const editor = quillRef.current?.getEditor();
+                    if (editor) {
+                      const range = editor.getSelection();
+                      editor.insertEmbed(
+                        range?.index || 0,
+                        "image",
+                        e.target?.result
+                      );
+                    }
+                  };
+                  reader.readAsDataURL(file);
+                }
+              };
+            },
+          },
+        },
+        table: false,
+        "table-better": {
+          language: "en_US",
+          menus: [
+            "column",
+            "row",
+            "merge",
+            "table",
+            "cell",
+            "wrap",
+            "copy",
+            "delete",
+          ],
+          toolbarTable: true,
+        },
+        keyboard: {
+          bindings: QuillTableBetter.keyboardBindings,
+        },
+        clipboard: {
+          matchVisual: false,
+        },
+        history: {
+          delay: 1000,
+          maxStack: 50,
+          userOnly: true,
+        },
+        ...modules,
+      }),
+      [modules]
+    );
 
     useLayoutEffect(() => {
       onTextChangeRef.current = onTextChange;
@@ -66,123 +170,47 @@ const QuillEditor = forwardRef<Quill, QuillEditorProps>(
     });
 
     useEffect(() => {
-      if (typeof ref === "object" && ref !== null && ref.current) {
-        ref.current.enable(!readOnly);
-      }
-    }, [ref, readOnly]);
-
-    useEffect(() => {
-      const container = containerRef.current;
-      if (!container) return;
-
-      const editorContainer = container.appendChild(
-        container.ownerDocument.createElement("div")
-      );
-      const quill = new Quill(editorContainer, {
-        theme: "snow",
-        placeholder: "Write something amazing...",
-        modules: {
-          toolbar: {
-            container: [
-              [{ header: [1, 2, 3, 4, 5, 6, false] }],
-              [{ font: [] }],
-              [{ size: ["small", false, "large", "huge"] }],
-              ["bold", "italic", "underline", "strike"],
-              [{ color: [] }, { background: [] }],
-              [{ script: "sub" }, { script: "super" }],
-              [{ list: "ordered" }, { list: "bullet" }],
-              [{ indent: "-1" }, { indent: "+1" }],
-              [{ align: [] }],
-              ["blockquote", "code-block"],
-              ["link", "image", "video"],
-              ["clean"],
-            ],
-            handlers: {
-              image: function () {
-                const input = document.createElement("input");
-                input.setAttribute("type", "file");
-                input.setAttribute("accept", "image/*");
-                input.click();
-
-                input.onchange = () => {
-                  const file = input.files?.[0];
-                  if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                      const range = quill.getSelection();
-                      quill.insertEmbed(
-                        range?.index || 0,
-                        "image",
-                        e.target?.result
-                      );
-                    };
-                    reader.readAsDataURL(file);
-                  }
-                };
-              },
-            },
-          },
-          clipboard: {
-            matchVisual: false,
-          },
-          history: {
-            delay: 1000,
-            maxStack: 50,
-            userOnly: true,
-          },
-        },
-        formats: [
-          "header",
-          "font",
-          "size",
-          "bold",
-          "italic",
-          "underline",
-          "strike",
-          "color",
-          "background",
-          "script",
-          "list",
-          "indent",
-          "align",
-          "blockquote",
-          "code-block",
-          "link",
-          "image",
-          "video"
-        ],
-      });
-
-      if (typeof ref === "object" && ref !== null) {
-        ref.current = quill;
-      }
-
-      if (defaultValueRef.current) {
-        quill.setContents(defaultValueRef.current);
-      }
-
-      quill.on(Quill.events.TEXT_CHANGE, (...args) => {
-        onTextChangeRef.current?.(...args);
-      });
-
-      quill.on(Quill.events.SELECTION_CHANGE, (...args) => {
-        onSelectionChangeRef.current?.(...args);
-      });
-
-      return () => {
+      if (quillRef.current && ref) {
         if (typeof ref === "object" && ref !== null) {
-          ref.current = null;
+          ref.current = quillRef.current;
         }
-        container.innerHTML = "";
-      };
+      }
     }, [ref]);
 
+    useEffect(() => {
+      if (quillRef.current && readOnly !== undefined) {
+        const editor = quillRef.current.getEditor();
+        editor.enable(!readOnly);
+      }
+    }, [readOnly]);
+
+    const handleChange = (
+      content: string,
+      delta: any,
+      source: any,
+      editor: any
+    ) => {
+      onTextChangeRef.current?.(delta, editor.getContents(), source);
+    };
+
+    const handleSelectionChange = (range: any, source: any, editor: any) => {
+      onSelectionChangeRef.current?.(range, {}, source);
+    };
+
     return (
-      <div
-        ref={containerRef}
-        style={{ minHeight: "400px" }}
-        className="quill-editor-container"
-      />
+      <div className="quill-editor-container" style={{ minHeight: "400px" }}>
+        <ReactQuill
+          ref={quillRef}
+          theme={theme}
+          placeholder={placeholder}
+          defaultValue={defaultValue}
+          modules={quillModules}
+          formats={formats}
+          onChange={handleChange}
+          onChangeSelection={handleSelectionChange}
+          readOnly={readOnly}
+        />
+      </div>
     );
   }
 );
