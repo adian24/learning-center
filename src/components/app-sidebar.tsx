@@ -22,7 +22,6 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { SidebarOption } from "./sidebar-option";
 import { useTranslations } from "next-intl";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -93,9 +92,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavTeacher items={data.navTeacher} />
       </SidebarContent>
       <SidebarFooter>
-        <div className="p-1">
-          <SidebarOption />
-        </div>
         <NavUser />
       </SidebarFooter>
       <SidebarRail />
