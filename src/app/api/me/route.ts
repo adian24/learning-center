@@ -23,6 +23,14 @@ export async function GET() {
             id: true,
             bio: true,
             expertise: true,
+            company: {
+              select: {
+                id: true,
+                name: true,
+                logoUrl: true,
+                industry: true,
+              },
+            },
           },
         },
         studentProfile: {

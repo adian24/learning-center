@@ -2,6 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 
 interface UserRoleResponse {
+  id: string;
+  name: string | null;
+  email: string | null;
   role: "TEACHER" | "STUDENT" | null;
   profile: any;
 }
@@ -29,8 +32,15 @@ export function useUserRole() {
 
   return {
     ...query,
+    user: query.data ? {
+      id: query.data.id,
+      name: query.data.name,
+      email: query.data.email,
+    } : null,
     role: query.data?.role || null,
     profile: query.data?.profile || null,
+    teacher: query.data?.role === "TEACHER" ? query.data.profile : null,
+    student: query.data?.role === "STUDENT" ? query.data.profile : null,
     isTeacher: query.data?.role === "TEACHER",
     isStudent: query.data?.role === "STUDENT",
     isLoading: status === "loading" || query.isLoading,
