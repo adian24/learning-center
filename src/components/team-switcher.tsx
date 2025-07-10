@@ -65,13 +65,16 @@ export function TeamSwitcher() {
             </div>
           ) : (
             <Avatar className="size-8">
-              <AvatarImage
-                imageKey={displayData.logo || undefined}
-                userName={displayData.title}
-              />
-              <AvatarFallback className="bg-sidebar-primary text-sidebar-primary-foreground text-xs">
-                {displayData.fallback}
-              </AvatarFallback>
+              {teacher.company.logoUrl ? (
+                <AvatarImage
+                  imageKey={teacher.company.logoUrl || undefined}
+                  userName={displayData.title}
+                />
+              ) : (
+                <AvatarFallback className="bg-sidebar-primary text-sidebar-primary-foreground text-xs">
+                  {displayData.fallback}
+                </AvatarFallback>
+              )}
             </Avatar>
           )}
           <div className="grid flex-1 text-left text-sm leading-tight">
