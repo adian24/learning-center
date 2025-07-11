@@ -123,11 +123,15 @@ export async function GET(req: NextRequest) {
     const processedEnrollments = await Promise.all(
       enrollments.map(async (enrollment) => {
         const totalChapters = enrollment.course.chapters.length;
-        
-        console.log(`Processing enrollment ${enrollment.id}: ${totalChapters} chapters found`);
-        
+
+        console.log(
+          `Processing enrollment ${enrollment.id}: ${totalChapters} chapters found`
+        );
+
         if (totalChapters === 0) {
-          console.warn(`No published chapters found for course ${enrollment.courseId}`);
+          console.warn(
+            `No published chapters found for course ${enrollment.courseId}`
+          );
           return {
             ...enrollment,
             progress: 0,
@@ -135,29 +139,36 @@ export async function GET(req: NextRequest) {
             totalChapters: 0,
           };
         }
-        
+
         // Use simplified calculation - check existing userProgress instead of recalculating
-        const completedChapters = enrollment.course.chapters.filter(chapter => {
-          const userProgress = chapter.userProgress?.[0];
-          // Consider completed if explicitly marked as completed in userProgress
-          // OR if chapter has no quizzes (video-only chapters)
-          if (!userProgress) return false;
-          
-          if (chapter.quizzes.length === 0) {
-            // Video-only chapter - completed if watched
-            return userProgress.isCompleted;
-          } else {
-            // Chapter with quizzes - completed if score >= 65
-            return userProgress.isCompleted && (userProgress.chapterScore || 0) >= 65;
+        const completedChapters = enrollment.course.chapters.filter(
+          (chapter) => {
+            const userProgress = chapter.userProgress?.[0];
+            // Consider completed if explicitly marked as completed in userProgress
+            // OR if chapter has no quizzes (video-only chapters)
+            if (!userProgress) return false;
+
+            if (chapter.quizzes.length === 0) {
+              // Video-only chapter - completed if watched
+              return userProgress.isCompleted;
+            } else {
+              // Chapter with quizzes - completed if score >= 65
+              return (
+                userProgress.isCompleted &&
+                (userProgress.chapterScore || 0) >= 65
+              );
+            }
           }
-        }).length;
+        ).length;
 
         const progress =
           totalChapters > 0
             ? Math.round((completedChapters / totalChapters) * 100)
             : 0;
 
-        console.log(`Course ${enrollment.courseId}: ${completedChapters}/${totalChapters} chapters completed (${progress}%)`);
+        console.log(
+          `Course ${enrollment.courseId}: ${completedChapters}/${totalChapters} chapters completed (${progress}%)`
+        );
 
         return {
           ...enrollment,
@@ -248,8 +259,8 @@ export async function POST(req: NextRequest) {
         data: {
           amount,
           currency,
-          status: "PENDING",
-          isActive: false,
+          status: amount == 0 ? "COMPLETED" : "PENDING",
+          isActive: amount == 0 ? true : false,
         },
       });
 
@@ -266,8 +277,8 @@ export async function POST(req: NextRequest) {
         courseId,
         amount,
         currency,
-        status: "PENDING",
-        isActive: false,
+        status: amount == 0 ? "COMPLETED" : "PENDING",
+        isActive: amount == 0 ? true : false,
       },
     });
 
