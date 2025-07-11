@@ -42,6 +42,7 @@ import EditQuestionDialog from "./questions/EditQuestionDialog";
 import DeleteQuestionDialog from "./questions/DeleteQuestionDialog";
 import { useChapterQuery } from "@/hooks/use-chapter-query";
 import { useTranslations } from "next-intl";
+import QuizQuestionsList from "./QuizQuestionsList";
 
 interface TeacherQuizManagerProps {
   chapterId: string;
@@ -270,15 +271,10 @@ const TeacherQuizManager: React.FC<TeacherQuizManagerProps> = ({
                                   })}
                                 </AccordionTrigger>
                                 <AccordionContent>
-                                  <div className="space-y-4">
-                                    {quiz.questions.map((question, qIndex) => (
-                                      <QuestionItem
-                                        key={qIndex}
-                                        question={question}
-                                        qIndex={qIndex}
-                                      />
-                                    ))}
-                                  </div>
+                                  <QuizQuestionsList
+                                    quizId={quiz.id}
+                                    chapterId={chapterId}
+                                  />
                                 </AccordionContent>
                               </AccordionItem>
                             </Accordion>

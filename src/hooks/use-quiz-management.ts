@@ -85,6 +85,16 @@ async function getQuestions(chapterId?: string): Promise<Question[]> {
   return response.json();
 }
 
+async function getQuestionsByQuiz(quizId: string): Promise<Question[]> {
+  const response = await fetch(`/api/teacher/questions?quizId=${quizId}`);
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch questions");
+  }
+
+  return response.json();
+}
+
 async function getQuestion(questionId?: string): Promise<Question> {
   const response = await fetch(`/api/teacher/questions/${questionId}`);
 
@@ -227,6 +237,16 @@ export function useQuestions(chapterId?: string) {
   });
 }
 
+export function useQuestionsByQuiz(quizId?: string) {
+  return useQuery({
+    queryKey: ["teacher-questions-by-quiz", quizId],
+    queryFn: () => getQuestionsByQuiz(quizId!),
+    staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
+    retry: 2,
+    enabled: !!quizId,
+  });
+}
+
 export function useQuestion(questionId?: string) {
   return useQuery({
     queryKey: ["teacher-question", questionId],
@@ -356,6 +376,16 @@ export function useCreateQuestion() {
         queryKey: ["student-quizzes"],
       });
 
+      // Invalidate questions list
+      queryClient.invalidateQueries({
+        queryKey: ["teacher-questions"],
+      });
+      
+      // Invalidate questions by quiz
+      queryClient.invalidateQueries({
+        queryKey: ["teacher-questions-by-quiz", variables.quizId],
+      });
+
       console.log(`Question created successfully`);
     },
     onError: (error) => {
@@ -417,10 +447,20 @@ export function useUpdateQuestion() {
 
       return response.json();
     },
-    onSuccess: (_, { questionId }) => {
+    onSuccess: (updatedQuestion, { questionId }) => {
       // Invalidate quiz queries to refresh the question list
       queryClient.invalidateQueries({ queryKey: ["teacher-quizzes"] });
       queryClient.invalidateQueries({ queryKey: ["teacher-questions"] });
+      
+      // Invalidate specific question
+      queryClient.invalidateQueries({ queryKey: ["teacher-question", questionId] });
+      
+      // Invalidate questions by quiz if quizId is available
+      if (updatedQuestion.quizId) {
+        queryClient.invalidateQueries({
+          queryKey: ["teacher-questions-by-quiz", updatedQuestion.quizId],
+        });
+      }
     },
   });
 }
@@ -507,9 +547,19 @@ export function useDeleteQuestion() {
 
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (deletedQuestion, { questionId }) => {
       queryClient.invalidateQueries({ queryKey: ["teacher-quizzes"] });
       queryClient.invalidateQueries({ queryKey: ["teacher-questions"] });
+      
+      // Remove specific question from cache
+      queryClient.removeQueries({ queryKey: ["teacher-question", questionId] });
+      
+      // Invalidate questions by quiz if quizId is available
+      if (deletedQuestion.quizId) {
+        queryClient.invalidateQueries({
+          queryKey: ["teacher-questions-by-quiz", deletedQuestion.quizId],
+        });
+      }
     },
   });
 }

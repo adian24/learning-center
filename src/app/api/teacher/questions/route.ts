@@ -8,21 +8,29 @@ export async function GET(req: Request) {
     const userId = session?.user?.id;
     const { searchParams } = new URL(req.url);
     const chapterId = searchParams.get('chapterId');
+    const quizId = searchParams.get('quizId');
 
     if (!userId) {
       return new NextResponse('Unauthorized', { status: 401 });
     }
 
-    if (!chapterId) {
-      return new NextResponse('Chapter ID is required', { status: 400 });
+    // Build the where clause based on provided parameters
+    let whereClause: any = {};
+    
+    if (quizId) {
+      // If quizId is provided, filter by specific quiz
+      whereClause.quizId = quizId;
+    } else if (chapterId) {
+      // If chapterId is provided, filter by chapter
+      whereClause.quiz = {
+        chapterId: chapterId
+      };
+    } else {
+      return new NextResponse('Either Chapter ID or Quiz ID is required', { status: 400 });
     }
 
     const questions = await db.question.findMany({
-      where: {
-        quiz: {
-          chapterId: chapterId
-        }
-      },
+      where: whereClause,
       include: {
         options: true,
         quiz: {
