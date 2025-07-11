@@ -15,15 +15,17 @@ export async function GET(req: Request) {
     }
 
     // Build the where clause based on provided parameters
-    let whereClause: any = {};
+    let whereClause: any;
     
     if (quizId) {
       // If quizId is provided, filter by specific quiz
-      whereClause.quizId = quizId;
+      whereClause = { quizId };
     } else if (chapterId) {
       // If chapterId is provided, filter by chapter
-      whereClause.quiz = {
-        chapterId: chapterId
+      whereClause = {
+        quiz: {
+          chapterId: chapterId
+        }
       };
     } else {
       return new NextResponse('Either Chapter ID or Quiz ID is required', { status: 400 });
