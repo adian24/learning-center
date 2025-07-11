@@ -15,9 +15,7 @@ export async function GET(request: NextRequest) {
     const userId = session?.user?.id;
 
     // Build filter conditions
-    const where: any = {
-      isPublished: true,
-    };
+    const where: any = {};
 
     if (categoryId) {
       where.categoryId = categoryId;
@@ -59,14 +57,16 @@ export async function GET(request: NextRequest) {
             },
           },
           category: true,
+          chapters: {
+            select: {
+              id: true,
+              duration: true,
+            },
+          },
           _count: {
             select: {
               enrolledStudents: true,
-              chapters: {
-                where: {
-                  isPublished: true,
-                },
-              },
+              chapters: true,
             },
           },
           ...(userId && {
@@ -93,26 +93,33 @@ export async function GET(request: NextRequest) {
     ]);
 
     // Format response with company info
-    const formattedCourses = courses.map((course) => ({
-      id: course.id,
-      title: course.title,
-      description: course.description,
-      imageUrl: course.imageUrl,
-      price: course.price,
-      level: course.level,
-      duration: course.duration,
-      totalSteps: course.totalSteps,
-      rating: course.rating,
-      reviewCount: course.reviewCount || 0,
-      language: course.language,
-      categoryName: course.category?.name,
-      teacherName: course.teacher?.user?.name,
-      teacherProfileUrl: course.teacher?.profileUrl,
-      teacherCompany: course.teacher?.company,
-      enrolledCount: course._count.enrolledStudents,
-      chapterCount: course._count.chapters,
-      isEnrolled: userId ? course.enrolledStudents.length > 0 : false,
-    }));
+    const formattedCourses = courses.map((course) => {
+      // Calculate total duration from chapters
+      const totalDuration = course.chapters.reduce((sum, chapter) => {
+        return sum + (chapter.duration || 0);
+      }, 0);
+
+      return {
+        id: course.id,
+        title: course.title,
+        description: course.description,
+        imageUrl: course.imageUrl,
+        price: course.price,
+        level: course.level,
+        duration: totalDuration > 0 ? totalDuration : null,
+        totalSteps: course.totalSteps,
+        rating: course.rating,
+        reviewCount: course.reviewCount || 0,
+        language: course.language,
+        categoryName: course.category?.name,
+        teacherName: course.teacher?.user?.name,
+        teacherProfileUrl: course.teacher?.profileUrl,
+        teacherCompany: course.teacher?.company,
+        enrolledCount: course._count.enrolledStudents,
+        chapterCount: course._count.chapters,
+        isEnrolled: userId ? course.enrolledStudents.length > 0 : false,
+      };
+    });
 
     return NextResponse.json({
       courses: formattedCourses,
