@@ -92,13 +92,15 @@ export async function POST(req: NextRequest) {
       try {
         const statusResponse = await coreApi.transaction.status(existingEnrollment.paymentId);
         
-        // If transaction is still pending/active, we can't create new token
+        // If transaction is still pending/active, return existing transaction info
         if (statusResponse.transaction_status === "pending") {
           return NextResponse.json(
             { 
               error: "Payment is still pending", 
               message: "Please complete the existing payment or wait for it to expire",
-              existingOrderId: existingEnrollment.paymentId
+              existingOrderId: existingEnrollment.paymentId,
+              snapToken: statusResponse.snap_token || null,
+              redirectUrl: statusResponse.snap_redirect_url || null
             }, 
             { status: 409 }
           );
