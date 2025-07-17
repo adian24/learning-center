@@ -91,6 +91,14 @@ export default function PendingPaymentCard({
 
       if (!response.ok) {
         const error = await response.json();
+        
+        // Handle case where payment is still pending in Midtrans
+        if (response.status === 409) {
+          toast.error(error.message || "Payment is still pending");
+          setIsLoading(false);
+          return;
+        }
+        
         throw new Error(error.error || "Failed to initialize payment");
       }
 

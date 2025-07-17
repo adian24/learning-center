@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import { auth } from "@/lib/auth";
 import db from "@/lib/db/db";
 import { z } from "zod";
-import { snap } from "@/lib/midtrans";
+import { snap, coreApi } from "@/lib/midtrans";
 
 // Input validation schema
 const snapPaymentSchema = z.object({
@@ -82,44 +82,68 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Generate unique transaction ID or reuse existing one for pending payments
+    // Generate unique transaction ID or check existing one for pending payments
     let transactionId;
     let enrollment;
+    let shouldCreateNewToken = true;
 
     if (existingEnrollment && existingEnrollment.status === "PENDING" && existingEnrollment.paymentId) {
-      // Reuse existing order_id for pending payments
-      transactionId = existingEnrollment.paymentId;
-      enrollment = existingEnrollment;
-    } else {
-      // Generate new transaction ID for new payments or failed payments
-      transactionId = `ORDER-${uuidv4().substring(0, 8)}`;
-
-      if (existingEnrollment) {
-        // Update existing enrollment to PENDING with new transaction ID
-        enrollment = await db.enrolledCourse.update({
-          where: { id: existingEnrollment.id },
-          data: {
-            status: "PENDING",
-            amount,
-            currency: "IDR",
-            paymentId: transactionId,
-            isActive: false,
-          },
-        });
-      } else {
-        // Create new enrollment with PENDING status
-        enrollment = await db.enrolledCourse.create({
-          data: {
-            studentId: studentProfile.id,
-            courseId: course.id,
-            amount,
-            currency: "IDR",
-            status: "PENDING",
-            paymentId: transactionId,
-            isActive: false,
-          },
-        });
+      // Check transaction status from Midtrans first
+      try {
+        const statusResponse = await coreApi.transaction.status(existingEnrollment.paymentId);
+        
+        // If transaction is still pending/active, we can't create new token
+        if (statusResponse.transaction_status === "pending") {
+          return NextResponse.json(
+            { 
+              error: "Payment is still pending", 
+              message: "Please complete the existing payment or wait for it to expire",
+              existingOrderId: existingEnrollment.paymentId
+            }, 
+            { status: 409 }
+          );
+        }
+        
+        // If transaction expired, cancel, or failed, create new token
+        if (["expire", "cancel", "deny", "failure"].includes(statusResponse.transaction_status)) {
+          transactionId = `ORDER-${uuidv4().substring(0, 8)}`;
+          shouldCreateNewToken = true;
+        }
+      } catch (error) {
+        // If transaction not found in Midtrans, create new token
+        transactionId = `ORDER-${uuidv4().substring(0, 8)}`;
+        shouldCreateNewToken = true;
       }
+    } else {
+      // Generate new transaction ID for new payments
+      transactionId = `ORDER-${uuidv4().substring(0, 8)}`;
+    }
+
+    if (existingEnrollment) {
+      // Update existing enrollment to PENDING with new transaction ID
+      enrollment = await db.enrolledCourse.update({
+        where: { id: existingEnrollment.id },
+        data: {
+          status: "PENDING",
+          amount,
+          currency: "IDR",
+          paymentId: transactionId,
+          isActive: false,
+        },
+      });
+    } else {
+      // Create new enrollment with PENDING status
+      enrollment = await db.enrolledCourse.create({
+        data: {
+          studentId: studentProfile.id,
+          courseId: course.id,
+          amount,
+          currency: "IDR",
+          status: "PENDING",
+          paymentId: transactionId,
+          isActive: false,
+        },
+      });
     }
 
     // Prepare transaction details for Snap
