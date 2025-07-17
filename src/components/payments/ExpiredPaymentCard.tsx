@@ -4,8 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CourseImageCard } from "@/components/media/SecureImage";
 import { formatPrice } from "@/utils/formatPrice";
-import { XCircle, User, BookOpen, ArrowRight, AlertTriangle } from "lucide-react";
+import {
+  XCircle,
+  User,
+  BookOpen,
+  ArrowRight,
+  AlertTriangle,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface ExpiredPaymentCardProps {
   enrollment: {
@@ -26,7 +33,9 @@ interface ExpiredPaymentCardProps {
   };
 }
 
-export default function ExpiredPaymentCard({ enrollment }: ExpiredPaymentCardProps) {
+export default function ExpiredPaymentCard({
+  enrollment,
+}: ExpiredPaymentCardProps) {
   const router = useRouter();
 
   const handleCreateNewPayment = () => {
@@ -39,8 +48,13 @@ export default function ExpiredPaymentCard({ enrollment }: ExpiredPaymentCardPro
         <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
           <XCircle className="w-8 h-8 text-red-600" />
         </div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Payment Expired</h1>
-        <p className="text-gray-600">Your payment session has expired. Please create a new payment to continue.</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          Payment Expired
+        </h1>
+        <p className="text-gray-600">
+          Your payment session has expired. Please create a new payment to
+          continue.
+        </p>
       </div>
 
       <Card className="mb-6">
@@ -66,12 +80,14 @@ export default function ExpiredPaymentCard({ enrollment }: ExpiredPaymentCardPro
               <h3 className="font-semibold text-lg text-gray-900 line-clamp-2">
                 {enrollment.course.title}
               </h3>
-              
+
               <div className="flex items-center gap-2 text-sm text-gray-600">
                 <User className="w-4 h-4" />
-                <span>{enrollment.course.teacher.user.name || "Instructor"}</span>
+                <span>
+                  {enrollment.course.teacher.user.name || "Instructor"}
+                </span>
               </div>
-              
+
               <div className="flex items-center gap-2 text-sm text-gray-600">
                 <BookOpen className="w-4 h-4" />
                 <span>Course ID: {enrollment.course.id}</span>
@@ -89,9 +105,11 @@ export default function ExpiredPaymentCard({ enrollment }: ExpiredPaymentCardPro
           <div className="space-y-4">
             <div className="flex justify-between items-center py-2">
               <span className="text-gray-600">Course Price</span>
-              <span className="font-medium">{formatPrice(enrollment.amount)}</span>
+              <span className="font-medium">
+                {formatPrice(enrollment.amount)}
+              </span>
             </div>
-            
+
             <div className="border-t pt-4">
               <div className="flex justify-between items-center">
                 <span className="text-lg font-semibold">Total Amount</span>
@@ -100,14 +118,17 @@ export default function ExpiredPaymentCard({ enrollment }: ExpiredPaymentCardPro
                 </span>
               </div>
             </div>
-            
+
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
               <div className="flex items-start gap-3">
                 <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5" />
                 <div>
-                  <p className="font-medium text-red-800">Payment Session Expired</p>
+                  <p className="font-medium text-red-800">
+                    Payment Session Expired
+                  </p>
                   <p className="text-sm text-red-700 mt-1">
-                    Your previous payment session has expired. Please create a new payment to access the course content.
+                    Your previous payment session has expired. Please create a
+                    new payment to access the course content.
                   </p>
                 </div>
               </div>
@@ -125,11 +146,16 @@ export default function ExpiredPaymentCard({ enrollment }: ExpiredPaymentCardPro
           Create New Payment
           <ArrowRight className="w-5 h-5 ml-2" />
         </Button>
-        
-        <div className="text-center">
-          <p className="text-sm text-gray-500">
-            Need help? <a href="/support" className="text-red-600 hover:underline">Contact Support</a>
-          </p>
+
+        <div className="space-y-4">
+          <div className="text-center">
+            <p className="text-sm text-gray-500">
+              Need help?{" "}
+              <Link href="/support" className="text-blue-600 hover:underline">
+                Contact Support
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>

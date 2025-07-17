@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import Link from "next/link";
 
 interface PendingPaymentCardProps {
   enrollment: {
@@ -268,9 +269,9 @@ export default function PendingPaymentCard({
         <div className="text-center">
           <p className="text-sm text-gray-500">
             Need help?{" "}
-            <a href="/support" className="text-blue-600 hover:underline">
+            <Link href="/support" className="text-blue-600 hover:underline">
               Contact Support
-            </a>
+            </Link>
           </p>
         </div>
       </div>
