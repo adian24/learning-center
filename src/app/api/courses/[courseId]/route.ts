@@ -101,6 +101,7 @@ export async function GET(
     let certificate = null;
     let studentId = null;
     let isEnrolled = false;
+    let enrollment = null;
 
     if (userId) {
       const studentProfile = await db.studentProfile.findUnique({
@@ -111,7 +112,7 @@ export async function GET(
         studentId = studentProfile.id;
 
         // Check if user is enrolled in this course
-        const enrollment = await db.enrolledCourse.findFirst({
+        enrollment = await db.enrolledCourse.findFirst({
           where: {
             studentId: studentProfile.id,
             courseId: course.id,
@@ -143,6 +144,7 @@ export async function GET(
       },
       certificate,
       studentId,
+      enrollment: enrollment || null,
     });
   } catch (error) {
     console.error("[COURSE_GET]", error);

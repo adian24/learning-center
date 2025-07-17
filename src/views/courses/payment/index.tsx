@@ -42,6 +42,8 @@ import mastercardLogo from "@/assets/international-payment/mastercard.png";
 import paypalLogo from "@/assets/international-payment/paypal.png";
 import jcbLogo from "@/assets/international-payment/jcb.png";
 import { CourseImageCard } from "@/components/media/SecureImage";
+import PendingPaymentCard from "@/components/payments/PendingPaymentCard";
+import ExpiredPaymentCard from "@/components/payments/ExpiredPaymentCard";
 
 // Payment methods config with instructions
 const PAYMENT_METHODS = {
@@ -367,6 +369,16 @@ export default function PaymentInstructions({
         </Button>
       </div>
     );
+  }
+
+  // Handle pending payments - redirect to create new payment
+  if (paymentDetail?.isPending) {
+    return <PendingPaymentCard enrollment={enrollment} />;
+  }
+
+  // Handle expired payments - redirect to create new payment
+  if (paymentDetail?.isExpired) {
+    return <ExpiredPaymentCard enrollment={enrollment} />;
   }
 
   // If payment details couldn't be loaded but no error was thrown

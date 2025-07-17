@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { coreApi } from "@/lib/midtrans";
 import { z } from "zod";
 import db from "@/lib/db/db";
 import { auth } from "@/lib/auth";
@@ -49,58 +48,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
-    // If enrollment is already completed, no need to check
-    if (enrollment.status === "COMPLETED") {
-      return NextResponse.json({
-        status: "COMPLETED",
-        enrollmentId: enrollment.id,
-      });
-    }
-
-    // If no payment ID, we can't check status
-    if (!enrollment.paymentId) {
-      return NextResponse.json(
-        { error: "No payment ID associated with this enrollment" },
-        { status: 400 }
-      );
-    }
-
-    // Get transaction status from Midtrans
-    const transactionStatus = await coreApi.transaction.status(
-      enrollment.paymentId
-    );
-
-    console.log("Midtrans transaction status:", transactionStatus);
-
-    // Update enrollment status based on transaction status
-    let newStatus: "PENDING" | "COMPLETED" | "FAILED" = "PENDING";
-
-    if (
-      transactionStatus.transaction_status === "capture" ||
-      transactionStatus.transaction_status === "settlement"
-    ) {
-      newStatus = "COMPLETED";
-    } else if (
-      transactionStatus.transaction_status === "deny" ||
-      transactionStatus.transaction_status === "cancel" ||
-      transactionStatus.transaction_status === "expire"
-    ) {
-      newStatus = "FAILED";
-    }
-
-    // Update enrollment status
-    const updatedEnrollment = await db.enrolledCourse.update({
-      where: { id: enrollment.id },
-      data: {
-        status: newStatus,
-        isActive: newStatus === "COMPLETED",
-      },
-    });
-
+    // Return current enrollment status without calling Midtrans
+    // Status is managed by webhook or manual updates
     return NextResponse.json({
-      status: newStatus,
-      transactionStatus: transactionStatus.transaction_status,
-      enrollmentId: updatedEnrollment.id,
+      status: enrollment.status,
+      enrollmentId: enrollment.id,
+      transactionStatus: enrollment.status.toLowerCase(),
     });
   } catch (error) {
     console.error("Check payment status error:", error);

@@ -52,6 +52,8 @@ const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
   // Check if user is enrolled (studentId will be present and possibly a certificate)
   const isEnrolled = course?.isEnrolled;
   const hasCertificate = !!data?.certificate;
+  const enrollment = data?.enrollment;
+  const enrollmentStatus = enrollment?.status;
 
   if (isLoading) {
     return <CardEnrollmentSkeleton />;
@@ -92,6 +94,12 @@ const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
     router.push(`/my-courses/${courseId}`);
   };
 
+  const handleContinuePayment = () => {
+    if (enrollment?.id) {
+      router.push(`/courses/${courseId}/payment?method=pending&enrollment=${enrollment.id}`);
+    }
+  };
+
   return (
     <div className="md:w-full">
       <Card className="sticky top-4">
@@ -104,15 +112,25 @@ const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
           />
         </div>
         <CardHeader>
-          {isEnrolled ? (
+          {!isEnrolled ? (
+            <CardTitle className="text-2xl font-bold">
+              {formatPrice(course?.price as number)}
+            </CardTitle>
+          ) : enrollmentStatus === "PENDING" ? (
+            <div className="bg-orange-50 p-3 rounded-md text-orange-700 flex items-center gap-2">
+              <Clock className="h-5 w-5 text-orange-600" />
+              <span>Payment Pending</span>
+            </div>
+          ) : enrollmentStatus === "COMPLETED" ? (
             <div className="bg-green-50 p-3 rounded-md text-green-700 flex items-center gap-2">
               <CheckCircle className="h-5 w-5 text-green-600" />
               <span>{t("already_enrolled")}</span>
             </div>
           ) : (
-            <CardTitle className="text-2xl font-bold">
-              {formatPrice(course?.price as number)}
-            </CardTitle>
+            <div className="bg-red-50 p-3 rounded-md text-red-700 flex items-center gap-2">
+              <CheckCircle className="h-5 w-5 text-red-600" />
+              <span>Enrollment Failed</span>
+            </div>
           )}
         </CardHeader>
         <CardContent className="space-y-4">
@@ -137,35 +155,7 @@ const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
             </div>
           </div>
 
-          {isEnrolled ? (
-            // Show UI for enrolled users
-            <div className="space-y-4">
-              <Button
-                onClick={handleStartLearning}
-                className="w-full bg-blue-600 hover:bg-blue-700"
-              >
-                <Play className="h-4 w-4" />
-                {t("resume_learning")}
-              </Button>
-              {hasCertificate && (
-                <Button
-                  variant="outline"
-                  className="w-full bg-green-100 hover:bg-green-200 text-green-600 hover:text-green-800"
-                  onClick={() =>
-                    data?.certificate
-                      ? viewCertificate({
-                          certificateId: data.certificate.id || "",
-                          pdfUrl: data.certificate.pdfUrl ?? "",
-                        })
-                      : null
-                  }
-                >
-                  <Award className="h-4 w-4" />
-                  {t("view_certificate")}
-                </Button>
-              )}
-            </div>
-          ) : (
+          {!isEnrolled ? (
             // Show UI for non-enrolled users
             <AlertDialog>
               <AlertDialogTrigger asChild>
@@ -202,6 +192,56 @@ const CardEnrollment = ({ courseId }: CardEnrollmentProps) => {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
+          ) : enrollmentStatus === "PENDING" ? (
+            // Show UI for pending payment
+            <div className="space-y-4">
+              <Button
+                onClick={handleContinuePayment}
+                className="w-full bg-orange-600 hover:bg-orange-700"
+              >
+                <Clock className="h-4 w-4" />
+                Continue Payment
+              </Button>
+            </div>
+          ) : enrollmentStatus === "COMPLETED" ? (
+            // Show UI for completed enrollment
+            <div className="space-y-4">
+              <Button
+                onClick={handleStartLearning}
+                className="w-full bg-blue-600 hover:bg-blue-700"
+              >
+                <Play className="h-4 w-4" />
+                {t("resume_learning")}
+              </Button>
+              {hasCertificate && (
+                <Button
+                  variant="outline"
+                  className="w-full bg-green-100 hover:bg-green-200 text-green-600 hover:text-green-800"
+                  onClick={() =>
+                    data?.certificate
+                      ? viewCertificate({
+                          certificateId: data.certificate.id || "",
+                          pdfUrl: data.certificate.pdfUrl ?? "",
+                        })
+                      : null
+                  }
+                >
+                  <Award className="h-4 w-4" />
+                  {t("view_certificate")}
+                </Button>
+              )}
+            </div>
+          ) : (
+            // Show UI for failed or unknown status
+            <div className="space-y-4">
+              <Button
+                onClick={handleEnrollCourse}
+                className="w-full bg-red-600 hover:bg-red-700"
+              >
+                <Play className="h-4 w-4" />
+                Enroll Again
+              </Button>
+            </div>
           )}
         </CardContent>
         <CardFooter className="flex flex-col items-start space-y-2">

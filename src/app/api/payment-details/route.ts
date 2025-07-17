@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { coreApi } from "@/lib/midtrans";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
 import db from "@/lib/db/db";
@@ -14,14 +13,9 @@ interface PaymentDetails {
   status: any;
   amount: number;
   currency: string;
-  paymentId: string;
-  transactionStatus: any;
-  expiryTime: any;
-  paymentType?: string;
-  vaNumbers?: Array<{ bank: string; vaNumber: string }>;
-  qrCodeUrl?: string | null;
-  deepLinkUrl?: string | null;
-  cardMasked?: string | null;
+  paymentId: string | null;
+  transactionStatus: string;
+  isPending?: boolean;
 }
 
 export async function POST(req: NextRequest) {
@@ -64,80 +58,31 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
-    // If no payment ID, we can't get details
-    if (!enrollment.paymentId) {
-      return NextResponse.json(
-        { error: "No payment ID associated with this enrollment" },
-        { status: 400 }
-      );
+    // Determine transaction status based on enrollment status
+    let transactionStatus: string;
+    let isPending = false;
+
+    if (enrollment.status === "PENDING") {
+      transactionStatus = "pending";
+      isPending = true;
+    } else if (enrollment.status === "COMPLETED") {
+      transactionStatus = "settlement";
+    } else if (enrollment.status === "FAILED") {
+      transactionStatus = "failed";
+    } else {
+      transactionStatus = "pending";
+      isPending = true;
     }
 
-    // Get transaction status and details from Midtrans
-    const transactionDetails = await coreApi.transaction.status(
-      enrollment.paymentId
-    );
-
-    // Format payment details based on payment type
-    let paymentDetails: PaymentDetails = {
+    // Return simplified payment details
+    const paymentDetails: PaymentDetails = {
       status: enrollment.status,
       amount: enrollment.amount,
       currency: enrollment.currency,
       paymentId: enrollment.paymentId,
-      transactionStatus: transactionDetails.transaction_status,
-      expiryTime: transactionDetails.expiry_time || null,
+      transactionStatus,
+      isPending,
     };
-
-    // Add additional details based on payment type
-    if (transactionDetails.payment_type === "bank_transfer") {
-      let vaNumbers = [];
-
-      if (
-        transactionDetails.va_numbers &&
-        transactionDetails.va_numbers.length > 0
-      ) {
-        vaNumbers = transactionDetails.va_numbers.map((va: any) => ({
-          bank: va.bank,
-          vaNumber: va.va_number,
-        }));
-      } else if (transactionDetails.permata_va_number) {
-        vaNumbers = [
-          {
-            bank: "permata",
-            vaNumber: transactionDetails.permata_va_number,
-          },
-        ];
-      }
-
-      paymentDetails = {
-        ...paymentDetails,
-        paymentType: "bank_transfer",
-        vaNumbers,
-      };
-    }
-
-    // For e-wallets
-    if (["gopay", "shopeepay"].includes(transactionDetails.payment_type)) {
-      const actions = transactionDetails.actions || [];
-      const qrCodeAction = actions.find(
-        (action: any) => action.name === "generate-qr-code"
-      );
-
-      paymentDetails = {
-        ...paymentDetails,
-        paymentType: transactionDetails.payment_type,
-        qrCodeUrl: qrCodeAction ? qrCodeAction.url : null,
-        deepLinkUrl: transactionDetails.deeplink_redirect_url || null,
-      };
-    }
-
-    // For credit cards
-    if (transactionDetails.payment_type === "credit_card") {
-      paymentDetails = {
-        ...paymentDetails,
-        paymentType: "credit_card",
-        cardMasked: transactionDetails.masked_card || null,
-      };
-    }
 
     return NextResponse.json(paymentDetails);
   } catch (error) {

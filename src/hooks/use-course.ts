@@ -79,6 +79,13 @@ export interface CourseResponse {
   course: Course;
   certificate: Certificate | null;
   studentId: string;
+  enrollment: {
+    id: string;
+    status: "PENDING" | "COMPLETED" | "FAILED";
+    amount: number;
+    currency: string;
+    paymentId: string | null;
+  } | null;
 }
 
 export const useCourse = (courseId: string) => {
