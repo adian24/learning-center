@@ -82,44 +82,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Generate unique transaction ID or check existing one for pending payments
-    let transactionId;
+    // Always generate new transaction ID for continue payment
+    const transactionId = `ORDER-${uuidv4().substring(0, 8)}`;
     let enrollment;
-    let shouldCreateNewToken = true;
-
-    if (existingEnrollment && existingEnrollment.status === "PENDING" && existingEnrollment.paymentId) {
-      // Check transaction status from Midtrans first
-      try {
-        const statusResponse = await coreApi.transaction.status(existingEnrollment.paymentId);
-        
-        // If transaction is still pending/active, return existing transaction info
-        if (statusResponse.transaction_status === "pending") {
-          return NextResponse.json(
-            { 
-              error: "Payment is still pending", 
-              message: "Please complete the existing payment or wait for it to expire",
-              existingOrderId: existingEnrollment.paymentId,
-              snapToken: statusResponse.snap_token || null,
-              redirectUrl: statusResponse.snap_redirect_url || null
-            }, 
-            { status: 409 }
-          );
-        }
-        
-        // If transaction expired, cancel, or failed, create new token
-        if (["expire", "cancel", "deny", "failure"].includes(statusResponse.transaction_status)) {
-          transactionId = `ORDER-${uuidv4().substring(0, 8)}`;
-          shouldCreateNewToken = true;
-        }
-      } catch (error) {
-        // If transaction not found in Midtrans, create new token
-        transactionId = `ORDER-${uuidv4().substring(0, 8)}`;
-        shouldCreateNewToken = true;
-      }
-    } else {
-      // Generate new transaction ID for new payments
-      transactionId = `ORDER-${uuidv4().substring(0, 8)}`;
-    }
 
     if (existingEnrollment) {
       // Update existing enrollment to PENDING with new transaction ID

@@ -66,29 +66,6 @@ export default function PendingPaymentCard({
     }, [])
   );
 
-  const handleCancelPayment = async (orderId: string) => {
-    try {
-      const response = await fetch("/api/payment/cancel", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ orderId }),
-      });
-
-      if (response.ok) {
-        toast.success("Payment cancelled successfully. You can now create a new payment.");
-        // Reload the page to refresh the state
-        window.location.reload();
-      } else {
-        const error = await response.json();
-        toast.error(error.error || "Failed to cancel payment");
-      }
-    } catch (error) {
-      console.error("Cancel payment error:", error);
-      toast.error("Failed to cancel payment");
-    }
-  };
 
   const handleContinuePayment = async () => {
     if (!isScriptLoaded) {
@@ -115,45 +92,6 @@ export default function PendingPaymentCard({
 
       if (!response.ok) {
         const error = await response.json();
-        
-        // Handle case where payment is still pending in Midtrans
-        if (response.status === 409) {
-          if (error.snapToken) {
-            // If we have snap token, use existing payment
-            // @ts-ignore - window.snap is injected by the Midtrans script
-            window.snap.pay(error.snapToken, {
-              onSuccess: function () {
-                router.push(`/courses/${enrollment.courseId}`);
-              },
-              onPending: function () {
-                router.push(
-                  `/courses/${enrollment.courseId}/payment?method=pending&enrollment=${enrollment.id}`
-                );
-              },
-              onError: function (error: any) {
-                console.error("Payment error:", error);
-                toast.error("Payment failed. Please try again.");
-                setIsLoading(false);
-              },
-              onClose: function () {
-                toast.info("Payment canceled. You can try again anytime.");
-                setIsLoading(false);
-              },
-            });
-            return;
-          } else {
-            // Show option to cancel existing payment
-            toast.error(error.message || "Payment is still pending", {
-              action: {
-                label: "Cancel Payment",
-                onClick: () => handleCancelPayment(error.existingOrderId),
-              },
-            });
-            setIsLoading(false);
-            return;
-          }
-        }
-        
         throw new Error(error.error || "Failed to initialize payment");
       }
 
