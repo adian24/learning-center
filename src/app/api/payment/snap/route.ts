@@ -82,37 +82,44 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Generate unique transaction ID
-    const transactionId = `ORDER-${uuidv4().substring(0, 8)}`;
-
-    // Create or update enrollment record with PENDING status
+    // Generate unique transaction ID or reuse existing one for pending payments
+    let transactionId;
     let enrollment;
 
-    if (existingEnrollment) {
-      // Update existing enrollment to PENDING
-      enrollment = await db.enrolledCourse.update({
-        where: { id: existingEnrollment.id },
-        data: {
-          status: "PENDING",
-          amount,
-          currency: "IDR",
-          paymentId: transactionId,
-          isActive: false,
-        },
-      });
+    if (existingEnrollment && existingEnrollment.status === "PENDING" && existingEnrollment.paymentId) {
+      // Reuse existing order_id for pending payments
+      transactionId = existingEnrollment.paymentId;
+      enrollment = existingEnrollment;
     } else {
-      // Create new enrollment with PENDING status
-      enrollment = await db.enrolledCourse.create({
-        data: {
-          studentId: studentProfile.id,
-          courseId: course.id,
-          amount,
-          currency: "IDR",
-          status: "PENDING",
-          paymentId: transactionId,
-          isActive: false,
-        },
-      });
+      // Generate new transaction ID for new payments or failed payments
+      transactionId = `ORDER-${uuidv4().substring(0, 8)}`;
+
+      if (existingEnrollment) {
+        // Update existing enrollment to PENDING with new transaction ID
+        enrollment = await db.enrolledCourse.update({
+          where: { id: existingEnrollment.id },
+          data: {
+            status: "PENDING",
+            amount,
+            currency: "IDR",
+            paymentId: transactionId,
+            isActive: false,
+          },
+        });
+      } else {
+        // Create new enrollment with PENDING status
+        enrollment = await db.enrolledCourse.create({
+          data: {
+            studentId: studentProfile.id,
+            courseId: course.id,
+            amount,
+            currency: "IDR",
+            status: "PENDING",
+            paymentId: transactionId,
+            isActive: false,
+          },
+        });
+      }
     }
 
     // Prepare transaction details for Snap
