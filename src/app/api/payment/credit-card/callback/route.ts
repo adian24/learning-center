@@ -44,22 +44,25 @@ export async function POST(req: NextRequest) {
     // Update enrollment status based on transaction status
     let newStatus: "PENDING" | "COMPLETED" | "FAILED";
 
-    if (
-      transaction_status === "capture" ||
-      transaction_status === "settlement"
-    ) {
-      // Payment successful
-      newStatus = "COMPLETED";
-    } else if (
-      transaction_status === "deny" ||
-      transaction_status === "cancel" ||
-      transaction_status === "expire"
-    ) {
-      // Payment failed
-      newStatus = "FAILED";
-    } else {
-      // Payment still pending
-      newStatus = "PENDING";
+    switch (transaction_status) {
+      case "capture":
+      case "settlement":
+        newStatus = "COMPLETED";
+        break;
+      case "deny":
+      case "cancel":
+      case "expire":
+      case "failure":
+      case "refund":
+      case "chargeback":
+      case "partial_refund":
+      case "partial_chargeback":
+        newStatus = "FAILED";
+        break;
+      case "pending":
+      case "authorize":
+      default:
+        newStatus = "PENDING";
     }
 
     // Update enrollment in database

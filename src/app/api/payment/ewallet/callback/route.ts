@@ -74,8 +74,15 @@ export async function POST(req: NextRequest) {
       case "deny":
       case "cancel":
       case "expire":
+      case "failure":
+      case "refund":
+      case "chargeback":
+      case "partial_refund":
+      case "partial_chargeback":
         newStatus = "FAILED";
         break;
+      case "pending":
+      case "authorize":
       default:
         newStatus = "PENDING";
     }
