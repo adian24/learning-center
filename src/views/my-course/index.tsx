@@ -677,7 +677,8 @@ const EnhancedCourseCard = ({
           },
           actionButton: {
             text: "Coba Lagi",
-            onClick: () => router.push(`/courses/${enrollment.courseId}`),
+            onClick: () =>
+              router.push(`/courses/${enrollment.courseId}/snap-checkout`),
             icon: <ArrowRight className="ml-2 h-4 w-4" />,
             variant: "outline" as const,
           },
