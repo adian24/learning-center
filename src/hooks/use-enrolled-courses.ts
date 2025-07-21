@@ -292,7 +292,7 @@ export const useEnrollmentPaymentStatus = (
     queryFn: async () => {
       if (!enrollmentId) return null;
 
-      const response = await fetch("/api/payment/check-status", {
+      const response = await fetch("/api/check-payment-status", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
