@@ -582,13 +582,6 @@ const MyCourses = () => {
   );
 };
 
-interface CourseCardProps {
-  enrollment: any;
-  viewType: "grid" | "list";
-  onContinuePayment: (enrollmentId: string, courseId: string) => void;
-  onCancelClick: (enrollmentId: string) => void;
-}
-
 interface EnhancedCourseCardProps {
   enrollment: any;
   viewType: "grid" | "list";
@@ -684,8 +677,7 @@ const EnhancedCourseCard = ({
           },
           actionButton: {
             text: "Coba Lagi",
-            onClick: () =>
-              router.push(`/courses/${enrollment.courseId}/checkout`),
+            onClick: () => router.push(`/courses/${enrollment.courseId}`),
             icon: <ArrowRight className="ml-2 h-4 w-4" />,
             variant: "outline" as const,
           },
