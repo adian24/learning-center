@@ -108,7 +108,7 @@ export default function CourseOverview({
                   <Button
                     size="lg"
                     className="bg-white/90 text-black hover:bg-white"
-                    onClick={() => onChapterSelect(continueChapter.id)}
+                    onClick={() => onChapterSelect(continueChapter.chapterId)}
                   >
                     <PlayCircle className="h-5 w-5 mr-2" />
                     {playText}
@@ -288,7 +288,7 @@ export default function CourseOverview({
                         disabled={chapter.isLocked}
                         onClick={(e) => {
                           e.stopPropagation();
-                          onChapterSelect(chapter.id);
+                          onChapterSelect(chapter.chapterId);
                         }}
                       >
                         {chapter?.isLocked ? (
