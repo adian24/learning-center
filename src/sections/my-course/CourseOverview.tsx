@@ -17,6 +17,8 @@ import {
   LockKeyhole,
   Award,
   ArrowUpRight,
+  Trophy,
+  Loader2,
 } from "lucide-react";
 import { CourseImageCard } from "@/components/media/SecureImage";
 import { StarFilledIcon } from "@radix-ui/react-icons";
@@ -24,6 +26,12 @@ import Link from "next/link";
 import { useReviewDialogStore } from "@/stores/review-dialog-store";
 import { ReviewDialog } from "@/components/reviews/review-dialog";
 import { useReviews } from "@/hooks/use-course-reviews";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
+import {
+  CourseCompletionModal,
+  useCourseCompletionDetection,
+} from "@/components/course-completion-modal";
 
 interface CourseOverviewProps {
   course: any;
@@ -37,6 +45,18 @@ export default function CourseOverview({
   onChapterSelect,
 }: CourseOverviewProps) {
   const { openCreateDialog, openEditDialog } = useReviewDialogStore();
+  const [isCheckingCertificate, setIsCheckingCertificate] = useState(false);
+
+  // Course completion detection
+  const {
+    showModal,
+    completionData,
+    handleCourseCompletion,
+    handleDownloadCertificate,
+    handleShareAchievement,
+    handleViewCertificate,
+    closeModal,
+  } = useCourseCompletionDetection(course.id);
 
   // Check if user has already reviewed this course
   const { data: reviewsData } = useReviews(course.id, 1, 1);
@@ -74,6 +94,56 @@ export default function CourseOverview({
     )[0];
 
   const continueChapter = lastWatchedChapter || nextChapter || chapters[0];
+
+  // Function to check course completion and certificate
+  const checkCourseCompletion = async () => {
+    if (!completed) return; // Only check if course is completed
+
+    setIsCheckingCertificate(true);
+    try {
+      const response = await fetch(
+        `/api/courses/${course.id}/completion-status`
+      );
+      const data = await response.json();
+
+      if (data.isCompleted && data.certificate) {
+        handleCourseCompletion({
+          id: course.id,
+          title: course.title,
+          instructor: data.instructor || "Unknown Instructor",
+          category: data.category || "General",
+          level: course.level || "Beginner",
+          completionDate: data.completionDate,
+          certificateUrl: data.certificate.pdfUrl,
+          certificateNumber: data.certificate.certificateNumber,
+        });
+        toast.success("Certificate found!");
+      } else if (data.isCompleted && !data.certificate) {
+        toast.info(
+          "Certificate is being generated. Please try again in a few moments."
+        );
+      } else {
+        toast.info("Course completion is being processed.");
+      }
+    } catch (error) {
+      console.error("Error checking course completion:", error);
+      toast.error("Failed to check certificate status. Please try again.");
+    } finally {
+      setIsCheckingCertificate(false);
+    }
+  };
+
+  // Auto-check certificate when course is completed (Option 1)
+  useEffect(() => {
+    if (completed && progressPercentage === 100) {
+      // Delay to avoid immediate trigger on first load
+      const timer = setTimeout(() => {
+        checkCourseCompletion();
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [completed, progressPercentage]);
 
   // Handle review button click
   const handleReviewClick = () => {
@@ -141,16 +211,40 @@ export default function CourseOverview({
                 </div>
 
                 {completed && (
-                  <Link href="/certificates">
+                  <div className="flex gap-2">
+                    <Link href="/certificates">
+                      <Button
+                        className="bg-sky-50 border border-sky-300 text-sky-500 font-semibold hover:text-yellow-500 hover:bg-yellow-50 hover:border-yellow-300"
+                        size="lg"
+                      >
+                        <Award />
+                        Lihat Sertifikat
+                        <ArrowUpRight />
+                      </Button>
+                    </Link>
+
+                    {/* Manual Certificate Check Button (Option 3) - Show only when course is completed */}
                     <Button
-                      className="bg-sky-50 border border-sky-300 text-sky-500 font-semibold hover:text-yellow-500 hover:bg-yellow-50 hover:border-yellow-300"
+                      variant="outline"
                       size="lg"
+                      onClick={checkCourseCompletion}
+                      disabled={isCheckingCertificate}
+                      className="border-orange-300 text-orange-600 hover:bg-orange-50 hover:border-orange-400"
+                      title="Check if your certificate is ready"
                     >
-                      <Award />
-                      Lihat Sertifikat
-                      <ArrowUpRight />
+                      {isCheckingCertificate ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Checking...
+                        </>
+                      ) : (
+                        <>
+                          <Trophy className="h-4 w-4" />
+                          Check Certificate
+                        </>
+                      )}
                     </Button>
-                  </Link>
+                  </div>
                 )}
               </div>
 
@@ -307,6 +401,18 @@ export default function CourseOverview({
       </Card>
 
       <ReviewDialog />
+
+      {/* Course Completion Modal */}
+      {completionData && (
+        <CourseCompletionModal
+          isOpen={showModal}
+          onClose={closeModal}
+          courseData={completionData}
+          onViewCertificate={handleViewCertificate}
+          onShareAchievement={handleShareAchievement}
+          onDownloadCertificate={handleDownloadCertificate}
+        />
+      )}
     </div>
   );
 }
