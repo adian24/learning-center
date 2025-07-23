@@ -32,6 +32,7 @@ import {
   CourseCompletionModal,
   useCourseCompletionDetection,
 } from "@/components/course-completion-modal";
+import { RegenerateCertificateModal } from "@/components/modals/regenerate-certificate-modal";
 
 interface CourseOverviewProps {
   course: any;
@@ -46,6 +47,7 @@ export default function CourseOverview({
 }: CourseOverviewProps) {
   const { openCreateDialog, openEditDialog } = useReviewDialogStore();
   const [isCheckingCertificate, setIsCheckingCertificate] = useState(false);
+  const [showRegenerateModal, setShowRegenerateModal] = useState(false);
 
   // Course completion detection
   const {
@@ -119,9 +121,8 @@ export default function CourseOverview({
         });
         toast.success("Certificate found!");
       } else if (data.isCompleted && !data.certificate) {
-        toast.info(
-          "Certificate is being generated. Please try again in a few moments."
-        );
+        // Show regenerate modal instead of just toast
+        setShowRegenerateModal(true);
       } else {
         toast.info("Course completion is being processed.");
       }
@@ -144,6 +145,23 @@ export default function CourseOverview({
       return () => clearTimeout(timer);
     }
   }, [completed, progressPercentage]);
+
+  // Handle successful certificate regeneration
+  const handleRegenerateSuccess = (certificateData: any) => {
+    // Show course completion modal with the new certificate
+    handleCourseCompletion({
+      id: course.id,
+      title: course.title,
+      instructor: course.teacher?.user?.name || "Unknown Instructor",
+      category: course.category?.name || "General",
+      level: course.level || "Beginner",
+      completionDate: certificateData.issueDate,
+      certificateUrl: certificateData.pdfUrl,
+      certificateNumber: certificateData.certificateNumber,
+    });
+    
+    setShowRegenerateModal(false);
+  };
 
   // Handle review button click
   const handleReviewClick = () => {
@@ -413,6 +431,15 @@ export default function CourseOverview({
           onDownloadCertificate={handleDownloadCertificate}
         />
       )}
+
+      {/* Regenerate Certificate Modal */}
+      <RegenerateCertificateModal
+        isOpen={showRegenerateModal}
+        onClose={() => setShowRegenerateModal(false)}
+        courseTitle={course.title}
+        courseId={course.id}
+        onSuccess={handleRegenerateSuccess}
+      />
     </div>
   );
 }
