@@ -184,6 +184,50 @@ export default function ChapterPlayer({
     }
   };
 
+  // Handle chapter navigation with progress update
+  const handleChapterNavigation = async (targetChapterId: string) => {
+    try {
+      // Auto-save current chapter progress before navigating
+      const currentChapterData = chapters.find(
+        (ch) => ch.chapterId === chapter.id
+      );
+      const hasQuizzes =
+        currentChapterData?.quizzes && currentChapterData.quizzes.length > 0;
+
+      // For chapters without quizzes, mark as completed if video was watched
+      if (!hasQuizzes && watchedSeconds > 0) {
+        await updateProgressMutation.mutateAsync({
+          chapterId: chapter.id,
+          isCompleted: true,
+          watchedSeconds: Math.round(watchedSeconds),
+        });
+
+        // Invalidate queries to refresh data
+        await Promise.all([
+          queryClient.invalidateQueries({
+            queryKey: ["course-progress", courseId],
+          }),
+          queryClient.invalidateQueries({
+            queryKey: ["chapter-progress", chapter.id],
+          }),
+        ]);
+      } else if (watchedSeconds > 0) {
+        // For chapters with quizzes or if we just need to save watched time
+        await updateProgressMutation.mutateAsync({
+          chapterId: chapter.id,
+          watchedSeconds: Math.round(watchedSeconds),
+        });
+      }
+
+      // Navigate to target chapter
+      onChapterSelect(targetChapterId);
+    } catch (error) {
+      console.error("Failed to save progress before navigation:", error);
+      // Still navigate even if progress save fails
+      onChapterSelect(targetChapterId);
+    }
+  };
+
   // Function to check course completion
   const checkCourseCompletion = async () => {
     try {
@@ -425,7 +469,7 @@ export default function ChapterPlayer({
                       ? "bg-green-50 hover:bg-green-100"
                       : "hover:bg-gray-50"
                   }`}
-                  onClick={() => !isLocked && onChapterSelect(ch.chapterId)}
+                  onClick={() => !isLocked && handleChapterNavigation(ch.chapterId)}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -485,7 +529,7 @@ export default function ChapterPlayer({
                         className="opacity-0 group-hover:opacity-100 transition-opacity"
                         onClick={(e) => {
                           e.stopPropagation();
-                          onChapterSelect(ch.chapterId);
+                          handleChapterNavigation(ch.chapterId);
                         }}
                       >
                         <Play className="h-3 w-3" />
