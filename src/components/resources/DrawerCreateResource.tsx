@@ -83,7 +83,7 @@ const DrawerCreateResource: React.FC = () => {
 
   return (
     <Drawer open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DrawerContent className="h-screen max-w-2xl ml-auto w-full p-0">
+      <DrawerContent className="fixed ml-auto top-0 bottom-0 min-h-[900px] max-w-7xl w-full p-0 rounded-none" style={{ marginTop: 0 }} >
         <DrawerHeader>
           <DrawerTitle>Buat Resource Baru</DrawerTitle>
           <DrawerDescription>
@@ -170,7 +170,6 @@ const DrawerCreateResource: React.FC = () => {
             </form>
           </Form>
         </div>
-
         <DrawerFooter className="px-4">
           <div className="flex gap-2 w-full">
             <Button
@@ -199,6 +198,7 @@ const DrawerCreateResource: React.FC = () => {
             </DrawerClose>
           </div>
         </DrawerFooter>
+
       </DrawerContent>
     </Drawer>
   );

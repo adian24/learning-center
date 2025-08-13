@@ -10,6 +10,7 @@ export async function GET(request: NextRequest) {
     const categoryId = searchParams.get("categoryId");
     const search = searchParams.get("search");
     const level = searchParams.get("level");
+    const isPublished = true;
 
     const session = await auth();
     const userId = session?.user?.id;
@@ -30,6 +31,10 @@ export async function GET(request: NextRequest) {
 
     if (level) {
       where.level = level;
+    }
+    
+    if (isPublished) {
+      where.isPublished = isPublished;
     }
 
     const [courses, total] = await Promise.all([
