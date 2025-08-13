@@ -105,7 +105,7 @@ const DrawerEditResource = () => {
 
   return (
     <Drawer open={isEditOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DrawerContent className="h-screen max-w-2xl ml-auto w-full p-0">
+      <DrawerContent className="fixed ml-auto top-0 bottom-0 min-h-[900px] max-w-7xl w-full p-0 rounded-none" style={{ marginTop: 0 }} >
         <DrawerHeader>
           <DrawerTitle>Edit Resource</DrawerTitle>
           <DrawerDescription>

@@ -39,10 +39,12 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useTranslations } from "next-intl";
+import { useQueryClient } from "@tanstack/react-query"; // ⬅️ tambahkan ini
 
 const CreateCourse = () => {
   const t = useTranslations("teacher_form_course");
   const tCommon = useTranslations("common");
+  const queryClient = useQueryClient(); // ⬅️ taruh di dalam komponen CreateCourse
 
   const router = useRouter();
   const { data: categories } = useCategories();
@@ -89,8 +91,13 @@ const CreateCourse = () => {
     mutationFn: createCourse,
     onSuccess: () => {
       toast.success(t("toast_success"));
+  
+      // ⬅️ invalidasi cache daftar course
+      queryClient.invalidateQueries({
+        queryKey: ["teacher-courses"],
+      });
+  
       router.push("/teacher/courses");
-      router.refresh();
     },
     onError: (error: any) => {
       console.error("Course creation error:", error);
