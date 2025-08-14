@@ -144,7 +144,7 @@ export function RegenerateCertificateModal({
               <FileX className="h-12 w-12 text-red-500 mx-auto mb-4" />
               <h3 className="text-lg font-semibold">Generation Failed</h3>
               <p className="text-muted-foreground">
-                We couldn't generate your certificate. Please try again.
+                We couldn&apos;t generate your certificate. Please try again.
               </p>
             </div>
           </div>
@@ -157,7 +157,7 @@ export function RegenerateCertificateModal({
               <FileX className="h-12 w-12 text-orange-500 mx-auto mb-4" />
               <h3 className="text-lg font-semibold">Certificate Not Found</h3>
               <p className="text-muted-foreground">
-                Your certificate for <strong>"{courseTitle}"</strong> could not be found. 
+                Your certificate for <strong>&ldquo;{courseTitle}&rdquo;</strong> could not be found. 
                 This might happen if the certificate generation process was interrupted.
               </p>
             </div>
@@ -165,7 +165,7 @@ export function RegenerateCertificateModal({
             <Alert>
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                Don't worry! You can generate a new certificate since you've successfully completed the course.
+                Don&apos;t worry! You can generate a new certificate since you&apos;ve successfully completed the course.
               </AlertDescription>
             </Alert>
           </div>
