@@ -6,7 +6,7 @@ import { randomBytes } from "crypto";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
   try {
     const session = await auth();
@@ -14,27 +14,35 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { courseId } = params;
+    const courseId = (await params).courseId;
 
-    // Get student data
-    const student = await db.student.findUnique({
-      where: { 
-        email: session.user.email 
+    // Get user by email
+    const user = await db.user.findUnique({
+      where: {
+        email: session.user.email,
       },
-      include: { 
-        user: true 
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // Get student data by userId
+    const student = await db.studentProfile.findUnique({
+      where: {
+        userId: user.id,
+      },
+      include: {
+        user: true,
       },
     });
 
     if (!student) {
-      return NextResponse.json(
-        { error: "Student not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Student not found" }, { status: 404 });
     }
 
     // Check if student is enrolled and course is completed
-    const enrollment = await db.enrollment.findUnique({
+    const enrollment = await db.enrolledCourse.findUnique({
       where: {
         studentId_courseId: {
           studentId: student.id,
@@ -103,17 +111,16 @@ export async function POST(
     });
 
     if (!course) {
-      return NextResponse.json(
-        { error: "Course not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Course not found" }, { status: 404 });
     }
 
     // If certificate doesn't exist, create one
     if (!certificate) {
       // Generate unique certificate number
-      const certificateNumber = `CERT-${Date.now()}-${randomBytes(4).toString('hex').toUpperCase()}`;
-      
+      const certificateNumber = `CERT-${Date.now()}-${randomBytes(4)
+        .toString("hex")
+        .toUpperCase()}`;
+
       certificate = await db.certificate.create({
         data: {
           certificateNumber,
