@@ -67,6 +67,29 @@ export default function MyCoursePlayerPage() {
     router.push(url);
   };
 
+  useEffect(() => {
+    // Disable klik kanan
+    const handleContextMenu = (e: MouseEvent) => e.preventDefault();
+    document.addEventListener("contextmenu", handleContextMenu);
+
+    // Disable beberapa shortcut (Ctrl+S, Ctrl+U, Ctrl+Shift+I, dll)
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        (e.ctrlKey && ["s", "u", "c"].includes(e.key.toLowerCase())) || // Ctrl+S, Ctrl+U, Ctrl+C
+        (e.ctrlKey && e.shiftKey && ["i", "j"].includes(e.key.toLowerCase())) // Ctrl+Shift+I/J
+      ) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("contextmenu", handleContextMenu);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
   const handleNextChapter = () => {
     if (!currentChapter) return;
 
