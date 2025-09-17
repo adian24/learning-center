@@ -221,14 +221,47 @@ export const useUpdateEnrollment = (enrollmentId?: string) => {
  * Hook to cancel an enrollment
  * @param enrollmentId The ID of the enrollment to cancel
  */
-export const useCancelEnrollment = (enrollmentId?: string) => {
+// export const useCancelEnrollment = (enrollmentId?: string) => {
+//   const queryClient = useQueryClient();
+//   console.log('enrollmentId1', enrollmentId)
+//   return useMutation({
+//     mutationFn: async () => {
+//       console.log('enrollmentId2', enrollmentId)
+//       if (!enrollmentId) {
+//         throw new Error("Enrollment ID is required");
+//       }
+
+//       const response = await fetch(`/api/enrollments/${enrollmentId}`, {
+//         method: "DELETE",
+//       });
+
+//       if (!response.ok) {
+//         const error = await response.json();
+//         throw new Error(error.error || "Failed to cancel enrollment");
+//       }
+
+//       return response.json();
+//     },
+//     onSuccess: () => {
+//       toast.success("Enrollment canceled");
+//       // Invalidate relevant queries to refetch data
+//       queryClient.invalidateQueries({ queryKey: ["enrolledCourses"] });
+//     },
+//     onError: (error) => {
+//       toast.error(
+//         error instanceof Error ? error.message : "Something went wrong"
+//       );
+//     },
+//   });
+// };
+
+export const useCancelEnrollment = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async () => {
-      if (!enrollmentId) {
-        throw new Error("Enrollment ID is required");
-      }
+    mutationFn: async (enrollmentId: string) => {
+      console.log('enrollmentId', enrollmentId);
+      if (!enrollmentId) throw new Error("Enrollment ID is required");
 
       const response = await fetch(`/api/enrollments/${enrollmentId}`, {
         method: "DELETE",
@@ -243,13 +276,10 @@ export const useCancelEnrollment = (enrollmentId?: string) => {
     },
     onSuccess: () => {
       toast.success("Enrollment canceled");
-      // Invalidate relevant queries to refetch data
       queryClient.invalidateQueries({ queryKey: ["enrolledCourses"] });
     },
     onError: (error) => {
-      toast.error(
-        error instanceof Error ? error.message : "Something went wrong"
-      );
+      toast.error(error instanceof Error ? error.message : "Something went wrong");
     },
   });
 };

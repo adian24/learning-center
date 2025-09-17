@@ -279,28 +279,33 @@ const StudentQuizzes = ({ chapterId, courseData, chapters }: StudentQuizzesProps
                         <span className="text-xs text-green-600 font-medium">
                           ✅ Selesai
                         </span>
-                        {canRetake && attemptsRemaining > 0 && (
+                        {/* {canRetake && attemptsRemaining > 0 && ( */}
                           <Button
                             size="sm"
                             variant="ghost"
                             className="text-xs"
                             onClick={() => handleOpenQuiz(quiz.id)}
                           >
-                            Coba Lagi ({attemptsRemaining} kesempatan)
+                            Coba Lagi ?
+                            {/* Coba Lagi ({attemptsRemaining} kesempatan) */}
                           </Button>
-                        )}
+                        {/* )} */}
                       </div>
                     ) : (
                       <Button
                         size="sm"
                         className="w-full mt-2"
-                        variant={hasAttempted ? "secondary" : "default"}
+                        variant={"default"}
                         onClick={() => handleOpenQuiz(quiz.id)}
-                        disabled={!canRetake}
+                        // disabled={!canRetake}
                       >
                         {hasAttempted
-                          ? `Coba Lagi (${attemptsRemaining} kesempatan)`
+                          ? `Coba Lagi `
                           : "Ikuti Kuis"}
+
+                            {/* {hasAttempted
+                          ? `Coba Lagi (${attemptsRemaining} kesempatan)`
+                          : "Ikuti Kuis"} */}
                       </Button>
                     )}
                   </div>
