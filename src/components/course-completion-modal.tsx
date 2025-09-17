@@ -201,7 +201,7 @@ export function CourseCompletionModal({
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3">
+          {/* <div className="flex flex-col sm:flex-row gap-3">
             <Button
               onClick={onViewCertificate}
               className="flex-1 bg-blue-600 hover:bg-blue-700"
@@ -229,7 +229,7 @@ export function CourseCompletionModal({
               <Share2 className="h-4 w-4 mr-2" />
               {isSharing ? "Sharing..." : "Share Achievement"}
             </Button>
-          </div>
+          </div> */}
 
           {/* Next Steps */}
           <div className="border-t pt-4">

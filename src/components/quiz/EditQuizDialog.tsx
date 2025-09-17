@@ -232,6 +232,7 @@ const EditQuizDialog: React.FC<EditQuizDialogProps> = ({ quiz }) => {
                         onCloseAutoFocus={(e) => e.preventDefault()}
                       >
                         <SelectItem value="unlimited">Tanpa Batas</SelectItem>
+                        <SelectItem value="1">1 menit</SelectItem>
                         <SelectItem value="5">5 menit</SelectItem>
                         <SelectItem value="10">10 menit</SelectItem>
                         <SelectItem value="15">15 menit</SelectItem>

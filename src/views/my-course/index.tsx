@@ -93,9 +93,10 @@ const MyCourses = () => {
   >(null);
 
   const { enrollments, isLoading, error } = useGroupedEnrollments();
-  const cancelEnrollment = useCancelEnrollment(
-    cancellingEnrollmentId || undefined
-  );
+  // const cancelEnrollment = useCancelEnrollment(
+  //   cancellingEnrollmentId || undefined
+  // );
+  
 
   // Get stats from the hook
   const { stats: enrollmentStats, isLoading: statsLoading } =
@@ -128,12 +129,22 @@ const MyCourses = () => {
     );
   };
 
+  // const handleCancelEnrollment = async () => {
+  //   if (cancellingEnrollmentId) {
+  //     await cancelEnrollment.mutateAsync();
+  //     setCancellingEnrollmentId(null);
+  //   }
+  // };
+
+  const cancelEnrollment = useCancelEnrollment();
+
   const handleCancelEnrollment = async () => {
     if (cancellingEnrollmentId) {
-      await cancelEnrollment.mutateAsync();
+      await cancelEnrollment.mutateAsync(cancellingEnrollmentId);
       setCancellingEnrollmentId(null);
     }
   };
+
 
   // Filter courses based on search query
   const filterCourses = (courses: any[]) => {

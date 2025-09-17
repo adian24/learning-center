@@ -3,14 +3,16 @@ import { QuizAttempt } from "@/lib/types";
 import { toast } from "sonner"; // Add this import
 import { useMemo } from "react";
 
-interface SubmitQuizAttemptData {
+export interface SubmitQuizAttemptData {
   quizId: string;
-  answers: Array<{
+  answers: {
     questionId: string;
-    selectedOptionId?: string;
+    selectedOptionId?: string;      // single
+    selectedOptionIds?: string[];   // multiple
     textAnswer?: string;
-  }>;
+  }[];
 }
+
 
 interface SubmitQuizAttemptResponse {
   message: string;

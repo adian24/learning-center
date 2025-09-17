@@ -77,19 +77,40 @@ const QuizDrawer: React.FC<QuizDrawerProps> = ({
   const totalQuestions = quizData?.questions.length || 0;
   const answeredQuestions = Object.keys(answers).length;
 
+  const [showTimeUpDialog, setShowTimeUpDialog] = useState(false);
+
+  // Timer jalan setiap detik
   useEffect(() => {
     if (!quizStarted || !quizData?.timeLimit || timeRemaining === null) return;
     const timer = setInterval(() => {
-      setTimeRemaining((prev) => {
-        if (prev === null || prev <= 0) {
-          handleSubmitQuiz();
-          return 0;
-        }
-        return prev - 1;
-      });
+      setTimeRemaining((prev) => (prev !== null && prev > 0 ? prev - 1 : 0));
     }, 1000);
     return () => clearInterval(timer);
-  }, [quizStarted, timeRemaining]);
+  }, [quizStarted, quizData?.timeLimit, timeRemaining]);
+
+  // Ketika waktu habis, auto-submit
+  useEffect(() => {
+    if (timeRemaining === 0 && quizStarted && !showResults) {
+      console.log("⏰ Waktu habis, auto submit...");
+      handleSubmitQuiz();
+      setShowTimeUpDialog(true);
+    }
+  }, [timeRemaining, quizStarted, showResults]);
+
+
+  // useEffect(() => { v1
+  //   if (!quizStarted || !quizData?.timeLimit || timeRemaining === null) return;
+  //   const timer = setInterval(() => {
+  //     setTimeRemaining((prev) => {
+  //       if (prev === null || prev <= 0) {
+  //         handleSubmitQuiz();
+  //         return 0;
+  //       }
+  //       return prev - 1;
+  //     });
+  //   }, 1000);
+  //   return () => clearInterval(timer);
+  // }, [quizStarted, timeRemaining]);
 
   const formatTime = (seconds: number): string => {
     const minutes = Math.floor(seconds / 60);
@@ -98,12 +119,12 @@ const QuizDrawer: React.FC<QuizDrawerProps> = ({
   };
 
   const handleStartQuiz = () => {
-    if (!canRetake) {
-      toast.error(
-        "Anda sudah mencapai batas maksimal percobaan untuk kuis ini"
-      );
-      return;
-    }
+    // if (!canRetake) {
+    //   toast.error(
+    //     "Anda sudah mencapai batas maksimal percobaan untuk kuis ini"
+    //   );
+    //   return;
+    // }
     setQuizStarted(true);
     if (quizData?.timeLimit) setTimeRemaining(quizData.timeLimit * 60);
     toast.info("Kuis dimulai! Semoga berhasil 🎯");
@@ -134,52 +155,54 @@ const QuizDrawer: React.FC<QuizDrawerProps> = ({
     setAnswers({ ...answers, [questionId]: answer });
   };
 
-  const handleSubmitQuiz = useCallback(async () => {
-    if (!quizData) return;
-    const answersArray = Object.values(answers);
-    if (answersArray.length < totalQuestions) {
-      toast.warning("Harap jawab semua pertanyaan sebelum submit");
-      return;
-    }
-    try {
-      toast.loading("Mengirim jawaban...");
-      const result = await submitQuizAttempt.mutateAsync({
-        quizId: quizData.id,
-        answers: answersArray.map((answer) => ({
-          questionId: answer.questionId,
-          selectedOptionId: answer.selectedOptionId,
-          textAnswer: answer.textAnswer,
-        })),
+ const handleSubmitQuiz = useCallback(async () => {
+  if (!quizData) return;
+
+  try {
+    toast.loading("Mengirim jawaban...");
+
+    const result = await submitQuizAttempt.mutateAsync({
+      quizId: quizData.id,
+      answers: quizData.questions.map((q) => {
+        const answer = answers[q.id]; // jawaban kalau ada
+        return {
+          questionId: q.id,
+          selectedOptionId: answer?.selectedOptionId
+            ?? (answer?.selectedOptionIds && answer.selectedOptionIds[0])
+            ?? undefined, // pakai undefined, bukan null
+          textAnswer: answer?.textAnswer ?? undefined,
+        };
+      }),
+
+    });
+
+    // console.log("✅ Submit result:", result);
+
+    toast.dismiss();
+    setQuizResult({ score: result.score, passed: result.passed });
+    setShowResults(true);
+
+    if (courseId) {
+      await queryClient.invalidateQueries({
+        queryKey: ["course-progress", courseId],
       });
-      toast.dismiss();
-      setQuizResult({ score: result.score, passed: result.passed });
-      setShowResults(true);
-
-      // Invalidate course progress to refresh ChapterPlayer
-      if (courseId) {
-        await queryClient.invalidateQueries({
-          queryKey: ["course-progress", courseId],
-        });
-
-        // Wait for queries to refetch and get updated data
-        await queryClient.refetchQueries({
-          queryKey: ["course-progress", courseId],
-        });
-      }
-
-      // Check if this quiz completion triggers course completion (after data is refreshed)
-      if (result.passed && courseData && chapters && chapterId) {
-        // Small delay to ensure all data is fully updated
-        setTimeout(() => {
-          checkAndGenerateCertificate(result.score);
-        }, 1000);
-      }
-    } catch (error) {
-      toast.dismiss();
-      toast.error("Gagal mengirim jawaban. Silakan coba lagi.");
-      console.error("Submit quiz error:", error);
+      await queryClient.refetchQueries({
+        queryKey: ["course-progress", courseId],
+      });
     }
-  }, [quizData, answers, totalQuestions, submitQuizAttempt]);
+
+    if (result.passed && courseData && chapters && chapterId) {
+      setTimeout(() => {
+        checkAndGenerateCertificate(result.score);
+      }, 1000);
+    }
+  } catch (error) {
+    toast.dismiss();
+    toast.error("Gagal mengirim jawaban. Silakan coba lagi.");
+    console.error("❌ Submit quiz error:", error);
+  }
+}, [quizData, answers, submitQuizAttempt, courseId, courseData, chapters, chapterId, queryClient]);
+
 
   // Function to check if course is completed and generate certificate
   const checkAndGenerateCertificate = async (quizScore: number) => {
@@ -321,7 +344,7 @@ const QuizDrawer: React.FC<QuizDrawerProps> = ({
                       <Badge variant="secondary">{bestScore}%</Badge>
                     </div>
                   )}
-                  <div className="flex items-center justify-between">
+                  {/* <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">
                       Kesempatan Tersisa
                     </span>
@@ -332,7 +355,7 @@ const QuizDrawer: React.FC<QuizDrawerProps> = ({
                     >
                       {attemptsRemaining} kali
                     </Badge>
-                  </div>
+                  </div> */}
                 </CardContent>
               </Card>
 
@@ -364,7 +387,7 @@ const QuizDrawer: React.FC<QuizDrawerProps> = ({
               </Button>
               <Button
                 onClick={handleStartQuiz}
-                disabled={!canRetake || totalQuestions === 0}
+                // disabled={canRetake || totalQuestions === 0}
                 className="flex-1"
               >
                 Mulai Kuis
@@ -440,8 +463,9 @@ const QuizDrawer: React.FC<QuizDrawerProps> = ({
                   <Alert>
                     <AlertCircle className="h-4 w-4" />
                     <AlertDescription>
-                      Anda masih memiliki {attemptsRemaining} kesempatan untuk
-                      mencoba lagi.
+                      {/* Anda masih memiliki {attemptsRemaining} kesempatan untuk
+                      mencoba lagi. */}
+                      Silahkan Coba Lagi !
                     </AlertDescription>
                   </Alert>
                 )}
@@ -666,6 +690,54 @@ const QuizDrawer: React.FC<QuizDrawerProps> = ({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <Dialog
+        open={showTimeUpDialog}
+        // jangan biarkan user close dialog sebelum submit selesai
+        onOpenChange={(open) => {
+          if (!submitQuizAttempt.isPending) {
+            setShowTimeUpDialog(open);
+          }
+        }}
+      >
+        <DialogContent
+          className="sm:max-w-[600px]"
+          // cegah close pakai ESC atau klik backdrop
+          onInteractOutside={(e) => {
+            if (submitQuizAttempt.isPending) e.preventDefault();
+          }}
+          onEscapeKeyDown={(e) => {
+            if (submitQuizAttempt.isPending) e.preventDefault();
+          }}
+        >
+          <DialogHeader>
+            <DialogTitle>Waktu Habis ⏰</DialogTitle>
+            <DialogDescription>
+              Waktu pengerjaan kuis telah habis. Jawaban Anda sudah otomatis disubmit.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              onClick={() => {
+                setShowTimeUpDialog(false);
+                setShowResults(true);
+              }}
+              disabled={submitQuizAttempt.isPending}
+            >
+              {submitQuizAttempt.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Mengirim jawaban...
+                </>
+              ) : (
+                "Lihat Hasil"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+
     </Drawer>
   );
 };
