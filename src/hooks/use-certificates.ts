@@ -175,6 +175,10 @@ export const useCertificateManager = () => {
 
   const certificates = useCertificates();
   const regenerateMutation = useCertificateRegenerate();
+  const regeneratingCertificateId =
+    typeof regenerateMutation.variables === "string"
+      ? regenerateMutation.variables
+      : null;
 
   // Download certificate
   const downloadCertificate = async (certificate: Certificate) => {
@@ -302,7 +306,7 @@ export const useCertificateManager = () => {
     downloadingId,
     sharingId,
     isRegenerating: regenerateMutation.isPending,
-    regeneratingId: regenerateMutation.variables,
+    regeneratingId: regeneratingCertificateId,
 
     // Utilities
     refetch: certificates.refetch,
