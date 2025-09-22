@@ -81,9 +81,9 @@ export async function GET(
                   },
                 },
                 chapters: {
-                  where: {
-                    isPublished: true,
-                  },
+                  // where: {
+                  //   isPublished: true,
+                  // },
                   select: {
                     id: true,
                     title: true,

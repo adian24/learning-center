@@ -6,6 +6,8 @@ import {
   CourseProgressStats,
   QuizPerformanceData,
   AchievementData,
+  StudentCertificate,
+  EnrollmentWithProgress,
 } from "@/lib/types/student-detail";
 
 // Basic Student Interface (existing)
@@ -153,11 +155,25 @@ export const useStudentOverview = (studentId: string | undefined) => {
  * @param studentId - The ID of the student
  * @returns Course progress data optimized for display
  */
+type EnrollmentWithCertificate = EnrollmentWithProgress & {
+  certificate: StudentCertificate | null;
+};
+
 export const useStudentCourseProgress = (studentId: string | undefined) => {
   const { data, isLoading, error } = useStudentDetail(studentId);
 
+  const coursesWithCertificates: EnrollmentWithCertificate[] =
+    data?.enrollments.map((enrollment) => ({
+      ...enrollment,
+      certificate:
+        data?.certificates.find(
+          (certificate) => certificate.courseId === enrollment.courseId
+        ) ?? null,
+    })) ?? [];
+
   return {
-    courses: data?.enrollments || [],
+    courses: coursesWithCertificates,
+    certificate: data?.certificates || [],
     coursesStats: data
       ? ({
           total: data.stats.totalCourses,
