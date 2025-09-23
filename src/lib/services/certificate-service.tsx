@@ -258,7 +258,7 @@ const TemplateCertificateDocument: React.FC<{
               width: LAYOUT.courseTitle.width,
             }}
           >
-            <Text style={styles.courseTitle}>"{courseTitle}"</Text>
+            <Text style={styles.courseTitle}>&quot;{courseTitle}&quot;</Text>
           </View>
 
           {/* Level & Category */}
