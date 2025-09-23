@@ -25,6 +25,7 @@ import {
 } from "@/hooks/use-certificates";
 
 export function CertificatesPage() {
+
   const {
     certificates,
     isLoading,
@@ -259,6 +260,7 @@ export function CertificatesPage() {
                   </div>
 
                   {/* Action Buttons */}
+
                   <div className="flex gap-2">
                     {certificate.pdfUrl ? (
                       <>
@@ -315,7 +317,6 @@ export function CertificatesPage() {
                       </Button>
                     )}
                   </div>
-
                   {/* <div className="flex gap-2">
                     <Button
                       variant="ghost"
