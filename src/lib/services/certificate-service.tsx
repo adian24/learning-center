@@ -5,7 +5,6 @@ import {
   Text,
   View,
   StyleSheet,
-  PDFDownloadLink,
   pdf,
   Image,
 } from "@react-pdf/renderer";
@@ -13,6 +12,11 @@ import { PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { s3Client, BUCKET_NAME } from "@/lib/s3";
 
+// Import asset untuk kasus browser (akan jadi URL oleh bundler)
+import certTemplateUrl from "@/assets/cert-template.png";
+import { Buffer } from "buffer";
+
+/* ===================== TYPES ===================== */
 interface CertificateData {
   certificate: {
     id: string;
@@ -20,271 +24,296 @@ interface CertificateData {
     issueDate: Date;
   };
   student: {
-    user: {
-      name: string | null;
-      email: string | null;
-    };
+    user: { name: string | null; email: string | null };
   };
   course: {
     title: string;
     description: string | null;
     level: string;
     teacher: {
-      user: {
-        name: string | null;
-      };
-      company?: {
-        name: string;
-        logoUrl: string | null;
-      } | null;
+      user: { name: string | null };
+      company?: { name: string; logoUrl: string | null } | null;
     };
-    category?: {
-      name: string;
-    } | null;
+    category?: { name: string } | null;
   };
 }
 
-// PDF Styles
+/* ===================== CONFIG ===================== */
+const COLOR_NAVY = "#0E3B70";
+const COLOR_MUTED = "#3E4A5B";
+
+// Relatif terhadap project root
+const TEMPLATE_REL_PATH = "src/assets/cert-template.png";
+
+/* ===================== POSISI TEKS (A4 landscape 842x595) ===================== */
+// A4 landscape 842x595
+// A4 landscape 842 x 595
+const LAYOUT = {
+  canvas: { w: 842, h: 595 },
+
+  // “This participation certificate is given to”
+  giveTo:      { top: 206, left: 60, width: 722 },
+
+  // Nama peserta — dinaikkan dan jadi anchor spasi berikutnya
+  studentName: { top: 244, left: 60, width: 722 },
+
+  // “Has successfully …”
+  hasSuccess:  { top: 310, left: 60, width: 722 },
+
+  // Judul course
+  courseTitle: { top: 335, left: 60, width: 722 },
+
+  // Level | Category
+  metaLine:    { top: 360, left: 60, width: 722 },
+
+  // Certificate ID
+  certId:      { top: 410, left: 60, width: 722 },
+
+  // Footer
+  bottomLogo:  { top: 462, w: 48, h: 48 },
+  companyName: { top: 526, left: 60, width: 722 },
+};
+
+
+/* ===================== STYLES ===================== */
 const styles = StyleSheet.create({
   page: {
-    flexDirection: "column",
-    backgroundColor: "#ffffff",
-    padding: 30,
-    fontFamily: "Helvetica",
+    backgroundColor: "#fff",
+    padding: 0,
+    fontFamily: "Helvetica",     // biar konsisten Times-Roman
   },
-  border: {
-    border: "3px solid #1e40af",
-    borderRadius: 8,
-    padding: 20,
-    height: "100%",
+  container: {
     position: "relative",
+    width: LAYOUT.canvas.w,
+    height: LAYOUT.canvas.h,
   },
-  innerBorder: {
-    border: "1px solid #1e40af",
-    borderRadius: 4,
-    padding: 25,
-    height: "100%",
-    flexDirection: "column",
-    justifyContent: "space-between",
+  bg: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: LAYOUT.canvas.w,
+    height: LAYOUT.canvas.h,
   },
-  header: {
-    alignItems: "center",
-    marginBottom: 30,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#1e40af",
-    marginBottom: 10,
+
+  // “This participation certificate is given to”
+  giveTo: {
+    fontSize: 18,
+    color: "#0E3B70",
     textAlign: "center",
+    lineHeight: 1.3,
   },
-  decorativeLine: {
-    width: 150,
-    height: 2,
-    backgroundColor: "#f59e0b",
-    marginBottom: 20,
-  },
-  content: {
-    alignItems: "center",
-    flex: 1,
-    justifyContent: "center",
-  },
-  certifyText: {
-    fontSize: 14,
-    color: "#64748b",
-    marginBottom: 15,
-    textAlign: "center",
-  },
+
   studentName: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#000000",
-    marginBottom: 15,
+    fontFamily: "Times-Roman",
+    fontSize: 42,
+    color: "#0E3B70",
     textAlign: "center",
+    fontStyle: "italic",
+    fontWeight: 700,
+    lineHeight: 1.15,              // jarak baris nama lebih proporsional
   },
-  completionText: {
-    fontSize: 14,
-    color: "#64748b",
-    marginBottom: 20,
+
+  // “Has successfully completed the online course”
+  hasSuccesfully: {
+    fontSize: 16,                  // tetap besar tapi tidak menempel
+    color: "#0E3B70",
     textAlign: "center",
+    fontWeight: "normal",
+    lineHeight: 1.35,
   },
+
   courseTitle: {
     fontSize: 18,
-    fontWeight: "bold",
-    color: "#1e40af",
-    marginBottom: 15,
+    color: "#0E3B70",
     textAlign: "center",
-    maxWidth: "80%",
+    fontWeight: 800,
+    lineHeight: 1.3,
   },
-  courseDetails: {
+
+  meta: {
+    fontSize: 12.5,
+    color: "#0E3B70",
+    textAlign: "center",
+    lineHeight: 1.35,
+  },
+
+  certId: {
     fontSize: 12,
-    color: "#64748b",
-    marginBottom: 15,
+    color: "#0E3B70",
     textAlign: "center",
+    lineHeight: 1.35,
   },
-  dateText: {
-    fontSize: 11,
-    color: "#64748b",
-    marginBottom: 10,
-    textAlign: "center",
-  },
-  certificateId: {
-    fontSize: 10,
-    color: "#666666",
-    textAlign: "center",
-  },
-  footer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-end",
-    marginTop: 30,
-    paddingHorizontal: 20,
-  },
-  signatureSection: {
-    alignItems: "center",
-    minWidth: 120,
-  },
-  signatureLabel: {
-    fontSize: 10,
-    color: "#000000",
-    marginBottom: 5,
-  },
-  signatureName: {
-    fontSize: 11,
-    fontWeight: "bold",
-    color: "#000000",
-    marginBottom: 10,
-  },
-  signatureLine: {
-    width: 100,
-    height: 1,
-    backgroundColor: "#000000",
-  },
-  logoSection: {
-    alignItems: "center",
-    marginTop: 10,
-  },
-  logo: {
-    width: 60,
-    height: 60,
-    marginBottom: 10,
-  },
+
   companyName: {
     fontSize: 12,
-    fontWeight: "bold",
-    color: "#1e40af",
+    color: "#0E3B70",
     textAlign: "center",
-  },
-  watermark: {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    fontSize: 60,
-    color: "#f8f9fa",
-    opacity: 0.1,
-    fontWeight: "bold",
-    zIndex: -1,
+    fontWeight: 700,
   },
 });
 
-// Helper function to get secure image URL
+
+
+/* ===================== HELPERS ===================== */
 async function getSecureImageUrl(imageKey: string): Promise<string | null> {
   if (!imageKey) return null;
-
   try {
-    const getCommand = new GetObjectCommand({
-      Bucket: BUCKET_NAME,
-      Key: imageKey,
-    });
-
-    const signedUrl = await getSignedUrl(s3Client, getCommand, {
-      expiresIn: 3600, // 1 hour
-    });
-
-    return signedUrl;
-  } catch (error) {
-    console.error("Error generating secure image URL:", error);
+    const cmd = new GetObjectCommand({ Bucket: BUCKET_NAME, Key: imageKey });
+    return await getSignedUrl(s3Client, cmd, { expiresIn: 3600 });
+  } catch (e) {
+    console.error("getSecureImageUrl error:", e);
     return null;
   }
 }
 
-// Certificate Document Component
-const CertificateDocument: React.FC<{
-  data: CertificateData;
-  companyLogoUrl?: string | null;
-}> = ({ data, companyLogoUrl }) => {
-  const studentName = data.student.user.name || "Student";
-  const courseTitle = data.course.title;
-  const courseLevel =
-    data.course.level.charAt(0).toUpperCase() +
-    data.course.level.slice(1).toLowerCase();
-  const categoryName = data.course.category?.name || "General";
-  const instructorName = data.course.teacher.user.name || "Instructor";
-  const companyName = data.course.teacher.company?.name || "Learning Center";
+/** Auto shrink nama jika terlalu panjang */
+function fitNameFontSize(name: string): number {
+  if (!name) return 42;
+  if (name.length > 28) return 30;
+  if (name.length > 22) return 34;
+  if (name.length > 18) return 38;
+  return 42;
+}
 
+/**
+ * Resolve sumber template untuk React-PDF.
+ * - Di server (Node): baca file sebagai Buffer (format 'png')
+ * - Di browser: pakai URL hasil import bundler
+ */
+// GANTI fungsi sebelumnya
+async function resolveTemplateSrc():
+  Promise<string | { data: Buffer; format: "png" }> {
+  if (typeof window === "undefined") {
+    const fs = await import("fs");
+    const path = await import("path");
+    try {
+      const abs = path.join(process.cwd(), "src/assets/cert-template.png");
+      const file = await fs.promises.readFile(abs); // -> Buffer
+      const bin = Buffer.isBuffer(file) ? file : Buffer.from(file);
+      return { data: bin, format: "png" as const };
+    } catch (e) {
+      console.error("FS read failed, fallback to imported URL:", e);
+      return certTemplateUrl as unknown as string;
+    }
+  }
+  return certTemplateUrl as unknown as string;
+}
+
+
+/* ===================== DOCUMENT ===================== */
+const TemplateCertificateDocument: React.FC<{
+  data: CertificateData;
+  templateSrc: string | { data: Buffer; format: "png" };
+  companyLogoUrl?: string | null;
+}> = ({ data, templateSrc, companyLogoUrl }) => {
+  const studentName = data.student.user.name || "Participant";
+  const courseTitle = data.course.title;
+  const level =
+    data.course.level?.charAt(0).toUpperCase() +
+      data.course.level?.slice(1).toLowerCase() || "Beginner";
+  const category = data.course.category?.name || "Professional Certification";
+  const companyName =
+    data.course.teacher.company?.name || "PT TSI SERTIFIKASI INTERNASIONAL";
+
+  const nameSize = fitNameFontSize(studentName);
   const issueDate = new Date(data.certificate.issueDate);
   const formattedDate = issueDate.toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
   });
-
   return (
     <Document>
       <Page size="A4" orientation="landscape" style={styles.page}>
-        <View style={styles.border}>
-          <View style={styles.innerBorder}>
-            {/* Watermark */}
-            <Text style={styles.watermark}>CERTIFIED</Text>
+        <View style={styles.container}>
+          {/* Background template */}
+          <Image src={templateSrc} style={styles.bg} />
 
-            {/* Header */}
-            <View style={styles.header}>
-              <Text style={styles.title}>CERTIFICATE OF COMPLETION</Text>
-              <View style={styles.decorativeLine} />
-            </View>
+          {/* {studentName} */}
+          <View
+            style={{
+              position: "absolute",
+              top: LAYOUT.studentName.top,
+              left: LAYOUT.studentName.left,
+              width: LAYOUT.studentName.width,
+            }}
+          >
+            <Text style={[styles.studentName, { fontSize: nameSize }]}>
+              {studentName}
+            </Text>
+          </View>
 
-            {/* Content */}
-            <View style={styles.content}>
-              <Text style={styles.certifyText}>This is to certify that</Text>
-              <Text style={styles.studentName}>{studentName}</Text>
-              <Text style={styles.completionText}>
-                has successfully completed the online course
-              </Text>
-              <Text style={styles.courseTitle}>{courseTitle}</Text>
-              <Text style={styles.courseDetails}>
-                Level: {courseLevel} | Category: {categoryName}
-              </Text>
-              <Text style={styles.dateText}>Issued on {formattedDate}</Text>
-              <Text style={styles.certificateId}>
-                Certificate ID: {data.certificate.certificateNumber}
-              </Text>
-            </View>
+          {/* “Has successfully …” */}
+          <View style={{ position: "absolute", ...LAYOUT.hasSuccess }}>
+            <Text style={styles.hasSuccesfully}>
+              Has successfully completed the online course
+            </Text>
+          </View>
+          {/* “{courseTitle}” */}
+          <View
+            style={{
+              position: "absolute",
+              top: LAYOUT.courseTitle.top,
+              left: LAYOUT.courseTitle.left,
+              width: LAYOUT.courseTitle.width,
+            }}
+          >
+            <Text style={styles.courseTitle}>"{courseTitle}"</Text>
+          </View>
 
-            {/* Footer */}
-            <View style={styles.footer}>
-              {/* Instructor Signature */}
-              <View style={styles.signatureSection}>
-                <Text style={styles.signatureLabel}>Instructor:</Text>
-                <Text style={styles.signatureName}>{instructorName}</Text>
-                <View style={styles.signatureLine} />
-              </View>
+          {/* Level & Category */}
+          <View
+            style={{
+              position: "absolute",
+              top: LAYOUT.metaLine.top,
+              left: LAYOUT.metaLine.left,
+              width: LAYOUT.metaLine.width,
+            }}
+          >
+            <Text style={styles.meta}>
+              Level : {level} | Category : {category}
+            </Text>
+            <Text style={styles.meta}>Issued on {formattedDate}</Text>
+          </View>
 
-              {/* Company Logo and Name */}
-              <View style={styles.logoSection}>
-                {companyLogoUrl && (
-                  <Image style={styles.logo} src={companyLogoUrl} />
-                )}
-                <Text style={styles.companyName}>{companyName}</Text>
-              </View>
+          {/* Certificate ID */}
+          <View
+            style={{
+              position: "absolute",
+              top: LAYOUT.certId.top,
+              left: LAYOUT.certId.left,
+              width: LAYOUT.certId.width,
+            }}
+          >
+            <Text style={styles.certId}>
+              Certificate ID : {data.certificate.certificateNumber}
+            </Text>
+          </View>
 
-              {/* Company Signature */}
-              <View style={styles.signatureSection}>
-                <Text style={styles.signatureLabel}>Issued by:</Text>
-                <Text style={styles.signatureName}>{companyName}</Text>
-                <View style={styles.signatureLine} />
-              </View>
-            </View>
+          {/* Logo bottom center */}
+          {companyLogoUrl && (
+            <Image
+              src={companyLogoUrl}
+              style={{
+                position: "absolute",
+                top: LAYOUT.bottomLogo.top,
+                left: (LAYOUT.canvas.w - LAYOUT.bottomLogo.w) / 2,
+                width: LAYOUT.bottomLogo.w,
+                height: LAYOUT.bottomLogo.h,
+              }}
+            />
+          )}
+
+          {/* {companyName} */}
+          <View
+            style={{
+              position: "absolute",
+              top: LAYOUT.companyName.top,
+              left: LAYOUT.companyName.left,
+              width: LAYOUT.companyName.width,
+            }}
+          >
+            <Text style={styles.companyName}>{companyName.toUpperCase()}</Text>
           </View>
         </View>
       </Page>
@@ -292,61 +321,39 @@ const CertificateDocument: React.FC<{
   );
 };
 
-export async function generateCertificatePDF(
-  data: CertificateData
-): Promise<string> {
+/* ===================== GENERATE + UPLOAD ===================== */
+export async function generateCertificatePDF(data: CertificateData): Promise<string> {
   try {
-    console.log("Starting PDF generation for certificate:", data.certificate.certificateNumber);
-    
-    // Get secure company logo URL if available
     let companyLogoUrl: string | null = null;
     if (data.course.teacher.company?.logoUrl) {
-      console.log("Getting secure logo URL for company:", data.course.teacher.company.name);
       companyLogoUrl = await getSecureImageUrl(
         data.course.teacher.company.logoUrl
       );
-      console.log("Logo URL obtained:", companyLogoUrl ? "success" : "failed");
     }
-    
-    // Create PDF document with secure logo URL
-    console.log("Creating PDF document...");
+
+    const templateSrc = await resolveTemplateSrc();
+
     const doc = (
-      <CertificateDocument data={data} companyLogoUrl={companyLogoUrl} />
+      <TemplateCertificateDocument
+        data={data}
+        templateSrc={templateSrc}
+        companyLogoUrl={companyLogoUrl}
+      />
     );
 
-    // Generate PDF buffer
-    console.log("Generating PDF blob...");
-    const pdfBlob = await pdf(doc).toBlob();
-    console.log("PDF blob size:", pdfBlob.size);
-    
-    const arrayBuffer = await pdfBlob.arrayBuffer();
-    const pdfBuffer = Buffer.from(arrayBuffer);
-    console.log("PDF buffer size:", pdfBuffer.length);
+    const blob = await pdf(doc).toBlob();
+    const buf = Buffer.from(await blob.arrayBuffer());
 
-    // Upload to S3
-    const fileName = `certificates/cert_${
-      data.certificate.certificateNumber
-    }_${Date.now()}.pdf`;
-    console.log("Uploading to S3 with filename:", fileName);
-    
-    const uploadResult = await uploadToS3(
-      pdfBuffer,
-      fileName,
-      "application/pdf"
-    );
-
-    const finalUrl = uploadResult.Location || uploadResult.url;
-    console.log("PDF uploaded successfully. Final URL:", finalUrl);
-
-    return finalUrl;
-  } catch (error) {
-    console.error("Error generating certificate PDF:", error);
-    console.error("Error stack:", error instanceof Error ? error.stack : error);
+    const fileName = `certificates/cert_${data.certificate.certificateNumber}_${Date.now()}.pdf`;
+    const res = await uploadToS3(buf, fileName, "application/pdf");
+    return res.Location || res.url;
+  } catch (e) {
+    console.error("Error generating certificate PDF:", e);
     throw new Error("Failed to generate certificate PDF");
   }
 }
 
-// Helper function to validate certificate data
+/* ===================== VALIDATION & UPLOAD ===================== */
 export function validateCertificateData(data: any): data is CertificateData {
   return (
     data &&
@@ -358,51 +365,20 @@ export function validateCertificateData(data: any): data is CertificateData {
   );
 }
 
-// Upload PDF buffer to S3
 async function uploadToS3(
   buffer: Buffer,
   fileName: string,
   contentType: string
 ): Promise<{ Location?: string; url: string }> {
-  try {
-    console.log("S3 Upload - Bucket:", BUCKET_NAME);
-    console.log("S3 Upload - Key:", fileName);
-    console.log("S3 Upload - Buffer size:", buffer.length);
-    console.log("S3 Upload - Content type:", contentType);
-    
-    const uploadCommand = new PutObjectCommand({
-      Bucket: BUCKET_NAME,
-      Key: fileName,
-      Body: buffer,
-      ContentType: contentType,
-      CacheControl: "max-age=31536000", // 1 year cache
-      Metadata: {
-        uploadedAt: new Date().toISOString(),
-        type: "certificate",
-      },
-    });
-
-    console.log("Sending upload command to S3...");
-    const result = await s3Client.send(uploadCommand);
-    console.log("S3 upload result:", result);
-
-    // Return the URL where the file can be accessed
-    const url = `${process.env.NEXT_PUBLIC_S3_ENDPOINT}/${BUCKET_NAME}/${fileName}`;
-    console.log("Generated S3 URL:", url);
-
-    return {
-      Location: url,
-      url: url,
-    };
-  } catch (error) {
-    console.error("Error uploading to S3:", error);
-    console.error("S3 Error details:", error instanceof Error ? error.message : error);
-    throw new Error("Failed to upload certificate to S3");
-  }
-}
-
-// Function to regenerate certificate (if needed)
-export async function regenerateCertificate(certificateId: string) {
-  // Implementation for regenerating certificates
-  // Useful for updating certificate templates or fixing issues
+  const upload = new PutObjectCommand({
+    Bucket: BUCKET_NAME,
+    Key: fileName,
+    Body: buffer,
+    ContentType: contentType,
+    CacheControl: "max-age=31536000",
+    Metadata: { uploadedAt: new Date().toISOString(), type: "certificate" },
+  });
+  await s3Client.send(upload);
+  const url = `${process.env.NEXT_PUBLIC_S3_ENDPOINT}/${BUCKET_NAME}/${fileName}`;
+  return { Location: url, url };
 }

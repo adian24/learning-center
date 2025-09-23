@@ -307,7 +307,6 @@ export const useCertificateManager = () => {
     sharingId,
     isRegenerating: regenerateMutation.isPending,
     regeneratingId: regeneratingCertificateId,
-
     // Utilities
     refetch: certificates.refetch,
   };
