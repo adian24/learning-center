@@ -32,12 +32,12 @@ export function CertificatesPage() {
     downloadCertificate,
     viewCertificate,
     // shareCertificate,
-    // regenerateCertificate,
+    regenerateCertificate,
     refreshCertificates,
     downloadingId,
     // sharingId,
-    // isRegenerating,
-    // regeneratingId,
+    isRegenerating,
+    regeneratingId,
   } = useCertificateManager();
 
   const {
@@ -260,40 +260,60 @@ export function CertificatesPage() {
 
                   {/* Action Buttons */}
                   <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() =>
-                        viewCertificate({
-                          certificateId: certificate.id,
-                          pdfUrl: certificate.pdfUrl || "",
-                        })
-                      }
-                      disabled={!certificate.pdfUrl}
-                      className="flex-1"
-                    >
-                      <Eye className="h-4 w-4 mr-1" />
-                      View
-                    </Button>
+                    {certificate.pdfUrl ? (
+                      <>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            viewCertificate({
+                              certificateId: certificate.id,
+                              pdfUrl: certificate.pdfUrl || "",
+                            })
+                          }
+                          className="flex-1"
+                        >
+                          <Eye className="h-4 w-4 mr-1" />
+                          View
+                        </Button>
 
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => downloadCertificate(certificate)}
-                      disabled={
-                        !certificate.pdfUrl || downloadingId === certificate.id
-                      }
-                      className="flex-1"
-                    >
-                      {downloadingId === certificate.id ? (
-                        <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-                      ) : (
-                        <Download className="h-4 w-4 mr-1" />
-                      )}
-                      {downloadingId === certificate.id
-                        ? "Downloading..."
-                        : "Download"}
-                    </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => downloadCertificate(certificate)}
+                          disabled={downloadingId === certificate.id}
+                          className="flex-1"
+                        >
+                          {downloadingId === certificate.id ? (
+                            <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                          ) : (
+                            <Download className="h-4 w-4 mr-1" />
+                          )}
+                          {downloadingId === certificate.id
+                            ? "Downloading..."
+                            : "Download"}
+                        </Button>
+                      </>
+                    ) : (
+                      <Button
+                        variant="default"
+                        size="sm"
+                        className="flex-1"
+                        onClick={() => regenerateCertificate(certificate.id)}
+                        disabled={
+                          isRegenerating && regeneratingId === certificate.id
+                        }
+                      >
+                        {isRegenerating && regeneratingId === certificate.id ? (
+                          <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                        ) : (
+                          <RefreshCw className="h-4 w-4 mr-1" />
+                        )}
+                        {isRegenerating && regeneratingId === certificate.id
+                          ? "Generating..."
+                          : "Generate Certificate"}
+                      </Button>
+                    )}
                   </div>
 
                   {/* <div className="flex gap-2">
