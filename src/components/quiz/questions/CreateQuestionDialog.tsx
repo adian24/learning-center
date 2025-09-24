@@ -56,9 +56,18 @@ const questionSchema = z.object({
   type: z.enum(["SINGLE_CHOICE", "TRUE_FALSE"], {
     required_error: "Tipe pertanyaan wajib dipilih",
   }),
-  points: z.number().min(1, "Minimal 1 poin").max(100, "Maksimal 100 poin"),
+  points: z.preprocess((val) => {
+  if (val === "" || val === null || val === undefined) return undefined;
+    return Number(val);
+  },
+  z.number({ required_error: "Poin wajib diisi" })
+  .min(1, "Minimal 1 poin")
+  .max(100, "Maksimal 100 poin")),
+
   explanation: z.string().optional(),
 });
+
+
 
 type QuestionFormData = z.infer<typeof questionSchema>;
 
@@ -88,13 +97,16 @@ const CreateQuestionDialog: React.FC = () => {
   // Forms
   const questionForm = useForm<QuestionFormData>({
     resolver: zodResolver(questionSchema),
+    mode: "onChange",          // <- penting
+    reValidateMode: "onChange",
     defaultValues: {
       text: "",
-      type: undefined,
-      points: 1,
+      type: "SINGLE_CHOICE",
+      points: undefined as unknown as number,
       explanation: "",
     },
   });
+
 
   const watchedType = questionForm.watch("type");
 
@@ -137,8 +149,16 @@ const CreateQuestionDialog: React.FC = () => {
       setOptions([]);
       setNewOptionText("");
       setIsSubmitting(false);
+
+      questionForm.reset({
+        text: "",
+        type: "SINGLE_CHOICE",
+        points: undefined as unknown as number, // kosong
+        explanation: "",
+      });
     }
   }, [isCreateQuestionOpen]);
+
 
   // Auto-generate TRUE_FALSE options when type changes
   React.useEffect(() => {
@@ -231,53 +251,99 @@ const CreateQuestionDialog: React.FC = () => {
     setCurrentStep(1);
   };
 
-  const handleSubmit = async () => {
-    if (!createQuestionQuizId) {
-      toast.error("Quiz ID tidak ditemukan");
-      return;
-    }
+  // const handleSubmit = async () => {
+  //   if (!createQuestionQuizId) {
+  //     toast.error("Quiz ID tidak ditemukan");
+  //     return;
+  //   }
 
-    const questionData = questionForm.getValues();
-    setIsSubmitting(true);
+  //   const questionData = questionForm.getValues();
+  //   setIsSubmitting(true);
 
-    try {
-      // Step 1: Create Question
-      const question = await createQuestionMutation.mutateAsync({
-        text: questionData.text.trim(),
-        type: questionData.type,
-        points: questionData.points,
-        explanation: questionData.explanation?.trim() || undefined,
-        quizId: createQuestionQuizId,
-      });
+  //   try {
+  //     // Step 1: Create Question
+  //     const question = await createQuestionMutation.mutateAsync({
+  //       text: questionData.text.trim(),
+  //       type: questionData.type,
+  //       points: questionData.points,
+  //       explanation: questionData.explanation?.trim() || undefined,
+  //       quizId: createQuestionQuizId,
+  //     });
 
-      // Step 2: Create Options (if needed)
-      const config = questionTypeConfig[questionData.type];
-      if (config.needsOptions || questionData.type === "TRUE_FALSE") {
-        const optionPromises = options.map((option) =>
+  //     // Step 2: Create Options (if needed)
+  //     const config = questionTypeConfig[questionData.type];
+  //     if (config.needsOptions || questionData.type === "TRUE_FALSE") {
+  //       const optionPromises = options.map((option) =>
+  //         createQuestionOptionMutation.mutateAsync({
+  //           text: option.text,
+  //           isCorrect: option.isCorrect,
+  //           questionId: question.id,
+  //         })
+  //       );
+
+  //       await Promise.all(optionPromises);
+  //     }
+
+  //     toast.success("Pertanyaan Berhasil Dibuat", {
+  //       description: `Pertanyaan dengan ${questionData.points} poin dan ${options.length} pilihan telah berhasil dibuat.`,
+  //     });
+
+  //     handleCancel();
+  //   } catch (error: any) {
+  //     toast.error("Gagal Membuat Pertanyaan", {
+  //       description:
+  //         error.message || "Terjadi kesalahan saat membuat pertanyaan.",
+  //     });
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
+
+const onCreateQuestion = async (values: QuestionFormData) => {
+  if (!createQuestionQuizId) {
+    toast.error("Quiz ID tidak ditemukan");
+    return;
+  }
+
+  setIsSubmitting(true);
+  try {
+    // values.points sudah number karena diproses Zod (preprocess)
+    const question = await createQuestionMutation.mutateAsync({
+      text: values.text.trim(),
+      type: values.type,
+      points: values.points,
+      explanation: values.explanation?.trim() || undefined,
+      quizId: createQuestionQuizId,
+    });
+
+    const config = questionTypeConfig[values.type];
+    if (config.needsOptions || values.type === "TRUE_FALSE") {
+      await Promise.all(
+        options.map((option) =>
           createQuestionOptionMutation.mutateAsync({
-            text: option.text,
-            isCorrect: option.isCorrect,
+            text: option.text.trim(),
+            isCorrect: !!option.isCorrect,
             questionId: question.id,
           })
-        );
-
-        await Promise.all(optionPromises);
-      }
-
-      toast.success("Pertanyaan Berhasil Dibuat", {
-        description: `Pertanyaan dengan ${questionData.points} poin dan ${options.length} pilihan telah berhasil dibuat.`,
-      });
-
-      handleCancel();
-    } catch (error: any) {
-      toast.error("Gagal Membuat Pertanyaan", {
-        description:
-          error.message || "Terjadi kesalahan saat membuat pertanyaan.",
-      });
-    } finally {
-      setIsSubmitting(false);
+        )
+      );
     }
-  };
+
+    toast.success("Pertanyaan Berhasil Dibuat", {
+      description: `Pertanyaan dengan ${values.points} poin dan ${options.length} pilihan telah berhasil dibuat.`,
+    });
+
+    handleCancel();
+  } catch (error: any) {
+    // Hindari parsing JSON dari response non-JSON
+    const desc =
+      error?.message?.includes("JSON") ? "Server mengembalikan error non-JSON (500). Cek payload & log server." :
+      error?.message || "Terjadi kesalahan saat membuat pertanyaan.";
+    toast.error("Gagal Membuat Pertanyaan", { description: desc });
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   const handleCancel = () => {
     questionForm.reset();
@@ -430,21 +496,27 @@ const CreateQuestionDialog: React.FC = () => {
                             type="number"
                             min="1"
                             max="100"
-                            placeholder="1"
+                            placeholder="Masukkan poin"
                             disabled={isLoading}
-                            {...field}
+                            value={questionForm.watch("points") ?? ""}
                             onChange={(e) =>
-                              field.onChange(parseInt(e.target.value) || 1)
+                              questionForm.setValue("points", e.target.value as any, {
+                                shouldValidate: true,   // <- kunci
+                                shouldDirty: true,
+                                shouldTouch: true,
+                              })
                             }
+                            onFocus={(e) => e.currentTarget.select()}
                           />
                         </FormControl>
                         <FormDescription className="text-xs">
-                          Poin yang akan diperoleh jika jawaban benar (1-100)
+                          Poin yang akan diperoleh jika jawaban benar (1–100)
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+
                 </div>
 
                 {/* Explanation */}
@@ -649,8 +721,8 @@ const CreateQuestionDialog: React.FC = () => {
           {currentStep === 1 && (
             <Button
               type="button"
-              onClick={handleNextStep}
-              disabled={!canGoToStep2() || isLoading}
+              onClick={questionForm.handleSubmit(() => setCurrentStep(2))} // validasi skema dulu
+              disabled={isLoading || !questionForm.formState.isValid}
               className="gap-2"
             >
               Selanjutnya
@@ -672,7 +744,7 @@ const CreateQuestionDialog: React.FC = () => {
               </Button>
               <Button
                 type="button"
-                onClick={handleSubmit}
+                onClick={questionForm.handleSubmit(onCreateQuestion)} // <— ini kuncinya
                 disabled={!canSubmit() || isLoading}
                 className="gap-2"
               >
@@ -688,6 +760,7 @@ const CreateQuestionDialog: React.FC = () => {
                   </>
                 )}
               </Button>
+
             </>
           )}
         </DialogFooter>
