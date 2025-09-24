@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
   page: {
     backgroundColor: "#fff",
     padding: 0,
-    fontFamily: "Times-Roman",
+    fontFamily: "Times-Roman",    
   },
   container: {
     position: "relative",
@@ -88,6 +88,7 @@ const styles = StyleSheet.create({
 
   hasSuccesfully: {
     fontSize: 16,
+    fontFamily: "Helvetica",
     color: COLOR_NAVY,
     textAlign: "center",
     fontWeight: "normal",
@@ -96,6 +97,7 @@ const styles = StyleSheet.create({
 
   courseTitle: {
     fontSize: 18,
+    fontFamily: "Helvetica",
     color: COLOR_NAVY,
     textAlign: "center",
     fontWeight: 800,
@@ -104,6 +106,7 @@ const styles = StyleSheet.create({
 
   meta: {
     fontSize: 12.5,
+    fontFamily: "Helvetica",
     color: COLOR_MUTED,
     textAlign: "center",
     lineHeight: 1.35,
@@ -111,6 +114,7 @@ const styles = StyleSheet.create({
 
   certId: {
     fontSize: 12,
+    fontFamily: "Helvetica",
     color: "#79849A",
     textAlign: "center",
     lineHeight: 1.35,
@@ -118,7 +122,8 @@ const styles = StyleSheet.create({
 
   companyName: {
     fontSize: 12,
-    color: "#0F0E0E",
+    fontFamily: "Helvetica",
+    color: COLOR_NAVY,
     textAlign: "center",
     fontWeight: 700,
   },
