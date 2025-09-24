@@ -34,6 +34,7 @@ export interface ChapterInfo {
   position: number;
   duration: number | null;
   userProgress: ChapterProgress[];
+  quizzes?: { id: string; title: string; timeLimit: number; chapterId: string }[];
 }
 
 // Course Category

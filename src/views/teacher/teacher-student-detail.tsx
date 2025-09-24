@@ -37,6 +37,7 @@ type TrainingCertificate = {
   hasCertificate: boolean;
   certificateNumber: string | null;
   certificateUrl: string | null;
+  // untuk tampilan ringkas
   chapters: {
     id: string;
     title: string;
@@ -45,8 +46,20 @@ type TrainingCertificate = {
     isCompleted: boolean;
     watchedSeconds: number;
     lastWatchedAt: string | null;
+    timeLimit: number;
+    attempts: number; // jumlah attempt
   }[];
+  // simpan raw chapters lengkap (ada quizzes.attempts)
+  rawChapters: any[];
+  totalWorkTime: string | null;   // "2 Hari 3 Jam ... (51 Jam)"
+  totalWorkMs: number;            // berguna buat sorting
+  estTimeHM: string | null;       // contoh: "49 Menit" atau "1 Jam 5 Menit"
+  isGood: any;
+  verdictLabel: string | null;
+  verdictColorCls: string | null;
+  deltaText: string | null;
 };
+
 
 const TeacherStudentDetail = () => {
   const params = useParams();
@@ -163,30 +176,136 @@ const TeacherStudentDetail = () => {
     };
   };
 
+    // --- Helpers ---
+  const toDate = (v: string | Date | null | undefined) => (v ? new Date(v) : null);
+
+  const formatDurationId = (msTotal: number) => {
+    if (!Number.isFinite(msTotal) || msTotal <= 0) return "0 Detik";
+    let s = Math.floor(msTotal / 1000);
+    const d = Math.floor(s / 86400); s %= 86400;
+    const h = Math.floor(s / 3600);  s %= 3600;
+    const m = Math.floor(s / 60);    s %= 60;
+    const sec = s;
+    const parts: string[] = [];
+    if (d) parts.push(`${d} Hari`);
+    if (h) parts.push(`${h} Jam`);
+    if (m) parts.push(`${m} Menit`);
+    parts.push(`${sec} Detik`);
+    return parts.join(" ");
+  };
+
+  const getAttemptSpanMs = (chapters: any[]) => {
+    let minStart: Date | null = null;
+    let maxEnd: Date | null = null;
+    for (const ch of chapters ?? []) {
+      for (const q of ch?.quizzes ?? []) {
+        for (const a of q?.attempts ?? []) {
+          const s = toDate(a?.startedAt);
+          const e = toDate(a?.completedAt);
+          if (!s || !e) continue;
+          if (!minStart || s < minStart) minStart = s;
+          if (!maxEnd || e > maxEnd)     maxEnd   = e;
+        }
+      }
+    }
+    if (!minStart || !maxEnd) return 0;
+    return maxEnd.getTime() - minStart.getTime();
+  };
+
+  // Estimasi total waktu = durasi video (menit) + 10 menit baca materi per chapter + waktu quiz
+  // Estimasi total waktu = video (detik→menit) + 10 menit baca/chapter + total timeLimit kuis (menit)
+  const sumEstimatedTotalMinutes = (chapters: any[]) => {
+    return (chapters ?? []).reduce((acc: number, ch: any) => {
+      const videoSeconds = ch.duration ?? 0;                // duration disimpan sebagai detik
+      const videoMinutes = Math.ceil(videoSeconds / 60);    // normalisasi ke menit (dibulatkan ke atas)
+
+      const readMinutes  = 10; // statis per chapter
+
+      const quizMinutes  = (ch.quizzes ?? []).reduce(
+        (qAcc: number, q: any) => qAcc + (q.timeLimit ?? 0), // timeLimit sudah menit
+        0
+      );
+
+      return acc + videoMinutes + readMinutes + quizMinutes;
+    }, 0);
+  };
+
+  const formatMinutesToHourMinute = (minutes: number) => {
+    if (!minutes || minutes <= 0) return "0 Menit";
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+
+    if (h > 0 && m > 0) return `${h} Jam ${m} Menit`;
+    if (h > 0 && m === 0) return `${h} Jam`;
+    return `${m} Menit`;
+  };
+
   const trainingStats = calculateTrainingStats();
 
-  const trainings: TrainingCertificate[] =
-    courses?.map((enrollment) => ({
+  const trainings: TrainingCertificate[] = (courses ?? []).map((enrollment) => {
+    const rawChapters = enrollment.course?.chapters ?? [];
+
+    // --- hitung sekali per course/enrollment ---
+    const spanMs = getAttemptSpanMs(rawChapters);
+    const totalHours = Math.floor(spanMs / 3600000);
+    const totalMinutesRemainder = Math.floor((spanMs % 3600000) / 60000);
+    const totalWorkTimeHM =
+      spanMs > 0
+        ? (totalHours > 0
+            ? `${totalHours} Jam ${totalMinutesRemainder} Menit`
+            : `${totalMinutesRemainder} Menit`)
+        : null;
+
+    // Estimasi
+    const estMinutes = sumEstimatedTotalMinutes(rawChapters);
+    const estTimeHM = estMinutes > 0 ? formatMinutesToHourMinute(estMinutes) : null;
+    
+    const estMs = estMinutes * 60 * 1000;
+    const isGood = spanMs <= estMs;
+    const verdictLabel = isGood ? "Memuaskan" : "Kurang Memuaskan";
+    const verdictColorCls = isGood
+      ? "text-green-700 bg-green-50 border-green-200"
+      : "text-red-700 bg-red-50 border-red-200";
+
+    const deltaMinutes = Math.ceil(Math.abs(spanMs - estMs) / 60000);
+    const deltaText = isGood
+      ? `Lebih cepat ${deltaMinutes} menit dari estimasi`
+      : `Lebih lama ${deltaMinutes} menit dari estimasi`;
+
+    return {
       id: enrollment.certificate?.id ?? null,
       title: enrollment.course?.title || "Pelatihan Tidak Diketahui",
       hasCertificate: Boolean(enrollment.certificate?.pdfUrl),
       certificateNumber: enrollment.certificate?.certificateNumber ?? null,
       certificateUrl: enrollment.certificate?.pdfUrl ?? null,
-      chapters:
-        enrollment.course?.chapters?.map((chapter) => {
-          const userProgress = chapter.userProgress?.[0];
 
-          return {
-            id: chapter.id,
-            title: chapter.title,
-            position: chapter.position,
-            duration: chapter.duration,
-            isCompleted: userProgress?.isCompleted ?? false,
-            watchedSeconds: userProgress?.watchedSeconds ?? 0,
-            lastWatchedAt: userProgress?.lastWatchedAt ?? null,
-          };
-        }) ?? [],
-    })) ?? [];
+      chapters: rawChapters.map((chapter: any) => {
+        const userProgress = chapter.userProgress?.[0];
+        const firstQuiz = chapter.quizzes?.[0];
+        return {
+          id: chapter.id,
+          title: chapter.title,
+          position: chapter.position,
+          duration: chapter.duration,
+          isCompleted: userProgress?.isCompleted ?? false,
+          watchedSeconds: userProgress?.watchedSeconds ?? 0,
+          lastWatchedAt: userProgress?.lastWatchedAt ?? null,
+          timeLimit: firstQuiz?.timeLimit ?? 0,
+          attempts: firstQuiz?.attempts?.length ?? 0,
+        };
+      }),
+
+      rawChapters,
+      totalWorkTime: spanMs > 0 ? `${totalWorkTimeHM}` : null,
+      totalWorkMs: spanMs,
+      estTimeHM,
+      isGood,
+      verdictLabel,
+      verdictColorCls,
+      deltaText,
+    };
+  });
+
 
   const joinDateDisplay = trainingStats.firstEnrollmentDate
     ? new Date(trainingStats.firstEnrollmentDate).toLocaleDateString("id-ID")
@@ -277,10 +396,13 @@ const TeacherStudentDetail = () => {
     }
   };
 
+
+
+
   console.log("COURSES ", courses );
   console.log("TRAININGS ", trainings );
   return (
-    <div className="mx-auto max-w-4xl space-y-6 pb-6 px-4">
+    <div className="mx-auto max-w-6xl space-y-6 pb-6 px-4">
       <Card className="shadow-md rounded-lg">
         <CardHeader className="flex flex-row items-center gap-4">
           <Image
@@ -364,6 +486,9 @@ const TeacherStudentDetail = () => {
                     <TableHead>Nama Pelatihan</TableHead>
                     <TableHead>Status Sertifikat</TableHead>
                     <TableHead>Nomor Sertifikat</TableHead>
+                    <TableHead>Estimasi Waktu Pengerjaan</TableHead>
+                    <TableHead>Aktual Waktu Pengerjaan</TableHead>
+                    <TableHead>Status</TableHead>
                     <TableHead>Aksi</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -413,6 +538,24 @@ const TeacherStudentDetail = () => {
                           </div>
                         </TableCell>
                         <TableCell>
+                          {training.estTimeHM ?? "-"}
+                        </TableCell>
+                        <TableCell>
+                          {training.totalWorkTime ?? "-"}
+                        </TableCell>
+                        <TableCell>
+                          <div className={`mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold border ${training.verdictColorCls}`}>
+                              {training.isGood ? (
+                              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path strokeWidth="2" d="M9 12l2 2 4-4"/><path strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            ) : (
+                              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path strokeWidth="2" d="M15 9l-6 6M9 9l6 6"/><path strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            )}
+                            <span>{training.verdictLabel}</span>
+                          </div>
+
+                          <p className="mt-1 text-xs text-gray-500">{training.deltaText}</p>
+                        </TableCell>
+                        <TableCell>
                           <Button
                             variant="ghost"
                             size="sm"
@@ -429,7 +572,7 @@ const TeacherStudentDetail = () => {
                       {openIndex === index && (
                         <TableRow>
                           <TableCell
-                            colSpan={5}
+                            colSpan={8}
                             className="bg-gray-50 p-5 border-t"
                           >
                             <div className="space-y-5 text-sm text-gray-700 animate-fade-in">
@@ -499,11 +642,10 @@ const TeacherStudentDetail = () => {
                                               <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-gray-500">
                                                 <span className="flex items-center gap-1">
                                                   <Clock className="h-3.5 w-3.5" />
-                                                  Durasi: {formatDuration(chapter.duration)}
+                                                  Durasi Video: {formatDuration(chapter.duration)}
                                                 </span>
-                                                <span>
-                                                  Ditonton: {formatWatchTime(chapter.watchedSeconds)}
-                                                </span>
+                                                <span>Ditonton: {formatWatchTime(chapter.watchedSeconds)}</span>
+                                                <span>Waktu Quiz: {chapter.timeLimit ?? 0} Menit</span>
                                               </div>
                                             </div>
                                             <div className="flex items-center gap-2 text-xs font-semibold">
@@ -514,18 +656,72 @@ const TeacherStudentDetail = () => {
                                                 })}
                                               />
                                               <span className="uppercase tracking-wide text-gray-600">
-                                                {training.chapters != null && chapter.isCompleted ? "Selesai" : "Proses"}
+                                                {chapter.isCompleted ? "Selesai" : "Proses"}
                                               </span>
                                             </div>
                                           </div>
                                         </div>
                                       ))}
+
+                                    {(() => {
+                                      // --- Hitung nilai & penilaian ---
+                                      const estMinutes = sumEstimatedTotalMinutes(training.rawChapters);
+                                      const estMs = estMinutes * 60 * 1000;
+
+                                      const spanMs = getAttemptSpanMs(training.rawChapters);
+                                      const spanText = formatDurationId(spanMs);
+                                      const totalHours = Math.floor(spanMs / (1000 * 60 * 60));
+
+                                      const isGood = spanMs <= estMs;
+                                      const verdictLabel = isGood ? "Memuaskan" : "Kurang Memuaskan";
+                                      const verdictColorCls = isGood
+                                        ? "text-green-700 bg-green-50 border-green-200"
+                                        : "text-red-700 bg-red-50 border-red-200";
+
+                                      const deltaMinutes = Math.ceil(Math.abs(spanMs - estMs) / 60000);
+                                      const deltaText = isGood
+                                        ? `Lebih cepat ${deltaMinutes} menit dari estimasi`
+                                        : `Lebih lama ${deltaMinutes} menit dari estimasi`;
+
+
+                                      return (
+                                        <>
+                                          <h1 className="text-sm font-semibold text-gray-800 pt-4">
+                                            Ringkasan Waktu Penyelesaian
+                                          </h1>
+                                          <hr style={{ paddingTop: 10 }} />
+                                          <p className="mt-2 text-gray-500 italic">
+                                            Total estimasi waktu yang dibutuhkan untuk menyelesaikan course ini adalah{" "}
+                                            <b>{formatMinutesToHourMinute(estMinutes)}</b>
+                                          </p>
+
+                                          <p className={`mt-2 italic`}>
+                                            Peserta telah menyelesaikan course ini dengan total waktu selama{" "}
+                                            <b>{spanText}</b>. (<b>{totalHours} Jam</b>)
+                                          </p>
+
+                                          <div className={`mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold border ${verdictColorCls}`}>
+                                            {isGood ? (
+                                              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path strokeWidth="2" d="M9 12l2 2 4-4"/><path strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                            ) : (
+                                              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path strokeWidth="2" d="M15 9l-6 6M9 9l6 6"/><path strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                            )}
+                                            <span>{verdictLabel}</span>
+                                          </div>
+
+                                          <p className="mt-1 text-xs text-gray-500">{deltaText}</p>
+
+
+                                        </>
+                                      );
+                                    })()}
                                   </div>
                                 ) : (
                                   <p className="mt-2 text-gray-500 italic">
                                     Belum ada data chapter untuk kursus ini.
                                   </p>
                                 )}
+
                               </div>
                             </div>
                           </TableCell>

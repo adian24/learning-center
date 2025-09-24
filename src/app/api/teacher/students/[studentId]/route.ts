@@ -101,7 +101,27 @@ export async function GET(
                         completedAt: true,
                         chapterScore: true,
                       },
+                      
                     },
+                    quizzes: {
+                      select: {
+                        id: true,
+                        title: true,
+                        timeLimit: true,
+                        chapterId: true,
+                        attempts: {
+                          include: {
+                            student: {
+                              select: {
+                                user: { select: { name: true, email: true } },
+                              },
+                            },
+                          },
+                          // optional: filter attempt milik student ini saja
+                          // where: { studentId },
+                        },
+                      },
+                    }
                   },
                   orderBy: {
                     position: "asc",
