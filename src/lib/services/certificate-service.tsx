@@ -11,10 +11,10 @@ import {
 import { PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { s3Client, BUCKET_NAME } from "@/lib/s3";
-
-// Import asset untuk kasus browser (akan jadi URL oleh bundler)
-import certTemplateUrl from "@/assets/cert-template.png";
 import { Buffer } from "buffer";
+
+// URL asset (untuk render di browser)
+import certTemplateUrl from "@/assets/cert-template.png";
 
 /* ===================== TYPES ===================== */
 interface CertificateData {
@@ -23,9 +23,7 @@ interface CertificateData {
     certificateNumber: string;
     issueDate: Date;
   };
-  student: {
-    user: { name: string | null; email: string | null };
-  };
+  student: { user: { name: string | null; email: string | null } };
   course: {
     title: string;
     description: string | null;
@@ -42,45 +40,28 @@ interface CertificateData {
 const COLOR_NAVY = "#0E3B70";
 const COLOR_MUTED = "#3E4A5B";
 
-// Relatif terhadap project root
-const TEMPLATE_REL_PATH = "src/assets/cert-template.png";
-
-/* ===================== POSISI TEKS (A4 landscape 842x595) ===================== */
-// A4 landscape 842x595
-// A4 landscape 842 x 595
+/* === LAYOUT A4 Landscape 842 x 595 === */
 const LAYOUT = {
   canvas: { w: 842, h: 595 },
 
-  // “This participation certificate is given to”
-  giveTo:      { top: 206, left: 60, width: 722 },
-
-  // Nama peserta — dinaikkan dan jadi anchor spasi berikutnya
+  // teks utama
   studentName: { top: 244, left: 60, width: 722 },
-
-  // “Has successfully …”
   hasSuccess:  { top: 310, left: 60, width: 722 },
-
-  // Judul course
   courseTitle: { top: 335, left: 60, width: 722 },
-
-  // Level | Category
   metaLine:    { top: 360, left: 60, width: 722 },
-
-  // Certificate ID
   certId:      { top: 410, left: 60, width: 722 },
 
-  // Footer
+  // footer
   bottomLogo:  { top: 462, w: 48, h: 48 },
   companyName: { top: 526, left: 60, width: 722 },
 };
-
 
 /* ===================== STYLES ===================== */
 const styles = StyleSheet.create({
   page: {
     backgroundColor: "#fff",
     padding: 0,
-    fontFamily: "Helvetica",     // biar konsisten Times-Roman
+    fontFamily: "Times-Roman",
   },
   container: {
     position: "relative",
@@ -95,28 +76,19 @@ const styles = StyleSheet.create({
     height: LAYOUT.canvas.h,
   },
 
-  // “This participation certificate is given to”
-  giveTo: {
-    fontSize: 18,
-    color: "#0E3B70",
-    textAlign: "center",
-    lineHeight: 1.3,
-  },
-
   studentName: {
     fontFamily: "Times-Roman",
     fontSize: 42,
-    color: "#0E3B70",
+    color: COLOR_NAVY,
     textAlign: "center",
     fontStyle: "italic",
     fontWeight: 700,
-    lineHeight: 1.15,              // jarak baris nama lebih proporsional
+    lineHeight: 1.15,
   },
 
-  // “Has successfully completed the online course”
   hasSuccesfully: {
-    fontSize: 16,                  // tetap besar tapi tidak menempel
-    color: "#0E3B70",
+    fontSize: 16,
+    color: COLOR_NAVY,
     textAlign: "center",
     fontWeight: "normal",
     lineHeight: 1.35,
@@ -124,7 +96,7 @@ const styles = StyleSheet.create({
 
   courseTitle: {
     fontSize: 18,
-    color: "#0E3B70",
+    color: COLOR_NAVY,
     textAlign: "center",
     fontWeight: 800,
     lineHeight: 1.3,
@@ -132,27 +104,25 @@ const styles = StyleSheet.create({
 
   meta: {
     fontSize: 12.5,
-    color: "#0E3B70",
+    color: COLOR_MUTED,
     textAlign: "center",
     lineHeight: 1.35,
   },
 
   certId: {
     fontSize: 12,
-    color: "#0E3B70",
+    color: "#79849A",
     textAlign: "center",
     lineHeight: 1.35,
   },
 
   companyName: {
     fontSize: 12,
-    color: "#0E3B70",
+    color: "#0F0E0E",
     textAlign: "center",
     fontWeight: 700,
   },
 });
-
-
 
 /* ===================== HELPERS ===================== */
 async function getSecureImageUrl(imageKey: string): Promise<string | null> {
@@ -166,7 +136,7 @@ async function getSecureImageUrl(imageKey: string): Promise<string | null> {
   }
 }
 
-/** Auto shrink nama jika terlalu panjang */
+/** Kecilkan font nama jika terlalu panjang */
 function fitNameFontSize(name: string): number {
   if (!name) return 42;
   if (name.length > 28) return 30;
@@ -176,29 +146,51 @@ function fitNameFontSize(name: string): number {
 }
 
 /**
- * Resolve sumber template untuk React-PDF.
- * - Di server (Node): baca file sebagai Buffer (format 'png')
- * - Di browser: pakai URL hasil import bundler
+ * Resolve sumber template untuk Node & Browser:
+ * - SERVER: coba baca file dari beberapa path. Jika gagal, fetch dari URL publik.
+ * - BROWSER: pakai URL hasil import bundler.
  */
-// GANTI fungsi sebelumnya
 async function resolveTemplateSrc():
   Promise<string | { data: Buffer; format: "png" }> {
   if (typeof window === "undefined") {
     const fs = await import("fs");
     const path = await import("path");
-    try {
-      const abs = path.join(process.cwd(), "src/assets/cert-template.png");
-      const file = await fs.promises.readFile(abs); // -> Buffer
-      const bin = Buffer.isBuffer(file) ? file : Buffer.from(file);
-      return { data: bin, format: "png" as const };
-    } catch (e) {
-      console.error("FS read failed, fallback to imported URL:", e);
-      return certTemplateUrl as unknown as string;
+
+    const candidates = [
+      path.join(process.cwd(), "src", "assets", "cert-template.png"),
+      path.join(process.cwd(), "public", "certificates", "cert-template.png"),
+      path.join(process.cwd(), "public", "cert-template.png"),
+    ];
+
+    for (const p of candidates) {
+      try {
+        const file = await fs.promises.readFile(p);
+        return { data: Buffer.from(file), format: "png" as const };
+      } catch { /* coba path berikutnya */ }
     }
+
+    // Fallback: fetch dari URL publik
+    const base =
+      process.env.APP_BASE_URL ||
+      process.env.NEXT_PUBLIC_APP_URL ||
+      "";
+    if (base) {
+      const url = new URL("/certificates/cert-template.png", base).toString();
+      const res = await fetch(url);
+      if (res.ok) {
+        const ab = await res.arrayBuffer();
+        return { data: Buffer.from(ab), format: "png" as const };
+      }
+      console.error("Fetch template failed:", res.status, res.statusText);
+    }
+
+    // Fallback terakhir: pakai URL bundler (mungkin tidak bisa diambil di server)
+    return certTemplateUrl as unknown as string;
   }
+
+  // Browser
   return certTemplateUrl as unknown as string;
 }
-
 
 /* ===================== DOCUMENT ===================== */
 const TemplateCertificateDocument: React.FC<{
@@ -222,6 +214,7 @@ const TemplateCertificateDocument: React.FC<{
     month: "long",
     day: "numeric",
   });
+
   return (
     <Document>
       <Page size="A4" orientation="landscape" style={styles.page}>
@@ -229,68 +222,33 @@ const TemplateCertificateDocument: React.FC<{
           {/* Background template */}
           <Image src={templateSrc} style={styles.bg} />
 
-          {/* {studentName} */}
-          <View
-            style={{
-              position: "absolute",
-              top: LAYOUT.studentName.top,
-              left: LAYOUT.studentName.left,
-              width: LAYOUT.studentName.width,
-            }}
-          >
-            <Text style={[styles.studentName, { fontSize: nameSize }]}>
-              {studentName}
-            </Text>
+          {/* Student Name */}
+          <View style={{ position: "absolute", top: LAYOUT.studentName.top, left: LAYOUT.studentName.left, width: LAYOUT.studentName.width }}>
+            <Text style={[styles.studentName, { fontSize: nameSize }]}>{studentName}</Text>
           </View>
 
-          {/* “Has successfully …” */}
-          <View style={{ position: "absolute", ...LAYOUT.hasSuccess }}>
-            <Text style={styles.hasSuccesfully}>
-              Has successfully completed the online course
-            </Text>
+          {/* Has successfully... */}
+          <View style={{ position: "absolute", top: LAYOUT.hasSuccess.top, left: LAYOUT.hasSuccess.left, width: LAYOUT.hasSuccess.width }}>
+            <Text style={styles.hasSuccesfully}>Has successfully completed the online course</Text>
           </View>
-          {/* “{courseTitle}” */}
-          <View
-            style={{
-              position: "absolute",
-              top: LAYOUT.courseTitle.top,
-              left: LAYOUT.courseTitle.left,
-              width: LAYOUT.courseTitle.width,
-            }}
-          >
+
+          {/* Course Title */}
+          <View style={{ position: "absolute", top: LAYOUT.courseTitle.top, left: LAYOUT.courseTitle.left, width: LAYOUT.courseTitle.width }}>
             <Text style={styles.courseTitle}>&quot;{courseTitle}&quot;</Text>
           </View>
 
-          {/* Level & Category */}
-          <View
-            style={{
-              position: "absolute",
-              top: LAYOUT.metaLine.top,
-              left: LAYOUT.metaLine.left,
-              width: LAYOUT.metaLine.width,
-            }}
-          >
-            <Text style={styles.meta}>
-              Level : {level} | Category : {category}
-            </Text>
+          {/* Level | Category + Issued on */}
+          <View style={{ position: "absolute", top: LAYOUT.metaLine.top, left: LAYOUT.metaLine.left, width: LAYOUT.metaLine.width }}>
+            <Text style={styles.meta}>Level : {level} | Category : {category}</Text>
             <Text style={styles.meta}>Issued on {formattedDate}</Text>
           </View>
 
           {/* Certificate ID */}
-          <View
-            style={{
-              position: "absolute",
-              top: LAYOUT.certId.top,
-              left: LAYOUT.certId.left,
-              width: LAYOUT.certId.width,
-            }}
-          >
-            <Text style={styles.certId}>
-              Certificate ID : {data.certificate.certificateNumber}
-            </Text>
+          <View style={{ position: "absolute", top: LAYOUT.certId.top, left: LAYOUT.certId.left, width: LAYOUT.certId.width }}>
+            <Text style={styles.certId}>Certificate ID : {data.certificate.certificateNumber}</Text>
           </View>
 
-          {/* Logo bottom center */}
+          {/* (opsional) logo perusahaan & nama perusahaan */}
           {companyLogoUrl && (
             <Image
               src={companyLogoUrl}
@@ -303,16 +261,7 @@ const TemplateCertificateDocument: React.FC<{
               }}
             />
           )}
-
-          {/* {companyName} */}
-          <View
-            style={{
-              position: "absolute",
-              top: LAYOUT.companyName.top,
-              left: LAYOUT.companyName.left,
-              width: LAYOUT.companyName.width,
-            }}
-          >
+          <View style={{ position: "absolute", top: LAYOUT.companyName.top, left: LAYOUT.companyName.left, width: LAYOUT.companyName.width }}>
             <Text style={styles.companyName}>{companyName.toUpperCase()}</Text>
           </View>
         </View>
@@ -326,9 +275,7 @@ export async function generateCertificatePDF(data: CertificateData): Promise<str
   try {
     let companyLogoUrl: string | null = null;
     if (data.course.teacher.company?.logoUrl) {
-      companyLogoUrl = await getSecureImageUrl(
-        data.course.teacher.company.logoUrl
-      );
+      companyLogoUrl = await getSecureImageUrl(data.course.teacher.company.logoUrl);
     }
 
     const templateSrc = await resolveTemplateSrc();
@@ -345,15 +292,24 @@ export async function generateCertificatePDF(data: CertificateData): Promise<str
     const buf = Buffer.from(await blob.arrayBuffer());
 
     const fileName = `certificates/cert_${data.certificate.certificateNumber}_${Date.now()}.pdf`;
-    const res = await uploadToS3(buf, fileName, "application/pdf");
-    return res.Location || res.url;
+    await s3Client.send(new PutObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: fileName,
+      Body: buf,
+      ContentType: "application/pdf",
+      CacheControl: "max-age=31536000",
+      Metadata: { uploadedAt: new Date().toISOString(), type: "certificate" },
+    }));
+
+    const url = `${process.env.NEXT_PUBLIC_S3_ENDPOINT}/${BUCKET_NAME}/${fileName}`;
+    return url;
   } catch (e) {
     console.error("Error generating certificate PDF:", e);
     throw new Error("Failed to generate certificate PDF");
   }
 }
 
-/* ===================== VALIDATION & UPLOAD ===================== */
+/* ===================== VALIDATION ===================== */
 export function validateCertificateData(data: any): data is CertificateData {
   return (
     data &&
@@ -363,22 +319,4 @@ export function validateCertificateData(data: any): data is CertificateData {
     data.student.user &&
     data.course.teacher
   );
-}
-
-async function uploadToS3(
-  buffer: Buffer,
-  fileName: string,
-  contentType: string
-): Promise<{ Location?: string; url: string }> {
-  const upload = new PutObjectCommand({
-    Bucket: BUCKET_NAME,
-    Key: fileName,
-    Body: buffer,
-    ContentType: contentType,
-    CacheControl: "max-age=31536000",
-    Metadata: { uploadedAt: new Date().toISOString(), type: "certificate" },
-  });
-  await s3Client.send(upload);
-  const url = `${process.env.NEXT_PUBLIC_S3_ENDPOINT}/${BUCKET_NAME}/${fileName}`;
-  return { Location: url, url };
 }
