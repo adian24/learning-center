@@ -402,7 +402,7 @@ const TeacherStudentDetail = () => {
   console.log("COURSES ", courses );
   console.log("TRAININGS ", trainings );
   return (
-    <div className="mx-auto max-w-6xl space-y-6 pb-6 px-4">
+    <div className="mx-auto max-w-7xl space-y-6 pb-6 px-4">
       <Card className="shadow-md rounded-lg">
         <CardHeader className="flex flex-row items-center gap-4">
           <Image
@@ -544,16 +544,36 @@ const TeacherStudentDetail = () => {
                           {training.totalWorkTime ?? "-"}
                         </TableCell>
                         <TableCell>
-                          <div className={`mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold border ${training.verdictColorCls}`}>
-                              {training.isGood ? (
-                              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path strokeWidth="2" d="M9 12l2 2 4-4"/><path strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            ) : (
-                              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path strokeWidth="2" d="M15 9l-6 6M9 9l6 6"/><path strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            )}
-                            <span>{training.verdictLabel}</span>
-                          </div>
+                          {training.totalWorkMs > 0 ? (
+                          <>
+                            <div
+                              className={`mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold border ${training.verdictColorCls}`}
+                            >
+                              {training.isGood === null ? (
+                                // ikon minus / placeholder opsional
+                                <span className="w-4 h-4 inline-block">–</span>
+                              ) : training.isGood ? (
+                                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                  <path strokeWidth="2" d="M9 12l2 2 4-4" />
+                                  <path strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                              ) : (
+                                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                  <path strokeWidth="2" d="M15 9l-6 6M9 9l6 6" />
+                                  <path strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                              )}
+                              <span>{training.verdictLabel}</span>
+                            </div>
 
-                          <p className="mt-1 text-xs text-gray-500">{training.deltaText}</p>
+                            {training.deltaText && (
+                              <p className="mt-1 text-xs text-gray-500">{training.deltaText}</p>
+                            )}
+                          </>
+                        ) : (
+                          <span className="text-gray-500">-</span>
+                        )}
+
                         </TableCell>
                         <TableCell>
                           <Button
@@ -699,7 +719,8 @@ const TeacherStudentDetail = () => {
                                             Peserta telah menyelesaikan course ini dengan total waktu selama{" "}
                                             <b>{spanText}</b>. (<b>{totalHours} Jam</b>)
                                           </p>
-
+                                          {training.totalWorkMs > 0 ? (
+                                          <>
                                           <div className={`mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold border ${verdictColorCls}`}>
                                             {isGood ? (
                                               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path strokeWidth="2" d="M9 12l2 2 4-4"/><path strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -710,7 +731,8 @@ const TeacherStudentDetail = () => {
                                           </div>
 
                                           <p className="mt-1 text-xs text-gray-500">{deltaText}</p>
-
+                                          </>
+                                          ) : null }
 
                                         </>
                                       );

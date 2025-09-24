@@ -110,6 +110,9 @@ export async function GET(
                         timeLimit: true,
                         chapterId: true,
                         attempts: {
+                          where: {
+                            studentId: studentId,
+                          },
                           include: {
                             student: {
                               select: {
